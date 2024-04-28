@@ -21,6 +21,7 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^8.56.0",
+		"@types/pg": "^8.11.5",
 		"@typescript-eslint/eslint-plugin": "^7.0.0",
 		"@typescript-eslint/parser": "^7.0.0",
 		"dotenv": "^16.4.5",
@@ -38,6 +39,7 @@
 	"dependencies": {
 		"dotenv-cli": "^7.4.1",
 		"node-pg-migrate": "^7.2.0",
+		"pg": "^8.11.5",
 		"ts-node": "^10.9.2"
 	}
 }

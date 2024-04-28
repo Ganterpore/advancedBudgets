@@ -1,11 +1,14 @@
 import { MigrationBuilder } from 'node-pg-migrate'
-import { userColumn } from '../src/db/utils'
-const { idColumn } = require('../src/db/utils.js')
+import { userColumn, idColumn } from '../src/db/standard_columns'
 
 exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
   pgm.createTable('users', {
     id: idColumn,
-    username: 'string'
+    username: {
+      type: 'string',
+      unique: true,
+      notNull: true
+    }
   })
   pgm.createTable('accounts', {
     id: idColumn,

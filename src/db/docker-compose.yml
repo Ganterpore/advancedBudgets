@@ -1,0 +1,22 @@
+version: "1"
+services:
+  budget-db:
+    image: "postgres:16"
+    container_name: budget-db
+    environment:
+      - POSTGRES_USER=budget
+      - POSTGRES_PASSWORD=budget
+      - POSTGRES_DB=budget
+    ports:
+      - "5432:5432"
+  setup-budget-db:
+    image: node:18-alpine
+    container_name: setup-budget-db
+    depends_on:
+     - db
+    env_file:
+      - ../../.local.docker.env
+    volumes:
+      - ../../:/app
+    working_dir: '/app'
+    command: /bin/sh -c "npm install && npm run migrate:up"

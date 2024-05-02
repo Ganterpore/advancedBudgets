@@ -1,13 +1,27 @@
 <script>
+    import Button from '../../components/Button.svelte'
+    import Input from '../../components/Input.svelte'
     export let form
 </script>
 
-<h1>log in</h1>
+<div class="login-flex">
+    <h1 style="margin: 10px">Log In</h1>
 
-<form method="POST">
-    {#if form?.error}
-        <p class="error">{form.error}</p>
-    {/if}
-    <input name="username" />
-    <button>log in</button>
-</form>
+    <form method="POST">
+        {#if form?.error}
+            <p class="error" style="text-align: center">{form.error}</p>
+        {/if}
+        <Input name="username"/>
+        <Button>Log In</Button>
+    </form>
+</div>
+
+<style>
+    .login-flex {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        flex-direction: column;
+    }
+</style>

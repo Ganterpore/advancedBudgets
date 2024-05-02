@@ -14,11 +14,23 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
     id: idColumn,
     user: userColumn,
     name: 'string',
-    amount: 'double',
+  })
+  pgm.createTable('sub_accounts', {
+    id: idColumn,
+    name: 'string',
     type: 'string',
     parent: {
       type: 'integer',
       references: 'accounts(id)'
+    }
+  })
+  pgm.createTable('transactions', {
+    id: idColumn,
+    amount: 'double',
+    description: 'string',
+    sub_account: {
+      type: 'integer',
+      references: 'sub_accounts(id)'
     }
   })
 };

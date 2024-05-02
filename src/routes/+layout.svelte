@@ -1,17 +1,28 @@
 <script>
-    export let data
+  export let data
 </script>
 
 <nav>
-    <a href="/">home</a>
-    <a href="/app">app</a>
     {#if data.authToken}
         <form method="POST" action="/logout">
             <button>log out</button>
         </form>
-    {:else}
-        <a href="/login">login</a>
     {/if}
 </nav>
 
 <slot />
+
+<style>
+    :root {
+        --theme-background: #161c91;
+        --theme-primary: #4a4de7;
+        --theme-secondary: #7ea6f4;
+        --theme-highlight: #a0e4f1;
+        --theme-text: #f1fafb;
+        background-color: var(--theme-background);
+        color: var(--theme-highlight);
+    }
+    button {
+        background-color: var(--theme-highlight);
+    }
+</style>

@@ -1,4 +1,4 @@
-import { connect } from '../db/db'
+import { connect } from '../../db/db'
 import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async () => {

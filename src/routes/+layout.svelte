@@ -1,5 +1,3 @@
-
-
 <slot />
 <style>
     :root {
@@ -11,5 +9,6 @@
         --theme-secondary-text: #161c91;
         background-color: var(--theme-background);
         color: var(--theme-highlight);
+        font-family: sans-serif;
     }
 </style>

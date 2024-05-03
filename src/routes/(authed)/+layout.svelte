@@ -1,18 +1,27 @@
 <script>
+  import { openPopup } from '$lib/store.ts'
+  import Button from '$lib/components/Button.svelte'
+  import Navigation from '$lib/components/Navigation.svelte'
   export let data
-  import Button from '../../components/Button.svelte'
-  import Navigation from '../../components/Navigation.svelte'
+
+  async function openAccountPopup () {
+    $openPopup = 'newAccount'
+  }
 </script>
 
 <Navigation>
-    <h1>Welcome to Advanced Budgets {data.user.username}</h1>
+    <h1>Welcome {data.user?.username ?? ''}</h1>
     <div style="flex-grow: 1"></div>
-    <form method="POST" action="/account" style="align-content: center">
-        <Button>Add</Button>
-    </form>
-    <form method="POST" action="/logout" style="align-content: center">
+    <div><Button on:click={openAccountPopup} preventDefault>Add</Button></div>
+    <form method="POST" action="/logout">
         <Button>log out</Button>
     </form>
 </Navigation>
 
 <slot/>
+
+<style>
+    form, div {
+        align-content: center;
+    }
+</style>

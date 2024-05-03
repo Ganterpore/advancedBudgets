@@ -7,7 +7,7 @@ export type User = {
 
 export async function newUser ({ username }: {username: string}): Promise<number> {
   const db = await connect()
-  const res = await db.query('INSERT INTO users(username) VALUES($1) RETURNING id', [username])
+  const res = await db.query('INSERT INTO users("username") VALUES($1) RETURNING id', [username])
   return res.rows[0].id
 }
 

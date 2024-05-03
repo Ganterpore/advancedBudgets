@@ -1,0 +1,54 @@
+<script>
+  import { openPopup } from '$lib/store.ts'
+  export let id
+</script>
+
+<div class="modal" class:hidden={id !== $openPopup}>
+    <div class="content">
+        <div class="close-button" on:click={() => $openPopup = false}>&times;</div>
+        <slot />
+    </div>
+</div>
+
+<style>
+    .hidden {
+        display: none;
+    }
+    .modal {
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+    .content {
+        position: relative;
+        background-color: var(--theme-background);
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    .close-button {
+        position: absolute;
+        top: 0;
+        right: 0.5rem;
+        color: var(--theme-highlight);
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .close-button:hover,
+    .close-button:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>

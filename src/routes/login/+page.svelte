@@ -1,6 +1,6 @@
 <script>
-    import Button from '../../components/Button.svelte'
-    import Input from '../../components/Input.svelte'
+    import Button from '$lib/components/Button.svelte'
+    import Input from '$lib/components/Input.svelte'
     export let form
 </script>
 

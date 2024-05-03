@@ -14,7 +14,7 @@ export interface AccountTree extends Account {
 export async function newAccount(accountInfo: Omit<Account, 'id'>): Promise<number> {
   const db = await connect()
   const res = await db.query(
-    'INSERT INTO accounts(user, name) VALUES($1, $2) RETURNING id',
+    'INSERT INTO accounts("user", "name") VALUES($1, $2) RETURNING id',
     [accountInfo.user, accountInfo.name]
   )
   return res.rows[0].id

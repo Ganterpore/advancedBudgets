@@ -7,6 +7,7 @@
         --theme-highlight: #a0e4f1;
         --theme-text: #f1fafb;
         --theme-secondary-text: #161c91;
+        --theme-alert: #ff6700;
         background-color: var(--theme-background);
         color: var(--theme-highlight);
         font-family: sans-serif;

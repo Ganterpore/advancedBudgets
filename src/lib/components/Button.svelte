@@ -1,4 +1,16 @@
-<button on:click>
+<script>
+  export let preventDefault = false
+  export let onClick = undefined
+
+  function preventDefaultFunc(handler) {
+    return e => {
+      if (preventDefault) e.preventDefault();
+      handler(e);
+    };
+  }
+</script>
+
+<button on:click={preventDefaultFunc(onClick)}>
     <slot />
 </button>
 
@@ -32,12 +44,10 @@
         width: auto;
     }
     button:hover,
-    button:focus {
-        background-color: var(--theme-primary);
-        box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
-    }
     button:hover {
         transform: translateY(-1px);
+        background-color: var(--theme-primary);
+        box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
     }
     button:active {
         background-color: var(--theme-secondary);

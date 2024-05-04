@@ -1,19 +1,27 @@
 <script>
   import { openPopup } from '$lib/store.ts'
+  import { fade, fly } from 'svelte/transition'
+
   export let id
+  export let onClose
+  $: isHidden = id !== $openPopup
+
+  function onCloseWrapper () {
+    $openPopup = false
+    if (onClose) onClose()
+  }
 </script>
 
-<div class="modal" class:hidden={id !== $openPopup}>
-    <div class="content">
-        <div class="close-button" on:click={() => $openPopup = false}>&times;</div>
-        <slot />
+{#if !isHidden}
+    <div class="modal" on:click={onCloseWrapper} transition:fade={{duration: 500}}>
+        <div class="content" on:click|stopPropagation transition:fly={{ duration: 500, y: 100 }}>
+            <div class="close-button" on:click={onCloseWrapper}>&times;</div>
+            <slot />
+        </div>
     </div>
-</div>
+{/if}
 
 <style>
-    .hidden {
-        display: none;
-    }
     .modal {
         position: fixed;
         z-index: 9999;
@@ -29,8 +37,8 @@
         background-color: var(--theme-background);
         margin: 15% auto;
         padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
+        border-radius: 5px;
+        width: fit-content;
         display: flex;
         justify-content: center;
         align-items: center;

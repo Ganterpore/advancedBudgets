@@ -8,7 +8,7 @@
         display: flex;
         justify-content: end;
         border-radius: 5px;
-        padding: 10px;
-        gap: 10px;
+        padding: 10px 20px;
+        gap: 15px;
     }
 </style>

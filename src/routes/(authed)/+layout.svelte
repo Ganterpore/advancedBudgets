@@ -12,7 +12,7 @@
 <Navigation>
     <h1>Welcome {data.user?.username ?? ''}</h1>
     <div style="flex-grow: 1"></div>
-    <div><Button on:click={openAccountPopup} preventDefault>Add</Button></div>
+    <div><Button onClick={openAccountPopup} preventDefault>Add Account</Button></div>
     <form method="POST" action="/logout">
         <Button>log out</Button>
     </form>

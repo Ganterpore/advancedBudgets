@@ -1,8 +1,9 @@
 <script>
     export let name
+    export let value
 </script>
 
-<input name={name} />
+<input name={name} bind:value={value} />
 
 <style>
     input {

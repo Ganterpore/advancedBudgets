@@ -17,6 +17,11 @@
 		"migrate:down": "dotenv -e .env tsx migrate.ts down"
 	},
 	"devDependencies": {
+		"@iconify-json/ep": "^1.1.15",
+		"@iconify-json/fa-solid": "^1.1.8",
+		"@iconify-json/fluent": "^1.1.53",
+		"@iconify-json/la": "^1.1.8",
+		"@iconify-json/map": "^1.1.9",
 		"@iconify-json/material-symbols": "^1.1.79",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.0.0",

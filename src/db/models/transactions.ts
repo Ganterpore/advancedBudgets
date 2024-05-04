@@ -21,6 +21,5 @@ export async function getTransactionsOnAccount (accountId: number) {
     'SELECT * FROM transactions WHERE subAccount=$1',
     [accountId]
   )
-  console.log(res)
   return res.rows
 }

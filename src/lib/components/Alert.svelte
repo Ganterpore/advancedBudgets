@@ -1,5 +1,5 @@
 <script>
-  import MaterialSymbolsWarningOutline from '~icons/material-symbols/warning-outline';
+    import MaterialSymbolsWarningOutline from '~icons/material-symbols/warning-outline';
 </script>
 
 <div class="alertBox">

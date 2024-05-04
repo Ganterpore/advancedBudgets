@@ -2,6 +2,7 @@
   import { openPopup } from '$lib/store.ts'
   import Button from '$lib/components/Button.svelte'
   import Navigation from '$lib/components/Navigation.svelte'
+  import ParentAccountPopup from './parentAccount/ParentAccountPopup.svelte'
   export let data
 
   async function openAccountPopup () {
@@ -17,6 +18,8 @@
         <Button>log out</Button>
     </form>
 </Navigation>
+
+<ParentAccountPopup/>
 
 <slot/>
 

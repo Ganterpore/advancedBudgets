@@ -1,34 +1,22 @@
 import { connect } from '../db'
-import type { SubAccount } from './subAccounts'
+
+export enum AccountTypes {
+  BUDGET = 'Budget',
+  SAVING = 'Saving',
+  STORAGE = 'Storage',
+  OWING = 'Owing'
+}
 
 export type Account = {
   id: number
-  user: number
   name: string
+  type: AccountTypes
+  parent: number
 }
 
-export interface AccountTree extends Account {
-  subAccounts: SubAccount[]
-}
-
-export async function newAccount(accountInfo: Omit<Account, 'id'>): Promise<number> {
+export async function newAccount(account: Omit<Account, 'id'>) {
   const db = await connect()
-  const res = await db.query(
-    'INSERT INTO accounts("user", "name") VALUES($1, $2) RETURNING id',
-    [accountInfo.user, accountInfo.name]
-  )
+  const res = await db.query('INSERT INTO accounts("name", "type", "parent") VALUES($1, $2, $3) RETURNING id',
+    [account.name, account.type, account.parent])
   return res.rows[0].id
-}
-
-export async function getAccountsForUser (userId: number): Promise<AccountTree[]> {
-  const db = await connect()
-  const res = await db.query(
-    '\
-    SELECT * FROM ACCOUNTS A WHERE USER=$1\
-    LEFT JOIN SUB_ACCOUNTS S\
-    ON A.ID = S.PARENT',
-    [userId]
-  )
-  console.log(res.rows)
-  return res.rows
 }

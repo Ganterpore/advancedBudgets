@@ -10,18 +10,18 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
       notNull: true
     }
   })
-  pgm.createTable('accounts', {
+  pgm.createTable('parent_accounts', {
     id: idColumn,
     user: userColumn,
     name: 'string',
   })
-  pgm.createTable('sub_accounts', {
+  pgm.createTable('accounts', {
     id: idColumn,
     name: 'string',
     type: 'string',
     parent: {
       type: 'integer',
-      references: 'accounts(id)'
+      references: 'parent_accounts(id)'
     }
   })
   pgm.createTable('transactions', {
@@ -30,12 +30,14 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
     description: 'string',
     sub_account: {
       type: 'integer',
-      references: 'sub_accounts(id)'
+      references: 'accounts(id)'
     }
   })
 };
 
 exports.down = (pgm: MigrationBuilder): Promise<void> | void => {
+  pgm.dropTable('transactions')
   pgm.dropTable('accounts')
+  pgm.dropTable('parent_accounts')
   pgm.dropTable('users')
 };

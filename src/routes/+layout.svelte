@@ -4,6 +4,7 @@
         --theme-background: #161c91;
         --theme-primary: #4a4de7;
         --theme-secondary: #7ea6f4;
+        --theme-tertiary: #060c81;
         --theme-highlight: #a0e4f1;
         --theme-text: #f1fafb;
         --theme-secondary-text: #161c91;

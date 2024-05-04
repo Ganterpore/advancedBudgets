@@ -6,7 +6,7 @@
         --theme-secondary: #7ea6f4;
         --theme-tertiary: #060c81;
         --theme-highlight: #a0e4f1;
-        --theme-text: #f1fafb;
+        --theme-text: #a0e4f1;
         --theme-secondary-text: #161c91;
         --theme-alert: #ff6700;
         background-color: var(--theme-background);

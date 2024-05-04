@@ -1,12 +1,9 @@
 <script lang="ts">
-  import type { AccountTree } from '../../db/models/parentAccounts'
   import List from '$lib/components/List.svelte'
   import ParentAccountHeader from './parentAccount/ParentAccountHeader.svelte'
   import AccountPopup from './account/AccountPopup.svelte'
   import AccountHeader from './account/AccountHeader.svelte'
   export let data
-
-  let accounts: AccountTree = data?.accounts
 </script>
 
 <List list={Object.values(data.accounts).map(a => {

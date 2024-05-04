@@ -21,7 +21,8 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
     type: 'string',
     parent: {
       type: 'integer',
-      references: 'parent_accounts(id)'
+      references: 'parent_accounts(id)',
+      onDelete: 'CASCADE'
     }
   })
   pgm.createTable('transactions', {
@@ -30,7 +31,8 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
     description: 'string',
     sub_account: {
       type: 'integer',
-      references: 'accounts(id)'
+      references: 'accounts(id)',
+      onDelete: 'CASCADE'
     }
   })
 };

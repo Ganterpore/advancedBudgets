@@ -45,7 +45,6 @@
     }
     button:hover,
     button:hover {
-        transform: translateY(-1px);
         background-color: var(--theme-primary);
         box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
     }

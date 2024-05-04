@@ -43,8 +43,6 @@
 
         font-weight: bold;
         border-radius: 5px;
-        padding: 10px 20px;
-        margin: 0 20px;
     }
     .list-item.secondary {
         background-color: var(--theme-primary);

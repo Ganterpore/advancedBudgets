@@ -17,8 +17,8 @@ export const accountTypeIcons = {
   [AccountType.OWED]: LaHandshakeSolid
 }
 export const accountTypeDescriptions = {
-  [AccountType.STORAGE]: 'This is an unlimited storage source.',
-  [AccountType.BUDGET]: 'Create a budget account for tracking spending in a certain category.',
-  [AccountType.SAVING]: 'Create a Savings account for tracking saving up for something.',
-  [AccountType.OWED]: 'Create an Owing account for tracking who owes you money.'
+  [AccountType.STORAGE]: 'This is a generic unlimited storage source. Use it for saving for retirement, for placing money in a splurge account, or for any other tracking of your funds.',
+  [AccountType.BUDGET]: 'Use this for budgeting. Create an account for tracking spending on groceries, bills or car maintenance.',
+  [AccountType.SAVING]: 'Create a Savings account when you have a specific goal in mind; Saving for a book, car or house!',
+  [AccountType.OWED]: 'When you loan someone money, or they loan you money, use this to track how much is left to pay, and close it when you are equal.'
 }

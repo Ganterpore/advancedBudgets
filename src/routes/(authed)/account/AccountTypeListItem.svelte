@@ -1,9 +1,6 @@
 <script lang="ts">
-
   import { accountTypeDescriptions, accountTypeIcons } from './types'
-
   export let id: string
-
 
   $: Icon = id ? accountTypeIcons[id] : undefined
   $: description = id ? accountTypeDescriptions[id] : undefined
@@ -36,14 +33,16 @@
       height: min-content;
       justify-content: center;
   }
+  p {
+      color: var(--theme-text);
+  }
   .name {
       font-weight: bold;
-      height: 3px;
+      height: min-content;
   }
   .description {
       font-style: italic;
       font-weight: normal;
-      height: 3px;
       padding-bottom: 10px;
   }
   p {

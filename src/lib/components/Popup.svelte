@@ -10,10 +10,15 @@
     $openPopup = false
     if (onClose) onClose()
   }
+  function onKeyDown (event) {
+      if (event.key === 'Escape') {
+          onCloseWrapper()
+      }
+  }
 </script>
 
 {#if !isHidden}
-    <div class="modal" on:click={onCloseWrapper} transition:fade={{duration: 500}}>
+    <div class="modal" on:click={onCloseWrapper} transition:fade={{duration: 500}} on:keydown={onKeyDown}>
         <div class="content" on:click|stopPropagation transition:fly={{ duration: 500, y: 100 }}>
             <div class="close-button" on:click={onCloseWrapper}>&times;</div>
             <slot />

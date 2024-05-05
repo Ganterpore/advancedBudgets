@@ -42,7 +42,7 @@
     <Alert>{error}</Alert>
   {/if}
   <form class="form">
-    <Input label="Name" name="accountName" bind:value={accountName}/>
+    <Input label="Name" name="accountName" autofocus bind:value={accountName}/>
     <Button onClick={() => createAccount(accountName)} preventDefault>Create</Button>
   </form>
 </Popup>

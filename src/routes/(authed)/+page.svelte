@@ -5,6 +5,7 @@
   import TransactionPopup from './transaction/TransacionPopup.svelte'
   import AccountHeader from './account/AccountHeader.svelte'
   export let data
+  $: totals = data.totals
 </script>
 
 <List list={Object.values(data.accounts).map(a => {
@@ -13,7 +14,7 @@
   return {
    id: a.id,
    header: ParentAccountHeader,
-   headerProps: { name: a.name, id: a.id },
+   headerProps: { name: a.name, id: a.id, value: totals[a.id]?.value },
    child: hasChildren ? List: undefined,
    childProps: !hasChildren ? undefined : {
      secondary: true,
@@ -24,7 +25,8 @@
           headerProps: {
             name: c.name,
             id: c.id,
-            type: c.type
+            type: c.type,
+            value: totals[a.id]?.children[c.id]
           }
          }
        })

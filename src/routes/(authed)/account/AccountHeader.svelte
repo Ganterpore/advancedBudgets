@@ -5,7 +5,10 @@
   import Button from '$lib/components/Button.svelte'
   export let id
   export let name
+  export let value: number = 0
   export let type
+  $: valueNum = value ?? 0
+  $: valueString = valueNum >= 0 ? `$${valueNum}` : `-$${Math.abs(valueNum)}`
 
   $: Icon = type ? accountTypeIcons[type] : undefined
   async function addTransaction () {
@@ -20,6 +23,7 @@
   </div>
   <p>{name}</p>
   <div class="separator" ></div>
+  <p>{valueString}</p>
   <Button onClick={addTransaction}>
     <MaterialSymbolsAddRounded/>
   </Button>
@@ -32,6 +36,7 @@
     .header {
         display: flex;
         justify-content: start;
+        gap: 5px;
     }
     .separator {
         flex-grow: 1;

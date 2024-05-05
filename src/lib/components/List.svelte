@@ -58,7 +58,7 @@
         box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
     }
     .children {
-        margin: 0 20px;
+        margin: 0 5px;
         padding: 0;
         background-color: var(--theme-tertiary);
     }

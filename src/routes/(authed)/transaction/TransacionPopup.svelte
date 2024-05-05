@@ -50,7 +50,7 @@
   <form class="form">
     <Input name="transactionName" bind:value={transactionName}/>
     <div class="footer">
-      <NumberInput label="Value" name="transactionValue" bind:value={transactionValue}/>
+      <NumberInput label="Value" name="transactionValue" autofocus bind:value={transactionValue}/>
       <Button onClick={createTransaction} preventDefault>Create</Button>
     </div>
   </form>

@@ -31,8 +31,7 @@
     })
     const body = await res.json()
     if (res.status === 201) {
-      accountName = ''
-      error = ''
+      onClose()
       $openPopup = false
       await invalidate('data:accounts')
     } else {
@@ -66,7 +65,7 @@
       <Alert>{error}</Alert>
     {/if}
     <form class="form">
-      <Input label="Name" name="accountName" bind:value={accountName}/>
+      <Input autofocus label="Name" name="accountName" bind:value={accountName}/>
       <div><Button onClick={() => createAccount()} preventDefault>Create</Button></div>
     </form>
   {/if}

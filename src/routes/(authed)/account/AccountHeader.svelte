@@ -3,12 +3,12 @@
   import { openPopup, selectedAccount } from '$lib/store.ts'
   import { accountTypeIcons } from './types'
   import Button from '$lib/components/Button.svelte'
+  import { numberFormatter } from '$lib/utils'
   export let id
   export let name
   export let value: number = 0
   export let type
-  $: valueNum = value ?? 0
-  $: valueString = valueNum >= 0 ? `$${valueNum}` : `-$${Math.abs(valueNum)}`
+  $: valueString = numberFormatter.format(value ?? 0)
 
   $: Icon = type ? accountTypeIcons[type] : undefined
   async function addTransaction () {

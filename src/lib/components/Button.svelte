@@ -1,10 +1,12 @@
 <script>
   export let preventDefault = false
+  export let stopPropagation = false
   export let onClick = undefined
 
   function preventDefaultFunc(handler) {
     return e => {
-      if (preventDefault) e.preventDefault();
+      if (preventDefault) e.preventDefault()
+      if (stopPropagation) e.stopPropagation()
       handler(e);
     };
   }

@@ -24,7 +24,7 @@
   <p>{name}</p>
   <div class="separator" ></div>
   <p>{valueString}</p>
-  <Button onClick={addTransaction}>
+  <Button stopPropagation onClick={addTransaction}>
     <MaterialSymbolsAddRounded/>
   </Button>
 </div>

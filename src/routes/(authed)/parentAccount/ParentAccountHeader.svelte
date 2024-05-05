@@ -18,7 +18,7 @@
   <p>{name}</p>
   <div class="separator" ></div>
   <p>{valueString}</p>
-  <Button onClick={() => openChildAccount(id)}>
+  <Button stopPropagation onClick={() => openChildAccount(id)}>
     <MaterialSymbolsAddRounded/>
   </Button>
 </div>

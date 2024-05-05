@@ -5,8 +5,8 @@
   export let name: string
   export let id: number
   export let value: number = 0
-
-  $: valueString = value >= 0 ? `$${value}` : `-$${Math.abs(value)}`
+  $: valueNum = value ?? 0
+  $: valueString = valueNum >= 0 ? `$${valueNum}` : `-$${Math.abs(valueNum)}`
 
   async function openChildAccount (id: number) {
     $openPopup = 'childAccount'

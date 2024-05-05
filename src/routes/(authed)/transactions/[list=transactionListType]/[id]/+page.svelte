@@ -5,7 +5,6 @@
   export let data
 </script>
 
-<h2>Transactions</h2>
 <div class="container">
   <div class="listContainer">
     <List secondary list={data.transactions.map(t => ({id: t.id, header: TransactionListItem, headerProps: {

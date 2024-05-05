@@ -2,7 +2,7 @@
   import List from '$lib/components/List.svelte'
   import ParentAccountHeader from './parentAccount/ParentAccountHeader.svelte'
   import AccountPopup from './account/AccountPopup.svelte'
-  import TransactionPopup from './transaction/TransacionPopup.svelte'
+  import TransactionPopup from './transactions/TransacionPopup.svelte'
   import AccountHeader from './account/AccountHeader.svelte'
   import { goto } from '$app/navigation'
   export let data
@@ -10,7 +10,7 @@
 
   function onSelected (isParent: boolean) {
     return (id: string) => {
-      const url = `/transaction/${isParent ? 'parentAccount/' : 'account/'}${id}`
+      const url = `/transactions/${isParent ? 'parentAccount/' : 'account/'}${id}`
       throw goto(url)
     }
   }

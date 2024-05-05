@@ -11,20 +11,24 @@
   async function openAccountPopup () {
     $openPopup = 'newAccount'
   }
+
+  $: pathname = $page.url.pathname
+  $: title = pathname === '/'
+    ? `Welcome ${data.user?.username ?? ''}`
+    : pathname.split('/')[1].charAt(0).toUpperCase() + pathname.split('/')[1].slice(1)
 </script>
 
 <Navigation>
-    {#if $page.url.pathname !== '/'}
+    {#if $page.url.pathname === '/'}
+        <form method="POST" action="/logout"><Button>log out</Button></form>
+    {:else}
         <Button onClick={() => goto('/')}><EpBack /></Button>
     {/if}
-    <h1>Welcome {data.user?.username ?? ''}</h1>
+    <h1>{title}</h1>
     <div style="flex-grow: 1"></div>
     {#if $page.url.pathname === '/'}
         <div><Button onClick={openAccountPopup} preventDefault>Add Account</Button></div>
     {/if}
-    <form method="POST" action="/logout">
-        <Button>log out</Button>
-    </form>
 </Navigation>
 
 <ParentAccountPopup/>

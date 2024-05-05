@@ -18,7 +18,6 @@
       description: transactionName,
       account: $selectedAccount
     }
-    console.log(body)
     const res = await fetch('/transaction', {
       method: 'POST',
       body: JSON.stringify(body),

@@ -1,14 +1,14 @@
 <script>
-    export let name = undefined
-    export let value = undefined
-    export let label = undefined
+  export let name = undefined
+  export let value = undefined
+  export let label = undefined
 </script>
 
 <div class="container">
   {#if label}
     <p>{label}:</p>
   {/if}
-  <input name={name} bind:value={value} />
+  <input name={name} bind:value={value} type="number" />
 </div>
 
 <style>

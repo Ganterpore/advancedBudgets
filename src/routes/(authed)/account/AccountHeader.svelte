@@ -1,13 +1,16 @@
 <script lang="ts">
-  import { openPopup } from '$lib/store.ts'
+  import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
+  import { openPopup, selectedAccount } from '$lib/store.ts'
   import { accountTypeIcons } from './types'
-  export let name
+  import Button from '$lib/components/Button.svelte'
   export let id
+  export let name
   export let type
 
   $: Icon = type ? accountTypeIcons[type] : undefined
   async function addTransaction () {
     $openPopup = 'transaction'
+    $selectedAccount = id
   }
 </script>
 
@@ -16,9 +19,10 @@
     <svelte:component this={Icon}/>
   </div>
   <p>{name}</p>
-<!--  <Button onClick={addTransaction}>-->
-<!--    <MaterialSymbolsAddRounded/>-->
-<!--  </Button>-->
+  <div class="separator" ></div>
+  <Button onClick={addTransaction}>
+    <MaterialSymbolsAddRounded/>
+  </Button>
 </div>
 
 <style>
@@ -28,5 +32,8 @@
     .header {
         display: flex;
         justify-content: start;
+    }
+    .separator {
+        flex-grow: 1;
     }
 </style>

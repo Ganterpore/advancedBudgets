@@ -2,6 +2,7 @@
   import List from '$lib/components/List.svelte'
   import ParentAccountHeader from './parentAccount/ParentAccountHeader.svelte'
   import AccountPopup from './account/AccountPopup.svelte'
+  import TransactionPopup from './transaction/TransacionPopup.svelte'
   import AccountHeader from './account/AccountHeader.svelte'
   export let data
 </script>
@@ -31,3 +32,4 @@
    }
   }})} />
 <AccountPopup/>
+<TransactionPopup />

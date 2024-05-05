@@ -29,7 +29,7 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
     id: idColumn,
     amount: 'double',
     description: 'string',
-    sub_account: {
+    account: {
       type: 'integer',
       references: 'accounts(id)',
       onDelete: 'CASCADE'

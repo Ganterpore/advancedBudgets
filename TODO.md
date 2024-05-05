@@ -1,0 +1,23 @@
+ - [x] basic login page
+ - [x] Create account popups
+ - [x] List parent accounts 
+ - [x] List accounts
+ - [x] Track transactions
+ - [x] Show account totals
+ - [x] Transaction Lists
+ - [ ] List and create accounts by account types, 
+   - [ ] Complete owed accounts
+   - [ ] Track percentage saving made
+   - [ ] Global Saving for things
+   - [ ] Set budget limits
+ - [ ] Proper Login Page
+ - [ ] Deployments
+ - [ ] CRUD everything
+ - [ ] Salary Budgeting
+   - [ ] Set frequency of budget accounts
+   - [ ] Income storage accounts
+   - [ ] Paydays, auto transfers
+   - [ ] Track how over/under budget you are
+   - [ ] Track inflation
+   - [ ] Excess Salary
+ - [ ] Bank Integrations

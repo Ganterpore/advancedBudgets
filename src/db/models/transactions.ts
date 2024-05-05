@@ -7,6 +7,10 @@ export type Transaction = {
   account: number
 }
 
+export interface TransactionWithParent extends Transaction {
+  accountName: string
+}
+
 export type AccountTotals = {
   [key: number]: {
     value: number
@@ -61,10 +65,24 @@ export async function getAccountTotalsForUser (userId: number) {
   return buildTotalsTree(res.rows)
 }
 
-export async function getTransactionsOnAccount (accountId: number) {
+export async function getTransactionsOnAccount (accountId: number): Promise<TransactionWithParent[]> {
   const db = await connect()
   const res = await db.query(
-    'SELECT * FROM transactions WHERE account=$1',
+    `select t.id, amount, description, account, a.name as "accountName" 
+                    from transactions t
+                     join accounts a on account=a.id 
+                     WHERE account=$1`,
+    [accountId]
+  )
+  return res.rows
+}
+export async function getTransactionsOnParentAccount (accountId: number): Promise<TransactionWithParent[]> {
+  const db = await connect()
+  const res = await db.query(
+    `select t.id, amount, description, account, a.name as "accountName" 
+                    from transactions t
+                    join accounts a on account=a.id
+                    where a.parent=$1`,
     [accountId]
   )
   return res.rows

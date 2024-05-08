@@ -31,11 +31,8 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
     id: idColumn,
     amount: 'double',
     description: 'string',
-    account: {
-      type: 'integer',
-      references: 'accounts(id)',
-      onDelete: 'CASCADE'
-    }
+    account: accountColumn,
+    transactionTime: 'datetime'
   })
 };
 

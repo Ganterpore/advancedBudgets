@@ -4,7 +4,8 @@ export type Transaction = {
   id: number,
   amount: number,
   description: string,
-  account: number
+  account: number,
+  transactionTime: Date
 }
 
 export interface TransactionWithParent extends Transaction {
@@ -20,11 +21,11 @@ export type AccountTotals = {
   }
 }
 
-export async function newTransaction (transaction: Omit<Transaction, 'id'>) {
+export async function newTransaction (transaction: Omit<Transaction, 'id'|'transactionTime'>) {
   const db = await connect()
   const res = await db.query(
-    'INSERT INTO transactions("amount", "description", "account") VALUES($1, $2, $3) RETURNING id',
-    [transaction.amount, transaction.description, transaction.account])
+    'INSERT INTO transactions("amount", "description", "account", "transactionTime") VALUES($1, $2, $3, $4) RETURNING id',
+    [transaction.amount, transaction.description, transaction.account, new Date()])
   return res.rows[0].id
 }
 

@@ -1,5 +1,5 @@
 import { MigrationBuilder } from 'node-pg-migrate'
-import { userColumn, idColumn } from '../src/db/standard_columns'
+import { userColumn, idColumn, accountColumn, priorityColumn } from '../src/db/standard_columns'
 
 exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
   pgm.createTable('users', {
@@ -14,11 +14,13 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
     id: idColumn,
     user: userColumn,
     name: 'string',
+    priority: priorityColumn
   })
   pgm.createTable('accounts', {
     id: idColumn,
     name: 'string',
     type: 'string',
+    priority: priorityColumn,
     parent: {
       type: 'integer',
       references: 'parent_accounts(id)',

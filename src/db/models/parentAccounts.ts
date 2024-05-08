@@ -56,11 +56,11 @@ function buildAccountTree (accounts: AccountsWithChildren[]): AccountTree {
 export async function getAccountsForUser (userId: number): Promise<AccountTree> {
   const db = await connect()
   const res = await db.query(
-    'SELECT A.id, A.name, S.id as "accountId", S.name as "accountName", S.type as "accountType" \
-    FROM PARENT_ACCOUNTS\
-    A LEFT JOIN ACCOUNTS S \
-    ON A.ID = S.PARENT\
-    WHERE A.USER=$1',
+    `SELECT A.id, A.name, S.id as "accountId", S.name as "accountName", S.type as "accountType"
+    FROM PARENT_ACCOUNTS A
+    LEFT JOIN ACCOUNTS S
+    ON A.ID = S.PARENT
+    WHERE A.USER=$1`,
     [userId]
   )
   const accountTree = buildAccountTree(res.rows)

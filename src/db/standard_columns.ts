@@ -12,3 +12,14 @@ export const userColumn: ColumnDefinition = {
   references: 'users(id)',
   notNull: true
 }
+
+export const accountColumn: ColumnDefinition = {
+  type: 'integer',
+  references: 'accounts(id)',
+  onDelete: 'CASCADE'
+}
+
+export const priorityColumn: ColumnDefinition = {
+  type: 'integer',
+  default: 100
+}

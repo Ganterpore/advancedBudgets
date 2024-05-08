@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types'
 import { json} from '@sveltejs/kit'
-import { newAccount } from '../../../db/models/accounts'
+import { createNewAccount } from '../../../controllers/accountController'
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   const authToken = cookies.get('auth_token')
@@ -11,6 +11,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   if (!data.type) return json({ error: 'Account type must not be empty' }, { status: 400 })
   if (!data.parent) return json({ error: 'Account parent must not be empty' }, { status: 400 })
 
-  const id =  await newAccount(data)
+  const id =  await createNewAccount(data)
   return json({ id }, { status: 201 })
 }

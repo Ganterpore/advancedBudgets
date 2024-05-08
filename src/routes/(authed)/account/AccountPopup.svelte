@@ -87,12 +87,12 @@
     {#if error}
       <Alert>{error}</Alert>
     {/if}
-    <form class="form">
       {#if accountType === AccountTypes.BUDGET}
         <BudgetAccountDetails bind:dataObject={additionalBudgetDetails} />
       {:else if accountType === AccountTypes.SAVING}
         <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
       {/if}
+    <form class="form">
       <Input autofocus={![AccountTypes.SAVING, AccountTypes.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
       <div><Button onClick={() => createAccount()} preventDefault>Create</Button></div>
     </form>

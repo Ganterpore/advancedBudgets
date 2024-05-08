@@ -1,9 +1,7 @@
 export enum FrequencyCategory {
-  EVERY_X_DAYS = 'everyXDays',
-  EVERY_X_WEEKS = 'everyXWeeks',
-  EVERY_X_MONTHS = 'everyXMonths',
-  WEEKLY_ON = 'weeklyOn',
-  MONTHLY_ON = 'monthlyOn'
+  DAILY = 'Day',
+  WEEKLY = 'Week',
+  MONTHLY = 'Month'
 }
 
 export type AccountTypeBudget = {
@@ -14,4 +12,5 @@ export type AccountTypeBudget = {
   frequency: number
   frequencyCategory: FrequencyCategory
   startDate: Date
+  dayOf: number
 }

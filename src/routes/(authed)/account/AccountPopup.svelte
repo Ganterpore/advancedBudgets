@@ -30,8 +30,9 @@
     regularBudget: 0,
     budgetMax: 0,
     frequency: 1,
-    frequencyCategory: FrequencyCategory.EVERY_X_MONTHS,
-    startDate: new Date()
+    frequencyCategory: FrequencyCategory.MONTHLY,
+    startDate: new Date(),
+    dayOf: 1
   }
 
   async function createAccount () {
@@ -88,7 +89,7 @@
       <Alert>{error}</Alert>
     {/if}
       {#if accountType === AccountTypes.BUDGET}
-        <BudgetAccountDetails bind:dataObject={additionalBudgetDetails} />
+        <BudgetAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
       {:else if accountType === AccountTypes.SAVING}
         <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
       {/if}

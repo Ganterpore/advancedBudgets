@@ -15,6 +15,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     budgetMax: 'double',
     frequency: 'integer',
     frequencyCategory: 'string',
+    dayOf: 'integer',
     startDate: 'date'
   })
 }

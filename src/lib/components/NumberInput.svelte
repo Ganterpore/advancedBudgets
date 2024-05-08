@@ -2,14 +2,14 @@
   export let name = undefined
   export let value = undefined
   export let label = undefined
-  export let autofocus = undefined
+  export let autofocus = false
 </script>
 
 <div class="container">
   {#if label}
     <p>{label}:</p>
   {/if}
-  <input name={name} bind:value={value} type="number" {autofocus} />
+  <input name={name} bind:value={value} type="number" {autofocus} on:input on:focusout />
 </div>
 
 <style>

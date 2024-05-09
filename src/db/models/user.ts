@@ -17,7 +17,7 @@ export async function getUserByUsername (username: string): Promise<User> {
   return res.rows[0]
 }
 
-export async function getUserById (userId: number): Promise<User> {
+export async function getUserById (userId: number): Promise<User | undefined> {
   const db = await connect()
   const res = await db.query('SELECT * FROM USERS WHERE id=$1', [userId])
   return res.rows[0]

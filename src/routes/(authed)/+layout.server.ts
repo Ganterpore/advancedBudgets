@@ -7,7 +7,11 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
   if (!authToken) {
     throw redirect(303, `/login?redirectTo=${url.pathname}`)
   }
-  let user = await getUserDetailsFromToken(authToken)
+  const user = await getUserDetailsFromToken(authToken)
+  if (!user) {
+    cookies.delete('auth_token', { path: '/' });
+    throw redirect(303, '/');
+  }
   return {
     authToken,
     user

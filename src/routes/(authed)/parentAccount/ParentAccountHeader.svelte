@@ -8,7 +8,8 @@
   export let value: number = 0
   $: valueString = numberFormatter.format(value ?? 0)
 
-  async function openChildAccount (id: number) {
+  async function openChildAccount (id: number, e) {
+    e.stopPropagation()
     $openPopup = 'childAccount'
     $selectedParentAccount = id
   }
@@ -18,7 +19,7 @@
   <p>{name}</p>
   <div class="separator" ></div>
   <p>{valueString}</p>
-  <Button stopPropagation onClick={() => openChildAccount(id)}>
+  <Button on:click={(e) => openChildAccount(id, e)}>
     <MaterialSymbolsAddRounded/>
   </Button>
 </div>

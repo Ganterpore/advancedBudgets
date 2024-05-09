@@ -80,7 +80,7 @@
   <AccountTypeList onSelected={onSelected}/>
   {:else }
     <div class="topBar">
-      <Button onClick={() => accountType = undefined}>
+      <Button on:click={() => accountType = undefined}>
         <EpBack />
       </Button>
       <AccountTypeListItem id={accountType} />
@@ -95,7 +95,7 @@
       {/if}
     <form class="form">
       <Input autofocus={![AccountTypes.SAVING, AccountTypes.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
-      <div><Button onClick={() => createAccount()} preventDefault>Create</Button></div>
+      <div><Button on:click={() => createAccount()} >Create</Button></div>
     </form>
   {/if}
 </Popup>

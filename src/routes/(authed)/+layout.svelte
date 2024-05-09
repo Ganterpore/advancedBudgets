@@ -22,12 +22,12 @@
     {#if $page.url.pathname === '/'}
         <form method="POST" action="/logout"><Button>log out</Button></form>
     {:else}
-        <Button onClick={() => goto('/')}><EpBack /></Button>
+        <Button on:click={() => goto('/')}><EpBack /></Button>
     {/if}
     <h1>{title}</h1>
     <div style="flex-grow: 1"></div>
     {#if $page.url.pathname === '/'}
-        <div><Button onClick={openAccountPopup} preventDefault>Add Account</Button></div>
+        <div><Button on:click={openAccountPopup}>Add Account</Button></div>
     {/if}
 </Navigation>
 

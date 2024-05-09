@@ -11,7 +11,8 @@
   $: valueString = numberFormatter.format(value ?? 0)
 
   $: Icon = type ? accountTypeIcons[type] : undefined
-  async function addTransaction () {
+  async function addTransaction (e) {
+    e.stopPropagation()
     $openPopup = 'transaction'
     $selectedAccount = id
   }
@@ -24,7 +25,7 @@
   <p>{name}</p>
   <div class="separator" ></div>
   <p>{valueString}</p>
-  <Button stopPropagation onClick={addTransaction}>
+  <Button on:click={addTransaction}>
     <MaterialSymbolsAddRounded/>
   </Button>
 </div>

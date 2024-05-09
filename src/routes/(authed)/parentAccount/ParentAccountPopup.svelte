@@ -43,6 +43,6 @@
   {/if}
   <form class="form">
     <Input label="Name" name="accountName" autofocus bind:value={accountName}/>
-    <Button onClick={() => createAccount(accountName)} preventDefault>Create</Button>
+    <Button on:click={() => createAccount(accountName)}>Create</Button>
   </form>
 </Popup>

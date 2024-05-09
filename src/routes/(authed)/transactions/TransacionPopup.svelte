@@ -51,7 +51,7 @@
     <Input name="transactionName" bind:value={transactionName}/>
     <div class="footer">
       <NumberInput label="Value" name="transactionValue" autofocus bind:value={transactionValue}/>
-      <Button onClick={createTransaction} preventDefault>Create</Button>
+      <Button on:click={createTransaction} >Create</Button>
     </div>
   </form>
 </Popup>

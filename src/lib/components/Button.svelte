@@ -1,18 +1,4 @@
-<script>
-  export let preventDefault = false
-  export let stopPropagation = false
-  export let onClick = undefined
-
-  function preventDefaultFunc(handler) {
-    return e => {
-      if (preventDefault) e.preventDefault()
-      if (stopPropagation) e.stopPropagation()
-      handler(e);
-    };
-  }
-</script>
-
-<button on:click={preventDefaultFunc(onClick)}>
+<button on:click>
     <slot />
 </button>
 

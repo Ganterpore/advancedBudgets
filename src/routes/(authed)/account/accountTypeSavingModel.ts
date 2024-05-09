@@ -1,11 +1,6 @@
-import { connect } from '../db'
+import type { AccountTypeSaving } from './types'
+import { connect } from '$lib/db'
 
-export type AccountTypeSaving = {
-  id: number
-  account: number
-  multiplier: number
-  target: number
-}
 
 export async function newSavingsAccount(props: Omit<AccountTypeSaving, 'id'>) {
   const db = await connect()

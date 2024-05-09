@@ -10,8 +10,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "vitest",
 		"lint": "eslint .",
-		"db": "docker-compose -f src/db/docker-compose.yml up -d",
-		"db-close": "docker-compose -f src/db/docker-compose.yml down",
+		"db": "docker-compose -f src/devops/docker-compose.yml up -d",
+		"db-close": "docker-compose -f src/devops/docker-compose.yml down",
 		"migrate:make": "node-pg-migrate create -j ts",
 		"migrate:up": "dotenv -e .env tsx migrate.ts up",
 		"migrate:down": "dotenv -e .env tsx migrate.ts down"

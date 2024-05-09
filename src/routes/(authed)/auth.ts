@@ -1,4 +1,4 @@
-import { getUserById, getUserByUsername, newUser } from '../../db/models/user'
+import { getUserById, getUserByUsername, newUser } from '../login/userModel'
 
 export const getAuthToken = async (username: string): Promise<string> => {
   const user = await getUserByUsername(username)

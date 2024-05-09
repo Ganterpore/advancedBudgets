@@ -8,19 +8,17 @@
   import AccountTypeList from './AccountTypeList.svelte'
   import AccountTypeListItem from './AccountTypeListItem.svelte'
   import { invalidate } from '$app/navigation'
-  import type { AccountTypeSaving } from '../../../db/models/accountTypeSaving'
   import BudgetAccountDetails from './BudgetAccountDetails.svelte'
   import SavingsAccountDetails from './SavingsAccountDetails.svelte'
-  import type { AccountTypeBudget } from '../../../db/types/accountTypeBudget'
-  import { FrequencyCategory } from '../../../db/types/accountTypeBudget'
-  import type { Account } from '../../../db/types/accounts'
-  import { AccountTypes } from '../../../db/types/accounts'
+  import type { Account, AccountTypeBudget, AccountTypeSaving } from './types'
+  import { FrequencyCategory } from '$lib/types'
+  import { AccountType } from './types'
 
   let accountName: string
   let error: string
   if (!accountName) accountName = ''
 
-  let accountType: AccountTypes | undefined
+  let accountType: AccountType | undefined
 
   let additionalSavingsDetails: Omit<AccountTypeSaving, 'id'|'account'> = {
     multiplier: 1,
@@ -41,9 +39,9 @@
       type: accountType!,
       parent: $selectedParentAccount
     }
-    if (accountType === AccountTypes.BUDGET) {
+    if (accountType === AccountType.BUDGET) {
       accountBody.additionalAccountData = additionalBudgetDetails
-    } else if (accountType === AccountTypes.SAVING) {
+    } else if (accountType === AccountType.SAVING) {
       accountBody.additionalAccountData = additionalSavingsDetails
     }
     const res = await fetch('/account', {
@@ -70,7 +68,7 @@
   }
 
   function onSelected (id: string) {
-    accountType = id as AccountTypes
+    accountType = id as AccountType
   }
 </script>
 
@@ -88,13 +86,13 @@
     {#if error}
       <Alert>{error}</Alert>
     {/if}
-      {#if accountType === AccountTypes.BUDGET}
+      {#if accountType === AccountType.BUDGET}
         <BudgetAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
-      {:else if accountType === AccountTypes.SAVING}
+      {:else if accountType === AccountType.SAVING}
         <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
       {/if}
     <form class="form">
-      <Input autofocus={![AccountTypes.SAVING, AccountTypes.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
+      <Input autofocus={![AccountType.SAVING, AccountType.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
       <div><Button on:click={() => createAccount()} >Create</Button></div>
     </form>
   {/if}

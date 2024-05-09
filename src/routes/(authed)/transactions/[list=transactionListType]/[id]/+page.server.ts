@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types'
 import { TransactionListType } from '../../../../../params/transactionListType'
-import { getTransactionsOnAccount, getTransactionsOnParentAccount } from '../../../../../db/models/transactions'
+import { getTransactionsOnAccount, getTransactionsOnParentAccount } from '../../transactionModel'
 
 export const load: PageServerLoad = async ({ params }) => {
   const { id, list } = params

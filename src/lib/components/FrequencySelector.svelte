@@ -1,7 +1,7 @@
 <script>
     import DayOfWeekSelector from "$lib/components/DayOfWeekSelector.svelte";
     import {getOrdinalNum} from "$lib/utils";
-    import {FrequencyCategory} from "../../db/types/accountTypeBudget";
+    import {FrequencyCategory} from "$lib/types";
 
     export let type
     export let value

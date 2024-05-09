@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types'
 import { json} from '@sveltejs/kit'
-import { newTransaction } from '../../../db/models/transactions'
+import { newTransaction } from './transactionModel'
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   const authToken = cookies.get('auth_token')

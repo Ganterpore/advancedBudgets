@@ -2,12 +2,39 @@ import FluentBox16Regular from '~icons/fluent/box-16-regular';
 import MapGroceryOrSupermarket from '~icons/map/grocery-or-supermarket';
 import FaSolidPiggyBank from '~icons/fa-solid/piggy-bank';
 import LaHandshakeSolid from '~icons/la/handshake-solid';
+import type {FrequencyCategory} from "$lib/types";
 
 export enum AccountType {
   STORAGE = 'Storage',
   BUDGET = 'Budget',
   SAVING = 'Saving',
   OWED = 'Owed'
+}
+
+export type AccountTypeSaving = {
+  id: number
+  account: number
+  multiplier: number
+  target: number
+}
+
+export type AccountTypeBudget = {
+  id: number
+  account: number
+  regularBudget: number
+  budgetMax: number
+  frequency: number
+  frequencyCategory: FrequencyCategory
+  startDate: Date
+  dayOf: number
+}
+
+export type Account = {
+  id: number
+  name: string
+  type: AccountType
+  parent: number
+  additionalAccountData?: Partial<AccountTypeSaving> | Partial<AccountTypeBudget>
 }
 
 export const accountTypeIcons = {

@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type {AccountTypeBudget} from '../../../db/types/accountTypeBudget'
-    import {FrequencyCategory} from "../../../db/types/accountTypeBudget";
     import FrequencySelector from "$lib/components/FrequencySelector.svelte";
     import {dayBitMapToString} from "$lib/dayOfWeekFunctons";
     import {getOrdinalNum} from "$lib/utils";
     import Input from "$lib/components/Input.svelte";
+    import type { AccountTypeBudget } from './types'
+    import { FrequencyCategory } from '$lib/types'
 
     export let name
     export let dataObject: Omit<AccountTypeBudget, 'id'>

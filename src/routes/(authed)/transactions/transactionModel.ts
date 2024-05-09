@@ -1,25 +1,5 @@
-import { connect } from '../db'
-
-export type Transaction = {
-  id: number,
-  amount: number,
-  description: string,
-  account: number,
-  transactionTime: Date
-}
-
-export interface TransactionWithParent extends Transaction {
-  accountName: string
-}
-
-export type AccountTotals = {
-  [key: number]: {
-    value: number
-    children: {
-      [key: number]: number
-    }
-  }
-}
+import type { AccountTotals, Transaction, TransactionWithParent } from './types'
+import { connect } from '$lib/db'
 
 export async function newTransaction (transaction: Omit<Transaction, 'id'|'transactionTime'>) {
   const db = await connect()

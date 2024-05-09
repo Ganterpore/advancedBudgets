@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { AccountTypeSaving } from '../../../db/models/accountTypeSaving'
   import RangeInput from "$lib/components/RangeInput.svelte";
   import Input from "$lib/components/Input.svelte";
+  import type { AccountTypeSaving } from './types'
 
   export let dataObject: Omit<AccountTypeSaving, 'id'>
   $: sliderValue = 2

@@ -1,9 +1,5 @@
-import { connect } from '../db'
-
-export type User = {
-  id: number
-  username: string
-}
+import { connect } from '$lib/db'
+import type { User } from './types'
 
 export async function newUser ({ username }: {username: string}): Promise<number> {
   const db = await connect()

@@ -6,7 +6,7 @@ import type { Actions } from './$types'
 export const actions: Actions = {
   default: async ({ cookies, url, request }) => {
     const data = await request.formData()
-    let username = data.get('username')
+    const username = data.get('username')
     if (!username) return fail(400, { error: 'Username cannot be empty' })
 
     const authToken = await getAuthToken(username!.toString())

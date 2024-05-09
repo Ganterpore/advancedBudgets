@@ -1,28 +1,6 @@
-import { connect } from '../db'
-import type { Account } from './accounts'
-import { AccountTypes } from './accounts'
+import type { AccountsWithChildren, AccountTree, ParentAccount } from './types'
+import { connect } from '$lib/db'
 
-export type ParentAccount = {
-  id: number
-  user: number
-  name: string
-}
-
-export interface AccountNode extends Omit<ParentAccount, 'user'> {
-  children: {
-    [id: number]: Omit<Account, 'parent'>
-  }
-}
-
-export interface AccountTree {
-  [id: number]: AccountNode
-}
-
-export interface AccountsWithChildren extends Omit<ParentAccount, 'user'> {
-  accountId?: number
-  accountName?: string
-  accountType?: AccountTypes
-}
 
 export async function newParentAccount(accountInfo: Omit<ParentAccount, 'id'>): Promise<number> {
   const db = await connect()
@@ -63,6 +41,5 @@ export async function getAccountsForUser (userId: number): Promise<AccountTree> 
     WHERE A.USER=$1`,
     [userId]
   )
-  const accountTree = buildAccountTree(res.rows)
-  return accountTree
+  return buildAccountTree(res.rows)
 }

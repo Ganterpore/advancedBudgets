@@ -1,8 +1,8 @@
-import { connect } from '../../db/db'
 import type { PageServerLoad } from './$types'
 import { getUserDetailsFromToken } from './auth'
-import { getAccountsForUser } from '../../db/models/parentAccounts'
-import { getAccountTotalsForUser } from '../../db/models/transactions'
+import { connect } from '$lib/db'
+import { getAccountsForUser } from './parentAccount/parentAccountModel'
+import { getAccountTotalsForUser } from './transactions/transactionModel'
 
 export const load: PageServerLoad = async ({ parent, depends }) => {
   depends('data:accounts')
@@ -10,8 +10,8 @@ export const load: PageServerLoad = async ({ parent, depends }) => {
   await connect()
   const { authToken } = await parent()
   const user = await getUserDetailsFromToken(authToken)
-  const accounts = await getAccountsForUser(user.id)
-  const totals = await getAccountTotalsForUser(user.id)
+  const accounts = await getAccountsForUser(user!.id)
+  const totals = await getAccountTotalsForUser(user!.id)
   return {
     accounts,
     totals

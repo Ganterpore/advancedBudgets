@@ -1,7 +1,6 @@
 <script lang="ts">
   import Button from '$lib/components/Button.svelte'
   import Input from '$lib/components/Input.svelte'
-  import NumberInput from '$lib/components/NumberInput.svelte'
   import Popup from '$lib/components/Popup.svelte'
   import Alert from '$lib/components/Alert.svelte'
   import { openPopup, selectedAccount } from '$lib/store.js'
@@ -50,7 +49,7 @@
   <form class="form">
     <Input name="transactionName" bind:value={transactionName}/>
     <div class="footer">
-      <NumberInput label="Value" name="transactionValue" autofocus bind:value={transactionValue}/>
+      <Input type="number" label="Value" name="transactionValue" autofocus bind:value={transactionValue}/>
       <Button on:click={createTransaction} >Create</Button>
     </div>
   </form>

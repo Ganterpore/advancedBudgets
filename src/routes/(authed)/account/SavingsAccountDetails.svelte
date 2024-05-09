@@ -1,7 +1,7 @@
 <script lang="ts">
-  import NumberInput from '$lib/components/NumberInput.svelte'
   import type { AccountTypeSaving } from '../../../db/models/accountTypeSaving'
   import RangeInput from "$lib/components/RangeInput.svelte";
+  import Input from "$lib/components/Input.svelte";
 
   export let dataObject: Omit<AccountTypeSaving, 'id'>
   $: sliderValue = 2
@@ -13,7 +13,7 @@
 </script>
 
 <div class="container">
-    <NumberInput autofocus name="target" bind:value={dataObject.target} label="Savings Target" />
+    <Input type="number" autofocus name="target" bind:value={dataObject.target} label="Savings Target" />
     <div class="multiplier_container"><p class="centered">Multiplier:&nbsp;&nbsp;&nbsp;</p><p class="multiplier">     {dataObject.multiplier / 100}X</p></div>
     <p style="font-style: italic">Determines how quickly this savings goal will reach it's target.</p>
     <RangeInput bind:value={sliderValue} ticks={['¼', '½', '1', '2', '4']} />

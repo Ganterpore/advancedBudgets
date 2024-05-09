@@ -4,9 +4,9 @@
   export type ListItem = {
     id: string
     header?: svelte.ComponentType
-    headerProps?: any
+    headerProps?: unknown
     child?: svelte.ComponentType
-    childProps?: any
+    childProps?: unknown
   }
   export let list: ListItem[] = []
   export let secondary: boolean = false
@@ -17,6 +17,7 @@
 <div style="width: 100%; margin-top: 20px">
   {#each list as listItem}
     <div class="content">
+      <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
       <div class={`list-item ${secondary ? 'secondary' : ''} ${selectable ? 'selectable' : ''}`}
         on:click={() => onSelected(listItem.id)}>
         <svelte:component this={listItem.header} {...listItem.headerProps}/>

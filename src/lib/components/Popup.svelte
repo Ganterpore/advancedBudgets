@@ -18,9 +18,10 @@
 </script>
 
 {#if !isHidden}
-    <div class="modal" on:click={onCloseWrapper} transition:fade={{duration: 500}} on:keydown={onKeyDown}>
-        <div class="content" on:click|stopPropagation transition:fly={{ duration: 500, y: 100 }}>
-            <div class="close-button" on:click={onCloseWrapper}>&times;</div>
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="modal" on:click|self={onCloseWrapper} transition:fade={{duration: 500}} on:keydown={onKeyDown}>
+        <div class="content" transition:fly={{ duration: 500, y: 100 }}>
+            <button class="close-button" on:click={onCloseWrapper}>&times;</button>
             <slot />
         </div>
     </div>
@@ -36,6 +37,7 @@
         height: 100%;
         overflow: auto;
         background-color: rgba(0,0,0,0.4);
+        border-width: 0;
     }
     .content {
         position: relative;

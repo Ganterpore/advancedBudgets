@@ -1,5 +1,5 @@
 import { MigrationBuilder } from 'node-pg-migrate';
-import { accountColumn, idColumn } from './standard_columns'
+import { accountColumn, idColumn } from "../src/lib/dbColumns";
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.createTable('account_type_saving', {

@@ -10,11 +10,13 @@ export interface TransactionWithParent extends Transaction {
     accountName: string
 }
 
-export type AccountTotals = {
-    [key: number]: {
+export type ParentAccountTotals = {
+    [parentAccountId: number]: {
         value: number
-        children: {
-            [key: number]: number
-        }
+        children: AccountTotals
     }
+}
+
+export type AccountTotals = {
+    [accountId: number]: number
 }

@@ -1,4 +1,4 @@
-import type { AccountTotals, Transaction, TransactionWithParent } from './types'
+import type { ParentAccountTotals, Transaction, TransactionWithParent } from './types'
 import { connect } from '$lib/db'
 
 export async function newTransaction (transaction: Omit<Transaction, 'id'|'transactionTime'>) {
@@ -10,7 +10,7 @@ export async function newTransaction (transaction: Omit<Transaction, 'id'|'trans
 }
 
 function buildTotalsTree (rows: { account: number, parent: number, value: number}[]) {
-  const getOrCreateBranch = (tree: AccountTotals, branch: number) => {
+  const getOrCreateBranch = (tree: ParentAccountTotals, branch: number) => {
     if (!tree[branch]) {
       tree[branch] = {
         value: 0,
@@ -20,7 +20,7 @@ function buildTotalsTree (rows: { account: number, parent: number, value: number
     return tree[branch]
   }
 
-  const totals: AccountTotals = {}
+  const totals: ParentAccountTotals = {}
   for (const row of rows) {
     const parent = getOrCreateBranch(totals, row.parent)
     parent.value += row.value

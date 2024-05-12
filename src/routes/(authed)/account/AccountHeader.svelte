@@ -1,12 +1,13 @@
 <script lang="ts">
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
-  import { openPopup, selectedAccount } from '$lib/store.ts'
+  import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store.ts'
   import { AccountType, accountTypeIcons } from './types'
   import Button from '$lib/components/Button.svelte'
   import { numberFormatter } from '$lib/utils'
   import SavingsProgress from "./savings/SavingsProgress.svelte";
   import type { AccountTypeBudget } from "./budget/types";
   import type { AccountTypeSaving } from "./savings/types";
+  import { TransactionType } from "../transactions/types";
   export let id
   export let name
   export let value: number = 0
@@ -18,7 +19,8 @@
   async function addTransaction (e) {
     e.stopPropagation()
     $openPopup = 'transaction'
-    $selectedAccount = id
+    $selectedTransactionType = TransactionType.INDIVIDUAL
+    $selectedTransactionAccount = id
   }
 </script>
 

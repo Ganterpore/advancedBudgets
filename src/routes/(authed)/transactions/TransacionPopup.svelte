@@ -3,8 +3,9 @@
   import Input from '$lib/components/Input.svelte'
   import Popup from '$lib/components/Popup.svelte'
   import Alert from '$lib/components/Alert.svelte'
-  import { openPopup, selectedAccount } from '$lib/store.js'
+  import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store'
   import { invalidate } from '$app/navigation';
+  import { TransactionType } from "./types";
 
   let transactionName: string
   let transactionValue: number
@@ -14,9 +15,11 @@
   async function createTransaction () {
     const body = {
       amount: transactionValue,
-      description: transactionName
+      description: transactionName,
+      type: $selectedTransactionType
     }
-    const res = await fetch(`/transactions/account/${$selectedAccount}`, {
+    const url = `/transactions/${ $selectedTransactionType === TransactionType.INDIVIDUAL ? 'account' : 'parentAccount' }/${$selectedTransactionAccount}`
+    const res = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {
@@ -37,6 +40,8 @@
     transactionName = 'Transaction'
     error = ''
     transactionValue = 0
+    $selectedTransactionAccount = 0
+    $selectedTransactionType = TransactionType.UNSELECTED
   }
 </script>
 

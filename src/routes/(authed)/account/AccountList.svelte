@@ -9,6 +9,7 @@
   import SavingsExpandable from "./savings/SavingsExpandable.svelte";
   import type { AccountTypeSaving } from "./savings/types";
 
+  export let parent: number
   export let accounts: Account[]
   export let totals: AccountTotals
   export let onSelect: (isParent: boolean, id: string) => void
@@ -48,6 +49,7 @@
     propsFor[category] = {}
     switch (category) {
       case AccountType.SAVING:
+        propsFor[category].parent = parent
         propsFor[category].accounts = accountMap[category]
         propsFor[category].totals = {}
         accountMap[category].forEach(a => propsFor[category].totals[a.id] = totals[a.id])

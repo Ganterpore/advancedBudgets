@@ -22,6 +22,7 @@
        headerProps: { name: a.name, id: a.id, value: totals[a.id]?.value },
        child: hasChildren ? AccountList: undefined,
        childProps: !hasChildren ? undefined : {
+           parent: a.id,
            accounts: children,
            totals: totals[a.id]?.children ?? {},
            onSelect

@@ -12,7 +12,7 @@
   export let totals: AccountTotals
   export let onSelect: (isParent: boolean, id: string) => void
 
-  const typeObjects: { [key: AccountType]: svelte.ComponentType } = {
+  const headerTypeObjects: { [key: AccountType]: svelte.ComponentType } = {
     [AccountType.STORAGE]: Expandable,
     [AccountType.SAVING]: SavingsExpandable,
     [AccountType.BUDGET]: Expandable,
@@ -47,7 +47,7 @@
 </script>
 
 {#each Object.keys(accountMap) as category (category)}
-  <svelte:component this={typeObjects[category]} {...propsFor[category]} >
+  <svelte:component this={headerTypeObjects[category]} {...propsFor[category]} >
     <List selectable secondary onSelected={(id) => onSelect(false, id)}
           list={accountMap[category].map(a => {
         return {
@@ -57,6 +57,7 @@
                 name: a.name,
                 id: a.id,
                 type: a.type,
+                additionalAccountData: a.additionalAccountData,
                 value: totals[a.id]
             }
         }

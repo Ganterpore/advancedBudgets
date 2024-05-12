@@ -26,8 +26,8 @@
   </div>
 </div>
 
+<!--  Credit https://codepen.io/brundolf  -->
 <style>
-    <!--  Credit https://codepen.io/brundolf  -->
     .progress-container {
         height: 20px;
         margin: 0 20px;

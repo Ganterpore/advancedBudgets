@@ -7,6 +7,7 @@
   import Expandable from "$lib/components/Expandable.svelte";
   import { AccountType } from "./types";
   import SavingsExpandable from "./savings/SavingsExpandable.svelte";
+  import type { AccountTypeSaving } from "./savings/types";
 
   export let accounts: Account[]
   export let totals: AccountTotals
@@ -18,6 +19,18 @@
     [AccountType.BUDGET]: Expandable,
     [AccountType.OWED]: Expandable
   }
+  function sortAccounts (category: AccountType): (a: Account, b: Account) => number {
+    switch (category) {
+      case AccountType.SAVING:
+        return (a: Account, b: Account) => {
+          const aPercent = (totals[a.id] ?? 0) / ((a.additionalAccountData as AccountTypeSaving).target ?? 1)
+          const bPercent = (totals[b.id] ?? 0) / ((b.additionalAccountData as AccountTypeSaving).target ?? 1)
+          return bPercent - aPercent
+        }
+      default:
+        return (a: Account, b: Account) => a.name.localeCompare(b.name)
+    }
+  }
   let accountMap: { [key: AccountType]: Account[] }
   $: accountMap = accounts.reduce(
     (am, a) => {
@@ -25,6 +38,7 @@
         am[a.type] = []
       }
       am[a.type].push(a)
+      am[a.type].sort(sortAccounts(a.type))
       return am
     },
     {}

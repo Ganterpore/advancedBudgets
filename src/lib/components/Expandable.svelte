@@ -2,10 +2,11 @@
   import MaterialSymbolsExpandMore from '~icons/material-symbols/expand-more';
   import {writable} from "svelte/store";
   import {tweened} from "svelte/motion";
+  import { cubicIn } from 'svelte/easing';
   import { slide } from 'svelte/transition';
 
   const expanded = writable(false)
-  const rotation = tweened(0, { duration: 100 })
+  const rotation = tweened(0, { duration: 100, easing: cubicIn })
 
   export let name
 

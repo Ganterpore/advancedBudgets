@@ -3,6 +3,7 @@
   import type { Account } from "../types";
   import type { AccountTotals } from "../../transactions/types";
   import type { AccountTypeSaving } from "./types";
+  import { tweened } from "svelte/motion";
 
   export let accounts: Account[]
   export let totals: AccountTotals
@@ -11,13 +12,15 @@
     (acc: number, s: Account) => acc + (s.additionalAccountData as AccountTypeSaving).target,
     0
   )
+  const currentValueTweened = tweened(0, { duration: 500 })
   $: currentValue = Object.values(totals).reduce((acc: number, t?: number) => acc + (t ?? 0), 0)
+  $: currentValueTweened.set(currentValue)
 </script>
 
 <Expandable {...$$restProps}>
   <div slot="header" class="header">
     <p>{`$${currentValue} of $${savingsGoal}`}</p>
-    <progress value={currentValue} max={savingsGoal}></progress>
+    <progress value={$currentValueTweened} max={savingsGoal}></progress>
   </div>
   <slot/>
 </Expandable>

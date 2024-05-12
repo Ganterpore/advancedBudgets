@@ -18,6 +18,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <div class="expandableHeader" on:click={onclick}>
   <h3>{name}</h3>
+  <slot name="header" />
   <div style={`rotate: ${$rotation + 'deg'}`}><MaterialSymbolsExpandMore /></div>
 </div>
 {#if $expanded}
@@ -35,6 +36,7 @@
       align-items: center;
       padding: 0 5px;
       border-width: 2px;
+      gap: 5px;
   }
   .expandableHeader:hover {
       filter: brightness(85%);

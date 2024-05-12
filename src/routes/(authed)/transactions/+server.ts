@@ -14,7 +14,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
     id = await newTransaction(data)
   } catch (e) {
-    console.log(e)
+    console.error(e)
     return json({ error: 'Failed to upload transaction. Try again.'}, { status: 500 })
   }
   return json({ id }, { status: 201 })

@@ -8,11 +8,13 @@
   import AccountTypeList from './AccountTypeList.svelte'
   import AccountTypeListItem from './AccountTypeListItem.svelte'
   import { invalidate } from '$app/navigation'
-  import BudgetAccountDetails from './BudgetAccountDetails.svelte'
-  import SavingsAccountDetails from './SavingsAccountDetails.svelte'
-  import type { Account, AccountTypeBudget, AccountTypeSaving } from './types'
   import { FrequencyCategory } from '$lib/types'
+  import type { Account } from './types'
   import { AccountType } from './types'
+  import type { AccountTypeSaving } from "./savings/types";
+  import type { AccountTypeBudget } from "./budget/types";
+  import BudgetAccountDetails from "./budget/BudgetAccountDetails.svelte";
+  import SavingsAccountDetails from "./savings/SavingsAccountDetails.svelte";
 
   let accountName: string
   let error: string

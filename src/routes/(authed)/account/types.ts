@@ -2,31 +2,14 @@ import FluentBox16Regular from '~icons/fluent/box-16-regular';
 import MapGroceryOrSupermarket from '~icons/map/grocery-or-supermarket';
 import FaSolidPiggyBank from '~icons/fa-solid/piggy-bank';
 import LaHandshakeSolid from '~icons/la/handshake-solid';
-import type {FrequencyCategory} from "$lib/types";
+import type { AccountTypeSaving } from "./savings/types";
+import type { AccountTypeBudget } from "./budget/types";
 
 export enum AccountType {
   STORAGE = 'Storage',
   BUDGET = 'Budget',
   SAVING = 'Saving',
   OWED = 'Owed'
-}
-
-export type AccountTypeSaving = {
-  id: number
-  account: number
-  multiplier: number
-  target: number
-}
-
-export type AccountTypeBudget = {
-  id: number
-  account: number
-  regularBudget: number
-  budgetMax: number
-  frequency: number
-  frequencyCategory: FrequencyCategory
-  startDate: Date
-  dayOf: number
 }
 
 export type Account = {

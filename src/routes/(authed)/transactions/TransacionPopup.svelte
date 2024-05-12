@@ -14,10 +14,9 @@
   async function createTransaction () {
     const body = {
       amount: transactionValue,
-      description: transactionName,
-      account: $selectedAccount
+      description: transactionName
     }
-    const res = await fetch('/transactions', {
+    const res = await fetch(`/transactions/account/${$selectedAccount}`, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {

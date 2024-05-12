@@ -55,8 +55,7 @@
     }
     .list-item.selectable:hover {
         transform: translateY(-1px);
-        background-color: var(--theme-tertiary);
-        color: var(--theme-text);
+        filter: brightness(70%);
         box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
     }
     .children {

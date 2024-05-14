@@ -8,6 +8,7 @@
   import Button from "$lib/components/Button.svelte";
   import { openPopup, selectedTransactionAccount, selectedTransactionType } from "$lib/store";
   import { TransactionType } from "../../transactions/types";
+  import { currencyToString } from "$lib/utils.js";
 
   export let parent
   export let accounts: Account[]
@@ -30,7 +31,7 @@
 <Expandable {...$$restProps}>
   <div slot="header" class="header">
     <div class="progress">
-      <p>{`$${currentValue} of $${savingsGoal}`}</p>
+      <p>{`${currencyToString(currentValue)} of ${currencyToString(savingsGoal)}`}</p>
       <SavingsProgress savingsGoal={savingsGoal} currentValue={currentValue} />
     </div>
     <Button on:click={addTransaction}>

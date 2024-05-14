@@ -4,8 +4,10 @@
   import type { AccountTypeSaving } from './types'
 
   export let dataObject: Omit<AccountTypeSaving, 'id'>
+  let savingsTarget
   $: sliderValue = 0
   $: dataObject.multiplier = sliderValueToMultiplierValue(sliderValue)
+  $: dataObject.target = savingsTarget * 100
 
   function sliderValueToMultiplierValue (sliderValue: number): number {
       if (sliderValue === 0) return 100
@@ -19,7 +21,7 @@
 </script>
 
 <div class="container">
-    <Input type="number" autofocus name="target" bind:value={dataObject.target} label="Savings Target" />
+    <Input type="number" autofocus name="target" bind:value={savingsTarget} label="Savings Target" />
     <div class="multiplier_container"><p class="centered">Multiplier:&nbsp;&nbsp;&nbsp;</p><p class="multiplier">     {dataObject.multiplier / 100}X</p></div>
     <p style="font-style: italic">Determines how quickly this savings goal will reach it's target.</p>
     <RangeInput min="-2" max="6" step="1" bind:value={sliderValue} ticks={['½', '1', '1.5', '3', '9']} />

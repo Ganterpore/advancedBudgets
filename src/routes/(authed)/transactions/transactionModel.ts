@@ -23,8 +23,8 @@ function buildTotalsTree (rows: { account: number, parent: number, value: number
   const totals: ParentAccountTotals = {}
   for (const row of rows) {
     const parent = getOrCreateBranch(totals, row.parent)
-    parent.value += row.value
-    parent.children[row.account] = row.value
+    parent.value += Number(row.value)
+    parent.children[row.account] = Number(row.value)
   }
   return totals
 }

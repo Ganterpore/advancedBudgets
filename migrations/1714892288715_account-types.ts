@@ -6,13 +6,13 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: idColumn,
     account: accountColumn,
     multiplier: 'integer',
-    target: 'double'
+    target: 'integer'
   })
   pgm.createTable('account_type_budget', {
     id: idColumn,
     account: accountColumn,
-    regularBudget: 'double',
-    budgetMax: 'double',
+    regularBudget: 'integer',
+    budgetMax: 'integer',
     frequency: 'integer',
     frequencyCategory: 'string',
     dayOf: 'integer',

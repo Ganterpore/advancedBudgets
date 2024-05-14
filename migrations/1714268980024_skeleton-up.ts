@@ -29,7 +29,7 @@ exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
   })
   pgm.createTable('transactions', {
     id: idColumn,
-    amount: 'double',
+    amount: 'integer',
     description: 'string',
     account: accountColumn,
     transactionTime: 'datetime'

@@ -22,11 +22,13 @@
 
   let accountType: AccountType | undefined
 
-  let additionalSavingsDetails: Omit<AccountTypeSaving, 'id'|'account'> = {
+  let additionalSavingsDetails: Omit<AccountTypeSaving, 'id'|'account'>
+  $: if (accountType === AccountType.SAVING)  additionalSavingsDetails = {
     multiplier: 1,
     target: 0
   }
-  let additionalBudgetDetails: Omit<AccountTypeBudget, 'id'|'account'> = {
+  let additionalBudgetDetails: Omit<AccountTypeBudget, 'id'|'account'>
+  $: if (accountType === AccountType.BUDGET) additionalBudgetDetails = {
     regularBudget: 0,
     budgetMax: 0,
     frequency: 1,

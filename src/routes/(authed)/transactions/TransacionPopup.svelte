@@ -14,7 +14,7 @@
 
   async function createTransaction () {
     const body = {
-      amount: transactionValue,
+      amount: parseInt((transactionValue * 100).toString()),
       description: transactionName,
       type: $selectedTransactionType
     }

@@ -5,28 +5,32 @@
     import Input from "$lib/components/Input.svelte";
     import type { AccountTypeBudget } from './types'
     import { FrequencyCategory } from '$lib/types'
+    import { currencyToString } from "$lib/utils.js";
 
     export let name
     export let dataObject: Omit<AccountTypeBudget, 'id'>
-    if (!dataObject.frequencyCategory) dataObject.frequencyCategory = FrequencyCategory.WEEKLY
+    let budget = 0
+    let max = 0
+    $: dataObject.regularBudget = budget * 100
+    $: dataObject.budgetMax = max * 100
 
     function adjustBudgetMax () {
-        dataObject.budgetMax = Math.max(dataObject.budgetMax, dataObject.regularBudget)
+      max = Math.max(max, budget)
     }
 
-    $: introText = `You will receive $${dataObject.regularBudget ?? 0} to spend ${name ? `on ${name} ` : ''}`
+    $: introText = `You will receive ${currencyToString(dataObject.regularBudget ?? 0)} to spend ${name ? `on ${name} ` : ''}`
     $: frequencyText = `every ${dataObject.frequency > 1 ? dataObject.frequency + ' ' : ''}
                     ${dataObject.frequencyCategory}${dataObject.frequency > 1 ? 's' + ' ' : ''}`
     $: dayOfText = `${dataObject.dayOf > 0 ? ' on the ' : ''}
                   ${dataObject.frequencyCategory === FrequencyCategory.WEEKLY
                       ? dayBitMapToString(dataObject.dayOf)
                       : dataObject.dayOf + getOrdinalNum(dataObject.dayOf)}.`
-    $: maxText = `You will never accumulate more than $${dataObject.budgetMax} in the account.`
+    $: maxText = `You will never accumulate more than ${currencyToString(dataObject.budgetMax ?? 0)} in the account.`
 </script>
 
-<Input autofocus type="number" name="regularBudget" bind:value={dataObject.regularBudget} on:input={adjustBudgetMax} label="Budget Amount" />
+<Input autofocus type="number" name="regularBudget" bind:value={budget} on:input={adjustBudgetMax} label="Budget Amount" />
 <FrequencySelector bind:value={dataObject.frequency} bind:type={dataObject.frequencyCategory} bind:daysOf={dataObject.dayOf} />
-<Input type="number" name="budgetMax" bind:value={dataObject.budgetMax}
+<Input type="number" name="budgetMax" bind:value={max}
              on:focusout={adjustBudgetMax} label="Max" />
 <p>{introText + frequencyText + dayOfText}</p>
 <p>{maxText}</p>

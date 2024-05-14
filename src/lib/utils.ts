@@ -1,5 +1,8 @@
 // TODO localisation
-export const numberFormatter = Intl.NumberFormat('en-au', { style: 'currency', currency: 'AUD' })
+const numberFormatter = Intl.NumberFormat('en-au', { style: 'currency', currency: 'AUD' })
+export function currencyToString (value: number): string {
+    return numberFormatter.format(value / 100)
+}
 
 // Credit: The Martin on stack overflow
 export function getOrdinalNum (n: number): string {

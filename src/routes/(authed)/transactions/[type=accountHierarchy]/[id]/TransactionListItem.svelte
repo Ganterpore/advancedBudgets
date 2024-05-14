@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { numberFormatter } from '$lib/utils'
+  import { currencyToString } from '$lib/utils'
   export let description
   export let amount
   export let accountName
-  $: valueString = numberFormatter.format(amount ?? 0)
+  $: valueString = currencyToString(amount ?? 0)
   // eslint-disable-next-line svelte/valid-compile
   export let id
 </script>

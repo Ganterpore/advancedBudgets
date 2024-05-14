@@ -14,6 +14,15 @@ export async function newParentAccount(accountInfo: Omit<ParentAccount, 'id'>): 
   return res.rows[0].id
 }
 
+export async function getParentAccount (accountId: number): Promise<ParentAccount> {
+  const db = await connect()
+  const res = await db.query(
+    `SELECT * FROM PARENT_ACCOUNTS WHERE ID=$1`,
+    [accountId]
+  )
+  return res.rows[0]
+}
+
 function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTree {
   const accountTree: AccountTree = {}
   for (const account of accounts) {

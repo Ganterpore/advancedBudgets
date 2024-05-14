@@ -15,7 +15,7 @@ export async function getSavingsAccountsOnParent (parentId: number): Promise<Exp
     `
     SELECT ats.id, ats.account, S.name, S.type, ats.multiplier, ats.target, S.parent
     FROM ACCOUNTS S 
-    left join account_type_saving ats
+    inner join account_type_saving ats
     on ats.account=S.id
     WHERE S.parent=$1`,
     [parentId]

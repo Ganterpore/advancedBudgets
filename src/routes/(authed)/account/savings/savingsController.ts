@@ -1,16 +1,68 @@
-import type { ExpandedSavingsAccount, SuggestedTransaction } from "./types";
+import type { SuggestedTransaction } from "./types";
+import { getSavingsAccountsOnParent } from "./accountTypeSavingModel";
+import { getParentAccount } from "../../parentAccount/parentAccountModel";
+import { getAccountTotalsForUser } from "../../transactions/transactionModel";
+import { currencyToString } from "$lib/utils";
+import { error } from '@sveltejs/kit';
 
-export function assignTransaction (amount: number, accounts: ExpandedSavingsAccount[]) {
-  const total = accounts.reduce((acc, a) => acc + a.multiplier, 0)
+type AccountDetails = {
+  id: number,
+  max: number,
+  weight: number,
+  amount: number
+}
+
+function distributeAmount (amount: number, accounts: AccountDetails[]): SuggestedTransaction[] {
+  const maxTotal = accounts.reduce((total, account) => total + account.max, 0)
+  if (maxTotal < amount) throw error(400, `Cannot send more than ${currencyToString(maxTotal)} to savings accounts`)
+  let unfilledAccounts = accounts.filter(acc => acc.amount < acc.max)
+  let totalWeight = unfilledAccounts.reduce((total, account) => total + account.weight, 0)
   let amountLeft = amount
-  const suggestions: SuggestedTransaction[] = accounts.map(a => {
-    const amountToAccount = Number((amount * (a.multiplier / total)).toFixed(2))
-    amountLeft = amountLeft - amountToAccount
+  let lastAmountLeft = 0
+
+  // Distribute the amount by weight into accounts - not above their max
+  while (amountLeft > 0 && amountLeft !== lastAmountLeft) {
+    lastAmountLeft = amountLeft
+    for (const account of unfilledAccounts) {
+      const percentToAccount = account.weight / totalWeight
+      const amountToAccount = Math.floor(Math.min(lastAmountLeft * percentToAccount, (account.max - account.amount)))
+      amountLeft = amountLeft - amountToAccount
+      account.amount = account.amount + amountToAccount
+    }
+
+    totalWeight = unfilledAccounts.reduce((total, account) => total + account.weight, 0)
+    unfilledAccounts = unfilledAccounts.filter(acc => acc.amount < acc.max)
+  }
+  // if there is still money left, it was not divisible. So just distribute into each account
+  if (amountLeft > 0) {
+    for (const account of accounts) {
+      if (account.amount < account.max) {
+        const amountToAdd = Math.min(account.max-account.amount, amountLeft)
+        account.amount = account.amount + amountToAdd
+        amountLeft = amountLeft - amountToAdd
+      }
+      if (amountLeft <= 0) break
+    }
+  }
+  return accounts.map(acc => ({
+    account: acc.id,
+    amount: acc.amount
+  }))
+}
+
+export async function assignTransaction (amount: number, accountId: number) {
+  const parentAccount = await getParentAccount(accountId)
+  const accounts = await getSavingsAccountsOnParent(Number(accountId))
+  const totals = await getAccountTotalsForUser(parentAccount.user)
+  const totalsForParent = totals[accountId].children
+
+  const detailsForAccounts: AccountDetails[] = accounts.map(account => {
     return {
-      account: a.account,
-      amount: amountToAccount
+      id: account.account,
+      max: account.target - (totalsForParent[account.account] ?? 0),
+      weight: account.multiplier,
+      amount: 0
     }
   })
-  suggestions[0].amount = suggestions[0].amount + Number(amountLeft.toFixed(2))
-  return suggestions
+  return distributeAmount(amount, detailsForAccounts)
 }

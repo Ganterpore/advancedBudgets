@@ -32,7 +32,7 @@
       $openPopup = false
       await invalidate('data:values')
     } else {
-      error = responseBody.error
+      error = responseBody.message
     }
   }
 

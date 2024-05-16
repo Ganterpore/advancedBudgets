@@ -54,7 +54,7 @@ export async function assignTransaction (amount: number, accountId: number) {
   const parentAccount = await getParentAccount(accountId)
   const accounts = await getSavingsAccountsOnParent(Number(accountId))
   const totals = await getAccountTotalsForUser(parentAccount.user)
-  const totalsForParent = totals[accountId].children
+  const totalsForParent = totals[accountId]?.children ?? {}
 
   const detailsForAccounts: AccountDetails[] = accounts.map(account => {
     return {

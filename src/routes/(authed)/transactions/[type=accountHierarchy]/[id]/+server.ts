@@ -1,9 +1,11 @@
 import type { RequestEvent, RequestHandler } from "@sveltejs/kit";
 import { json, error } from "@sveltejs/kit";
-import { newTransaction } from "../../transactionModel";
+import { getTotalOnAccount, newTransaction } from "../../transactionModel";
 import { AccountHierarchy } from "../../../../../params/accountHierarchy";
 import { TransactionType } from "../../types";
 import { assignTransaction } from "../../../account/savings/savingsController";
+import { getSavingsAccountOnAccountId } from "../../../account/savings/accountTypeSavingModel";
+import { currencyToString } from "$lib/utils";
 
 type Data = {
   amount: number,
@@ -41,6 +43,12 @@ async function handleGroupedSavingTransaction (accountId: number, data: Data) {
 }
 
 async function handleIndividualTransaction (accountId: number, data: Data) {
+  const savingsAccount = await getSavingsAccountOnAccountId(accountId)
+  if (savingsAccount) {
+    const total = await getTotalOnAccount(accountId)
+    const maxTransaction = savingsAccount.target - total
+    if (data.amount > maxTransaction) throw error(400, `Cannot send more than ${currencyToString(maxTransaction)} to this account`)
+  }
   let id
   try {
     id = await newTransaction({...data, account: accountId})

@@ -43,7 +43,7 @@ export async function getAccountTotalsForUser (userId: number) {
     [userId]
   )
 
-  return buildTotalsTree(res.rows)
+  return buildTotalsTree(res.rows ?? [])
 }
 
 export async function getTransactionsOnAccount (accountId: number): Promise<TransactionWithParent[]> {
@@ -56,6 +56,17 @@ export async function getTransactionsOnAccount (accountId: number): Promise<Tran
     [accountId]
   )
   return res.rows
+}
+export async function getTotalOnAccount (accountId: number): Promise<number> {
+  const db = await connect()
+  const res = await db.query(
+    `select SUM(amount) as total 
+                    from transactions t
+                     join accounts a on account=a.id 
+                     WHERE account=$1`,
+    [accountId]
+  )
+  return res.rows[0].total
 }
 export async function getTransactionsOnParentAccount (accountId: number): Promise<TransactionWithParent[]> {
   const db = await connect()

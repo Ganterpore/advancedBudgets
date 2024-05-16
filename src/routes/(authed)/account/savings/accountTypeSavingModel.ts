@@ -22,3 +22,9 @@ export async function getSavingsAccountsOnParent (parentId: number): Promise<Exp
   )
   return res.rows as ExpandedSavingsAccount[]
 }
+
+export async function getSavingsAccountOnAccountId (accountId: number): Promise<AccountTypeSaving> {
+  const db = await connect()
+  const res = await db.query(`SELECT * FROM ACCOUNT_TYPE_SAVING WHERE ACCOUNT=$1`, [accountId])
+  return res.rows[0]
+}

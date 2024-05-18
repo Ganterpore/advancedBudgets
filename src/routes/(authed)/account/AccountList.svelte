@@ -2,10 +2,10 @@
   import * as svelte from 'svelte'
   import List from "$lib/components/List.svelte"
   import type { Account } from "./types";
+  import { AccountType } from "./types";
   import AccountHeader from "./AccountHeader.svelte";
   import type { AccountTotals } from "../transactions/types";
   import Expandable from "$lib/components/Expandable.svelte";
-  import { AccountType } from "./types";
   import SavingsExpandable from "./savings/SavingsExpandable.svelte";
   import type { AccountTypeSaving } from "./savings/types";
 
@@ -32,13 +32,17 @@
         return (a: Account, b: Account) => a.name.localeCompare(b.name)
     }
   }
+  function filterAccounts (category: AccountType): (account: Account) => boolean {
+    if (category !== AccountType.SAVING) return () => true
+    return account => !(account.additionalAccountData as AccountTypeSaving).completed
+  }
   let accountMap: { [key: AccountType]: Account[] }
   $: accountMap = accounts.reduce(
     (am, a) => {
       if (!am[a.type]) {
         am[a.type] = []
       }
-      am[a.type].push(a)
+      if (filterAccounts(a.type)(a)) am[a.type].push(a)
       am[a.type].sort(sortAccounts(a.type))
       return am
     },

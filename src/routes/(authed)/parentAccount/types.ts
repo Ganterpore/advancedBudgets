@@ -24,6 +24,7 @@ export interface DBResultAccountsWithChildren extends Omit<ParentAccount, 'user'
     accountType?: AccountType
     multiplier?: number
     target?: number
+    completed?: boolean
     regularBudget?: number
     budgetMax?: number
     frequency?: number

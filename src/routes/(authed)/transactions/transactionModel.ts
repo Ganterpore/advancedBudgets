@@ -66,7 +66,7 @@ export async function getTotalOnAccount (accountId: number): Promise<number> {
                      WHERE account=$1`,
     [accountId]
   )
-  return res.rows[0].total
+  return parseInt(res.rows[0].total)
 }
 export async function getTransactionsOnParentAccount (accountId: number): Promise<TransactionWithParent[]> {
   const db = await connect()

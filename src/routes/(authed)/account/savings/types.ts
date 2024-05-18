@@ -3,6 +3,7 @@ export type AccountTypeSaving = {
   account: number
   multiplier: number
   target: number
+  completed?: boolean
 }
 
 export interface ExpandedSavingsAccount extends AccountTypeSaving {

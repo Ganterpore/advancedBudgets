@@ -1,5 +1,6 @@
 <script lang="ts">
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
+  import MaterialSymbolsCheck from '~icons/material-symbols/check';
   import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store.ts'
   import { AccountType, accountTypeIcons } from './types'
   import Button from '$lib/components/Button.svelte'
@@ -8,18 +9,21 @@
   import type { AccountTypeBudget } from "./budget/types";
   import type { AccountTypeSaving } from "./savings/types";
   import { TransactionType } from "../transactions/types";
+
   export let id
   export let name
   export let value: number = 0
   export let type
   export let additionalAccountData: AccountTypeSaving | AccountTypeBudget
-  $: valueString = currencyToString(value ?? 0)
 
+  $: valueString = currencyToString(value ?? 0)
   $: Icon = type ? accountTypeIcons[type] : undefined
-  async function addTransaction (e) {
+  $: isCompletable = value === (additionalAccountData as AccountTypeSaving)?.target
+
+  async function addTransaction (e, isCompletion) {
     e.stopPropagation()
     $openPopup = 'transaction'
-    $selectedTransactionType = TransactionType.INDIVIDUAL
+    $selectedTransactionType = isCompletion ? TransactionType.COMPLETION : TransactionType.INDIVIDUAL
     $selectedTransactionAccount = id
   }
 </script>
@@ -34,9 +38,16 @@
   {#if type===AccountType.SAVING}
     <p>{` / ${additionalAccountData.target / 100}`}</p>
   {/if}
-  <Button on:click={addTransaction}>
-    <MaterialSymbolsAddRounded/>
-  </Button>
+
+  {#if isCompletable}
+    <Button id="completionButton" on:click={(e) => addTransaction(e, true)}>
+      <MaterialSymbolsCheck/>
+    </Button>
+  {:else}
+    <Button id="transactionButton" on:click={addTransaction}>
+      <MaterialSymbolsAddRounded/>
+    </Button>
+  {/if}
 </div>
 {#if type===AccountType.SAVING}
   <SavingsProgress backgroundColor="#4a4de7" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />

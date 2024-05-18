@@ -41,7 +41,8 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
       if (account.accountType === AccountType.SAVING) {
         parentAccount.children[account.accountId!].additionalAccountData = {
           multiplier: account.multiplier,
-          target: account.target
+          target: account.target,
+          completed: account.completed
         } as Partial<AccountTypeSaving>
       }
       if (account.accountType === AccountType.BUDGET) {
@@ -64,7 +65,7 @@ export async function getAccountsForUser (userId: number): Promise<AccountTree> 
   const res = await db.query(
     `
     SELECT A.id, A.name, S.id as "accountId", S.name as "accountName", S.type as "accountType",
-    ats.multiplier, ats.target,
+    ats.multiplier, ats.target, ats.completed,
     atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate"
     FROM PARENT_ACCOUNTS A
     LEFT JOIN ACCOUNTS S 

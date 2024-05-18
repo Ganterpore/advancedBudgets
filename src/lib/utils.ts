@@ -1,6 +1,7 @@
 // TODO localisation
 const numberFormatter = Intl.NumberFormat('en-au', { style: 'currency', currency: 'AUD' })
 export function currencyToString (value: number): string {
+    if (isNaN(value)) return ''
     return numberFormatter.format(value / 100)
 }
 

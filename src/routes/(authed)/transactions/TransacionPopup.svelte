@@ -8,12 +8,13 @@
   import { TransactionType } from "./types";
   import type { AccountNode, AccountTree } from "../parentAccount/types";
   import type { TransactionData } from "./[type=accountHierarchy]/[id]/+server";
+  import { currencyToString } from "$lib/utils";
 
   export let accounts: AccountTree
   let accountList: { name: string, id: number }[]
   $: accountList = Object.values(accounts).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
     const children = parentAccount.children
-    const childAccountList = Object.values(children).map(account => ({ name: `${parentAccount.name}: ${account.name}`, id: account.id }))
+    const childAccountList = Object.values(children).map(account => ({ ...account, concatName: `${parentAccount.name}: ${account.name}` }))
     return [...accs, ...childAccountList]
   }, [])
   $: account = $selectedTransactionType === TransactionType.GROUPED_SAVING
@@ -22,11 +23,14 @@
 
   let transactionName: string
   let transactionValue: number
+  $: actualValue = parseInt((transactionValue * 100).toString())
   let error: string
 
   let transferTo = (accountList ?? [])[0]?.id
   let prevTransactionType = $selectedTransactionType
-  $: transferAvailable = $selectedTransactionType !== TransactionType.GROUPED_SAVING
+  const transferableTypes = [TransactionType.INDIVIDUAL, TransactionType.TRANSFER]
+  $: transferAvailable = transferableTypes.includes($selectedTransactionType)
+  $: isTransferring = $selectedTransactionType === TransactionType.TRANSFER || ($selectedTransactionType === TransactionType.COMPLETION && actualValue !== account?.additionalAccountData?.target)
 
   function setDefaultTransferName (transactionType: TransactionType) {
     switch (transactionType) {
@@ -34,6 +38,8 @@
         return 'Savings Transaction'
       case TransactionType.TRANSFER:
         return 'Transfer'
+      case TransactionType.COMPLETION:
+        return 'Savings purchase'
       case TransactionType.UNSELECTED:
         return ''
       case TransactionType.INDIVIDUAL:
@@ -54,11 +60,11 @@
 
   async function createTransaction () {
     const body: TransactionData = {
-      amount: parseInt((transactionValue * 100).toString()),
+      amount: actualValue,
       description: transactionName,
       type: $selectedTransactionType
     }
-    if ($selectedTransactionType === TransactionType.TRANSFER) body.transferTo = transferTo
+    if ([TransactionType.TRANSFER, TransactionType.COMPLETION].includes($selectedTransactionType)) body.transferTo = transferTo
     const url = `/transactions/${ $selectedTransactionType === TransactionType.GROUPED_SAVING ? 'parentAccount' : 'account' }/${$selectedTransactionAccount}`
     const res = await fetch(url, {
       method: 'POST',
@@ -94,22 +100,37 @@
   <form class="form">
     <Input name="transactionName" bind:value={transactionName}/>
     <div class="footer">
-      <Input type="number" label="Value" name="transactionValue" autofocus bind:value={transactionValue}/>
+      <Input type="number" label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"} name="transactionValue" autofocus bind:value={transactionValue}/>
       <Button on:click={createTransaction} >Create</Button>
     </div>
-    {#if transferAvailable}
+
+    {#if transferAvailable && !isTransferring}
       <div class="transfer">
-        {#if $selectedTransactionType !== TransactionType.TRANSFER}
           <Button on:click={toggleTransfer}>Make it a transfer</Button>
+      </div>
+    {/if}
+    {#if isTransferring}
+      {#if $selectedTransactionType === TransactionType.COMPLETION}
+        <p style="text-align: center">
+          Transfer the remaining {currencyToString(Math.abs(account?.additionalAccountData?.target - actualValue))}
+          {account?.additionalAccountData?.target - actualValue > 0 ? 'to' : 'from'}
+        </p>
+      {/if}
+      <div class="transfer">
+        {account.name}
+        {#if !transactionValue || transactionValue >= 0}
+          <p>--></p>
         {:else}
-          {account.name} -->
-          <select bind:value={transferTo}>
-            {#each accountList as accountItem}
-              {#if accountItem.id !== account.id}
-                <option id={accountItem.id} value={accountItem.id}>{accountItem.name}</option>
-              {/if}
-            {/each}
-          </select>
+          <p>{'<--'}</p>
+        {/if}
+        <select bind:value={transferTo}>
+          {#each accountList as accountItem}
+            {#if accountItem.id !== account.id}
+              <option id={accountItem.id} value={accountItem.id}>{accountItem.concatName}</option>
+            {/if}
+          {/each}
+        </select>
+        {#if transferAvailable}
           <Button on:click={toggleTransfer}>X</Button>
         {/if}
       </div>

@@ -13,7 +13,7 @@ export async function getSavingsAccountsOnParent (parentId: number): Promise<Exp
   const db = await connect()
   const res = await db.query(
     `
-    SELECT ats.id, ats.account, S.name, S.type, ats.multiplier, ats.target, S.parent
+    SELECT ats.id, ats.account, S.name, S.type, ats.multiplier, ats.target, S.parent, ats.completed
     FROM ACCOUNTS S 
     inner join account_type_saving ats
     on ats.account=S.id
@@ -27,4 +27,13 @@ export async function getSavingsAccountOnAccountId (accountId: number): Promise<
   const db = await connect()
   const res = await db.query(`SELECT * FROM ACCOUNT_TYPE_SAVING WHERE ACCOUNT=$1`, [accountId])
   return res.rows[0]
+}
+
+export async function completeAccount (id: number) {
+ const db = await connect()
+  await db.query(`
+    update account_type_saving 
+    set "completed"=true
+    where id=$1
+  `, [id])
 }

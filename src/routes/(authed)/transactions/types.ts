@@ -2,7 +2,8 @@ export enum TransactionType {
     UNSELECTED = 'unselected',
     INDIVIDUAL = 'individual',
     GROUPED_SAVING = 'group_savings',
-    TRANSFER = 'transfer'
+    TRANSFER = 'transfer',
+    COMPLETION = 'completion'
 }
 
 export type Transaction = {

@@ -4,8 +4,8 @@ import { connect } from '$lib/db'
 
 export async function newSavingsAccount(props: Omit<AccountTypeSaving, 'id'>) {
   const db = await connect()
-  const res = await db.query('INSERT INTO account_type_saving("account", "multiplier", "target") VALUES($1, $2, $3) RETURNING id',
-    [props.account, props.multiplier, props.target])
+  const res = await db.query('INSERT INTO account_type_saving("account", "multiplier", "target", "completed") VALUES($1, $2, $3, $4) RETURNING id',
+    [props.account, props.multiplier, props.target, props.completed ?? false])
   return res.rows[0].id
 }
 
@@ -17,7 +17,7 @@ export async function getSavingsAccountsOnParent (parentId: number): Promise<Exp
     FROM ACCOUNTS S 
     inner join account_type_saving ats
     on ats.account=S.id
-    WHERE S.parent=$1`,
+    WHERE S.parent=$1 AND not ats.completed`,
     [parentId]
   )
   return res.rows as ExpandedSavingsAccount[]

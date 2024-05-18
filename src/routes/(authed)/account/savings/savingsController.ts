@@ -64,5 +64,5 @@ export async function assignTransaction (amount: number, accountId: number) {
       amount: 0
     }
   })
-  return distributeAmount(amount, detailsForAccounts)
+  return distributeAmount(amount, detailsForAccounts).filter(suggestion => suggestion.amount > 0)
 }

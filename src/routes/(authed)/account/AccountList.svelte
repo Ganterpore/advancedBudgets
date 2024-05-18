@@ -52,7 +52,7 @@
         propsFor[category].parent = parent
         propsFor[category].accounts = accountMap[category]
         propsFor[category].totals = {}
-        accountMap[category].forEach(a => propsFor[category].totals[a.id] = totals[a.id])
+        accountMap[category]?.forEach(a => propsFor[category].totals[a.id] = totals[a.id])
       // eslint-disable-next-line no-fallthrough
       case AccountType.BUDGET:
       case AccountType.OWED:

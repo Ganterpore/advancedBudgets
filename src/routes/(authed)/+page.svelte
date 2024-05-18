@@ -13,4 +13,4 @@
 
 <ParentAccountList totals={data.totals} accounts={data.accounts} onSelect={onSelected} />
 <AccountPopup/>
-<TransactionPopup />
+<TransactionPopup accounts={data.accounts} />

@@ -6,7 +6,8 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: idColumn,
     account: accountColumn,
     multiplier: 'integer',
-    target: 'integer'
+    target: 'integer',
+    completed: 'boolean'
   })
   pgm.createTable('account_type_budget', {
     id: idColumn,

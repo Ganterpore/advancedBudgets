@@ -2,12 +2,14 @@
   import RangeInput from "$lib/components/RangeInput.svelte";
   import Input from "$lib/components/Input.svelte";
   import type { AccountTypeSaving } from './types'
+  import { getHighlightColour } from "./utils";
 
   export let dataObject: Omit<AccountTypeSaving, 'id'>
   let savingsTarget
   $: sliderValue = 0
   $: dataObject.multiplier = sliderValueToMultiplierValue(sliderValue)
   $: dataObject.target = savingsTarget * 100
+  $: highlightColour = getHighlightColour(false, dataObject.multiplier)
 
   function sliderValueToMultiplierValue (sliderValue: number): number {
       if (sliderValue === 0) return 100
@@ -20,7 +22,7 @@
   }
 </script>
 
-<div class="container">
+<div class="container" style="--multiplier-highlight:{highlightColour}">
     <Input type="number" autofocus name="target" bind:value={savingsTarget} label="Savings Target" />
     <div class="multiplier_container"><p class="centered">Multiplier:&nbsp;&nbsp;&nbsp;</p><p class="multiplier">     {dataObject.multiplier / 100}X</p></div>
     <p style="font-style: italic">Determines how quickly this savings goal will reach it's target.</p>
@@ -42,7 +44,7 @@
     }
     .multiplier {
         font-weight: bold;
-        color: var(--theme-highlight);
-        text-shadow: red;
+        color: var(--theme-secondary-text);
+        text-shadow: -1px -1px 5px var(--multiplier-highlight), 1px -1px 5px var(--multiplier-highlight), -1px 1px 5px var(--multiplier-highlight), 1px 1px 5px var(--multiplier-highlight);
     }
 </style>

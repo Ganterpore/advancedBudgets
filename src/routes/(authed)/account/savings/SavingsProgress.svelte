@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tweened } from "svelte/motion";
+  import { getHighlightColour } from "./utils";
 
   export let savingsGoal
   export let currentValue
@@ -10,12 +11,7 @@
   $: currentPercentTweened.set(Math.min((currentValue * 100 ?? 0) / (savingsGoal ?? 1), 100))
 
   $: completed = $currentPercentTweened >= 100
-  let highlightColour = '#a0e4f1'
-  $: if (multiplier >= 200) highlightColour = 'aqua'
-  $: if (multiplier >= 300) highlightColour = 'gold'
-  $: if (multiplier <= 50) highlightColour = 'gray'
-  $: if (multiplier <= 25) highlightColour = 'maroon'
-  $: if (completed) highlightColour = 'greenyellow'
+  $: highlightColour = getHighlightColour(completed, multiplier)
 </script>
 
 <div class="progress-container" style="--progress-background:{backgroundColor}; --progress-highlight:{highlightColour}">

@@ -9,6 +9,7 @@
   import type { AccountTypeBudget } from "./budget/types";
   import type { AccountTypeSaving } from "./savings/types";
   import { TransactionType } from "../transactions/types";
+  import { getHighlightColour } from "./savings/utils";
 
   export let id
   export let name
@@ -19,6 +20,7 @@
   $: valueString = currencyToString(value ?? 0)
   $: Icon = type ? accountTypeIcons[type] : undefined
   $: isCompletable = value === (additionalAccountData as AccountTypeSaving)?.target
+  $: highlightColour = getHighlightColour(false, additionalAccountData?.multiplier)
 
   async function addTransaction (e, isCompletion) {
     e.stopPropagation()
@@ -28,11 +30,14 @@
   }
 </script>
 
-<div class="header">
+<div class="header" style="--multiplier-highlight:{highlightColour}">
   <div class="icon">
     <svelte:component this={Icon}/>
   </div>
   <p>{name}</p>
+  {#if type===AccountType.SAVING}
+    <p class="multiplier">{additionalAccountData.multiplier/100}X</p>
+  {/if}
   <div class="separator" ></div>
   <p>{valueString}</p>
   {#if type===AccountType.SAVING}
@@ -64,5 +69,10 @@
     }
     .separator {
         flex-grow: 1;
+    }
+    .multiplier {
+        font-weight: bold;
+        color: var(--theme-secondary-text);
+        text-shadow: -1px -1px 5px var(--multiplier-highlight), 1px -1px 5px var(--multiplier-highlight), -1px 1px 5px var(--multiplier-highlight), 1px 1px 5px var(--multiplier-highlight);
     }
 </style>

@@ -1,3 +1,6 @@
+import * as jose from 'jose'
+import { PUBLIC_AUTH0_DOMAIN } from '$env/static/public'
+
 // TODO localisation
 const numberFormatter = Intl.NumberFormat('en-au', { style: 'currency', currency: 'AUD' })
 export function currencyToString (value: number): string {
@@ -12,4 +15,13 @@ export function getOrdinalNum (n: number): string {
 
 export function arrayToString (arr: string[]) {
     return arr.slice(0, -1).join(', ') + (arr.length > 1 ? ' and ' : '') + arr[arr.length - 1]
+}
+
+export async function validateToken (token: string) {
+    const JWKS = jose.createRemoteJWKSet(new URL(`https://${PUBLIC_AUTH0_DOMAIN}/.well-known/jwks.json`))
+    const {payload} = await jose.jwtVerify(token, JWKS, {
+        issuer: `https://${PUBLIC_AUTH0_DOMAIN}/`,
+        audience: 'budget-backend',
+    })
+    return payload
 }

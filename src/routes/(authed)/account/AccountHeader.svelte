@@ -45,11 +45,11 @@
   {/if}
 
   {#if isCompletable}
-    <Button id="completionButton" on:click={(e) => addTransaction(e, true)}>
+    <Button on:click={(e) => addTransaction(e, true)}>
       <MaterialSymbolsCheck/>
     </Button>
   {:else}
-    <Button id="transactionButton" on:click={addTransaction}>
+    <Button on:click={addTransaction}>
       <MaterialSymbolsAddRounded/>
     </Button>
   {/if}

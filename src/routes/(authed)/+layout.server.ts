@@ -1,18 +1,8 @@
 import { redirect } from '@sveltejs/kit'
 import type { LayoutServerLoad } from './$types'
 import { getUserFromToken } from "../login/userModel";
-import * as jose from 'jose'
+import { validateToken } from "$lib/utils";
 
-import { PUBLIC_AUTH0_DOMAIN } from '$env/static/public'
-
-export async function validateToken (token: string) {
-  const JWKS = jose.createRemoteJWKSet(new URL(`https://${PUBLIC_AUTH0_DOMAIN}/.well-known/jwks.json`))
-  const {payload} = await jose.jwtVerify(token, JWKS, {
-    issuer: `https://${PUBLIC_AUTH0_DOMAIN}/`,
-    audience: 'budget-backend',
-  })
-  return payload
-}
 
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
   const authToken = cookies.get('auth_token')

@@ -5,7 +5,7 @@ import * as jose from 'jose'
 
 import { PUBLIC_AUTH0_DOMAIN } from '$env/static/public'
 
-async function validateToken (token: string) {
+export async function validateToken (token: string) {
   const JWKS = jose.createRemoteJWKSet(new URL(`https://${PUBLIC_AUTH0_DOMAIN}/.well-known/jwks.json`))
   const {payload} = await jose.jwtVerify(token, JWKS, {
     issuer: `https://${PUBLIC_AUTH0_DOMAIN}/`,

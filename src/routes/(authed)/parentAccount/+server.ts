@@ -2,10 +2,11 @@ import type { RequestHandler } from './$types'
 import { json} from '@sveltejs/kit'
 import { newParentAccount } from './parentAccountModel'
 import { getUserFromToken } from "../../login/userModel";
+import { validateToken } from "../+layout.server";
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   const authToken = cookies.get('auth_token')
-  if (!authToken) return json({ status: 401 })
+  if (!authToken || !(await validateToken(authToken))) return json({ status: 401 })
 
   const user = await getUserFromToken(authToken)
   const data = await request.json()

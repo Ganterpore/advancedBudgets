@@ -1,11 +1,13 @@
 <script>
   import EpBack from '~icons/ep/back';
   import { page } from '$app/stores'
-  import { openPopup } from '$lib/store.ts'
+  import {openPopup} from '$lib/store.ts'
   import Button from '$lib/components/Button.svelte'
   import Navigation from '$lib/components/Navigation.svelte'
   import ParentAccountPopup from './parentAccount/ParentAccountPopup.svelte'
   import { goto } from '$app/navigation'
+  import {onMount} from "svelte";
+  import {createClient, logout} from "../login/authClient";
   export let data
 
   async function openAccountPopup () {
@@ -16,11 +18,21 @@
   $: title = pathname === '/'
     ? `Welcome ${data.user?.username ?? ''}`
     : pathname.split('/')[1].charAt(0).toUpperCase() + pathname.split('/')[1].slice(1)
+
+  let auth0Client
+  onMount(async () => {
+      auth0Client = await createClient()
+      if (!await auth0Client.isAuthenticated()) {
+          throw goto('/login')
+      }
+  })
+
+  const handleLogout = () => logout(auth0Client);
 </script>
 
 <Navigation>
     {#if $page.url.pathname === '/'}
-        <form method="POST" action="/logout"><Button>log out</Button></form>
+        <Button on:click={handleLogout}>log out</Button>
     {:else}
         <Button on:click={() => goto('/')}><EpBack /></Button>
     {/if}
@@ -36,7 +48,7 @@
 <slot/>
 
 <style>
-    form, div {
+    div {
         align-content: center;
     }
 </style>

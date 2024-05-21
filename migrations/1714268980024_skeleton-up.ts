@@ -4,11 +4,12 @@ import { accountColumn, idColumn, priorityColumn, userColumn } from "../src/lib/
 exports.up = (pgm: MigrationBuilder): Promise<void> | void => {
   pgm.createTable('users', {
     id: idColumn,
-    username: {
+    authId: {
       type: 'string',
       unique: true,
       notNull: true
-    }
+    },
+    username: 'string'
   })
   pgm.createTable('parent_accounts', {
     id: idColumn,

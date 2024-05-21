@@ -13,7 +13,7 @@
 
 <List
     selectable onSelected={(id) => onSelect(true, id)}
-    list={Object.values(accounts).map(a => {
+    list={Object.values(accounts ?? {}).map(a => {
       const children = Object.values(a.children)
       const hasChildren = children.length > 0
       return {

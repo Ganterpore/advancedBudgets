@@ -12,7 +12,7 @@
 
   export let accounts: AccountTree
   let accountList: { name: string, id: number }[]
-  $: accountList = Object.values(accounts).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
+  $: accountList = Object.values(accounts ?? {}).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
     const children = parentAccount.children
     const childAccountList = Object.values(children).map(account => ({ ...account, concatName: `${parentAccount.name}: ${account.name}` }))
     return [...accs, ...childAccountList]

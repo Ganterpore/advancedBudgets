@@ -7,12 +7,13 @@
     let auth0Client
     onMount(async () => {
         auth0Client = await createClient();
-        const isAuthenticated = await auth0Client.isAuthenticated()
+        let isAuthenticated = await auth0Client.isAuthenticated()
 
         // Handling auth0 redirect
         if (window.location.search.includes('code=') && window.location.search.includes('state=')) {
             await auth0Client.handleRedirectCallback()
-            window.history.replaceState({}, document.title, window.location.pathname);
+            await goto('/login')
+            isAuthenticated = await auth0Client.isAuthenticated()
         }
         if (isAuthenticated) {
             const authToken = await auth0Client.getTokenSilently({ authorizationParams: { audience: 'budget-backend' } })

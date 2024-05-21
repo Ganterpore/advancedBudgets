@@ -22,8 +22,9 @@
   let auth0Client
   onMount(async () => {
       auth0Client = await createClient()
-      if (!await auth0Client.isAuthenticated()) {
-          throw goto('/login')
+      const isAuthenticated = await auth0Client.isAuthenticated()
+      if (!isAuthenticated) {
+          await goto('/login')
       }
   })
 

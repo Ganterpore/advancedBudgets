@@ -5,6 +5,8 @@ export const createClient = async () => {
   const auth0Client = await createAuth0Client({
     domain: PUBLIC_AUTH0_DOMAIN,
     clientId: PUBLIC_AUTH0_CLIENT_ID,
+    useRefreshTokens: true,
+    cacheLocation: 'localstorage'
   })
   return auth0Client
 };
@@ -13,7 +15,8 @@ export const login = async (auth0Client: Auth0Client) => {
   await auth0Client.loginWithRedirect({
     authorizationParams: {
       redirect_uri: PUBLIC_BASE_URL + 'login',
-      audience: 'budget-backend'
+      audience: 'budget-backend',
+      scope: 'openid profile email offline_access'
     }
   })
 }

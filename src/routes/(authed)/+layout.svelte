@@ -28,7 +28,7 @@
       }
   })
 
-  const handleLogout = () => logout(auth0Client);
+  const handleLogout = () => logout(auth0Client, data.baseUrl);
 </script>
 
 <Navigation>

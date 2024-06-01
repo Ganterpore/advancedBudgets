@@ -3,6 +3,7 @@
     import Button from "$lib/components/Button.svelte";
     import {createClient, login} from "./authClient";
     import {goto} from "$app/navigation";
+    export let data
 
     let auth0Client
     onMount(async () => {
@@ -34,7 +35,7 @@
         }
     });
 
-    const handleLogin = () => login(auth0Client);
+    const handleLogin = () => login(auth0Client, data.baseUrl);
 </script>
 
 <div class="login-flex">

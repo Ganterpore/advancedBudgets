@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types'
 import { json} from '@sveltejs/kit'
 import { newParentAccount } from './parentAccountModel'
 import { getUserFromToken } from "../../login/userModel";
-import { validateToken } from "../+layout.server";
+import { validateToken } from '$lib/utils'
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   const authToken = cookies.get('auth_token')

@@ -1,14 +1,10 @@
 import pg from 'pg'
 import type { ClientConfig } from 'pg'
-import { PGUSER, PGHOST, PGPASSWORD, PGDATABASE, PGPORT } from '$env/static/private'
+import { DATABASE_URL } from '$env/static/private'
 
 const { Client } = pg
 const clientDetails: ClientConfig = {
-  user: PGUSER,
-  database: PGDATABASE,
-  port: Number(PGPORT),
-  host: PGHOST,
-  password: PGPASSWORD,
+  connectionString: DATABASE_URL
 }
 const client = new Client(clientDetails)
 

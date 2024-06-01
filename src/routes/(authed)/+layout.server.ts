@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit'
 import type { LayoutServerLoad } from './$types'
 import { getUserFromToken } from "../login/userModel";
 import { validateToken } from "$lib/utils";
-
+import { VERCEL_URL } from '$env/static/private'
 
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
   const authToken = cookies.get('auth_token')
@@ -21,6 +21,7 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
     throw redirect(303, '/login');
   }
   return {
+    baseUrl: VERCEL_URL,
     user
   }
 }

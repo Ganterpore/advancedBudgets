@@ -19,8 +19,8 @@
 
   $: valueString = currencyToString(value ?? 0)
   $: Icon = type ? accountTypeIcons[type] : undefined
-  $: isCompletable = value === (additionalAccountData as AccountTypeSaving)?.target
-  $: highlightColour = getHighlightColour(false, additionalAccountData?.multiplier)
+  $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
+  $: highlightColour = getHighlightColour(false, (additionalAccountData as AccountTypeSaving)?.multiplier)
 
   async function addTransaction (e, isCompletion) {
     e.stopPropagation()

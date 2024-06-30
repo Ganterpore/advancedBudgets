@@ -6,8 +6,6 @@
   import Navigation from '$lib/components/Navigation.svelte'
   import ParentAccountPopup from './parentAccount/ParentAccountPopup.svelte'
   import { goto } from '$app/navigation'
-  import {onMount} from "svelte";
-  import {createClient, logout} from "../login/authClient";
   export let data
 
   async function openAccountPopup () {
@@ -19,16 +17,8 @@
     ? `Welcome ${data.user?.username ?? ''}`
     : pathname.split('/')[1].charAt(0).toUpperCase() + pathname.split('/')[1].slice(1)
 
-  let auth0Client
-  onMount(async () => {
-      auth0Client = await createClient()
-      const isAuthenticated = await auth0Client.isAuthenticated()
-      if (!isAuthenticated) {
-          await goto('/login')
-      }
-  })
-
-  const handleLogout = () => logout(auth0Client, data.baseUrl);
+  // TODO
+  const handleLogout = () => console.log('TODO logout')
 </script>
 
 <Navigation>

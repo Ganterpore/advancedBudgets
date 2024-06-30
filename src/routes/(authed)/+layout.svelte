@@ -17,8 +17,7 @@
     ? `Welcome ${data.user?.username ?? ''}`
     : pathname.split('/')[1].charAt(0).toUpperCase() + pathname.split('/')[1].slice(1)
 
-  // TODO
-  const handleLogout = () => console.log('TODO logout')
+  const handleLogout = async () => goto('/logout')
 </script>
 
 <Navigation>

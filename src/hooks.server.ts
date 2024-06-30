@@ -32,6 +32,8 @@ export const handle: Handle = async ({event, resolve}) => {
   await handleLuciaAuthentication(event)
   // If not authed, redirect to login page
   if (!event.url.pathname.startsWith('/login') && !event.locals.user) {
+    event.locals.user = null
+    event.locals.session = null
     return new Response(null, {
       status: 303,
       headers: { location: '/login' }

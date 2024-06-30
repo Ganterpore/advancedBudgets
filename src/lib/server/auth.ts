@@ -1,4 +1,4 @@
-import { Lucia} from 'lucia'
+import { Lucia } from 'lucia'
 import { dev} from '$app/environment'
 import { NodePostgresAdapter } from '@lucia-auth/adapter-postgresql'
 import pg from 'pg'

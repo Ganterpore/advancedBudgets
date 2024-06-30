@@ -3,7 +3,7 @@ import type { ClientConfig } from 'pg'
 import { DATABASE_URL } from '$env/static/private'
 
 const { Client } = pg
-const clientDetails: ClientConfig = {
+export const clientDetails: ClientConfig = {
   connectionString: DATABASE_URL
 }
 const client = new Client(clientDetails)

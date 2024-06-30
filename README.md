@@ -35,3 +35,16 @@ npm run migrate:make $migration_name # create a new migration
 npm run migrate:up # run all new migrations
 npm run migrate:down # rollback a migration
 ```
+
+# Auth
+Authorisation is handled by a combination of arctic, Lucia and Auth0. 
+
+I initially chose Auth0 for handling OAuth registration securely with various OAuth providers, google, facebook etc.
+
+However, at the time of writing, there is no native sveltekit implementation of Auth0. Initially I tried working around
+this manually, but it was causing many issues, so I chose to use Lucia to  handle session tokens and user logins.
+
+arctic works as a middle man between Lucia and Auth0.
+
+If Auth0 creates a sveltekit implementation I will probably either switch to that, or move towards native Lucia / arctic
+OAuth functionality.

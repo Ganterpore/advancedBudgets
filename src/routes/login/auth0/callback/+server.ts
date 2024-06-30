@@ -5,12 +5,11 @@ import { getUserByAuthId, newUser } from '../../userModel'
 
 export const GET: RequestHandler = async (event) => {
   const code = event.url.searchParams.get('code')
-  const state = event.url.searchParams.get('state')
-  const storedState = event.cookies.get('auth0_oauth_state') ?? null
-  if (!code || !state || !storedState || state !== storedState) {
+  if (!code) {
     return new Response(null, {
-      status: 400
-    });
+      status: 303,
+      headers: { location: '/login' }
+    })
   }
   try {
     const tokens = await auth0.validateAuthorizationCode(code)

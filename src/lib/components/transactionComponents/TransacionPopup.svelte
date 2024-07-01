@@ -22,8 +22,16 @@
     : accountList.find(account => account.id === $selectedTransactionAccount)
 
   let transactionName: string
-  let transactionValue: number
-  $: actualValue = parseInt((transactionValue * 100).toString())
+  let transactionValue: number | string
+  let previousTransactionValue
+  function onNegativePressed (event: InputEvent) {
+    if (event.data === '-') {
+      transactionValue = -1 * previousTransactionValue
+    }
+    previousTransactionValue = transactionValue
+  }
+  $: transactionValue = Number(transactionValue)
+  $: actualValue = parseInt((Number(transactionValue) * 100).toString())
   let error: string
 
   let transferTo = (accountList ?? [])[0]?.id
@@ -100,7 +108,9 @@
   <form class="form">
     <Input name="transactionName" bind:value={transactionName}/>
     <div class="footer">
-      <Input type="number" step="0.01" label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"} name="transactionValue" autofocus bind:value={transactionValue}/>
+      <Input type="number" step="0.01" name="transactionValue" autofocus
+             label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"}
+             bind:value={transactionValue} on:input={onNegativePressed}/>
       <Button on:click={createTransaction} >Create</Button>
     </div>
 

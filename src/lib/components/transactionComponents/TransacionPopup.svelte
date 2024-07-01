@@ -100,7 +100,7 @@
   <form class="form">
     <Input name="transactionName" bind:value={transactionName}/>
     <div class="footer">
-      <Input type="number" label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"} name="transactionValue" autofocus bind:value={transactionValue}/>
+      <Input type="number" step="0.01" label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"} name="transactionValue" autofocus bind:value={transactionValue}/>
       <Button on:click={createTransaction} >Create</Button>
     </div>
 

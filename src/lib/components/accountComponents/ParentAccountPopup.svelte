@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Button from '$lib/components/Button.svelte'
-  import Input from '$lib/components/Input.svelte'
-  import Popup from '$lib/components/Popup.svelte'
-  import Alert from '$lib/components/Alert.svelte'
   import { openPopup } from '$lib/store.js'
-  import { invalidate } from '$app/navigation';
+  import { invalidate } from '$app/navigation'
+  import Popup from '$lib/components/sharedComponents/Popup.svelte'
+  import Alert from '$lib/components/sharedComponents/Alert.svelte'
+  import Input from '$lib/components/sharedComponents/Input.svelte'
+  import Button from '$lib/components/sharedComponents/Button.svelte'
 
   let accountName: string
   let error: string

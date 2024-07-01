@@ -1,8 +1,9 @@
 <script lang="ts">
   import { openPopup, selectedParentAccount } from '$lib/store.ts'
-  import Button from '$lib/components/Button.svelte'
-  import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
+  import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded'
   import { currencyToString } from '$lib/utils'
+  import Button from '$lib/components/sharedComponents/Button.svelte'
+
   export let name: string
   export let id: number
   export let value: number = 0

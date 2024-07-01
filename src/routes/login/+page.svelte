@@ -1,8 +1,8 @@
 <script>
     import {goto} from "$app/navigation";
-    import Button from "$lib/components/Button.svelte";
     import {writable} from "svelte/store";
-    import LoadingSpinner from "$lib/components/LoadingSpinner.svelte";
+    import Button from "$lib/components/sharedComponents/Button.svelte";
+    import LoadingSpinner from "$lib/components/sharedComponents/LoadingSpinner.svelte";
 
     const isLoading = writable(false)
     const handleLogin = () => {

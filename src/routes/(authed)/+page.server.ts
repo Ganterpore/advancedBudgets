@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types'
 import { connect } from '$lib/db'
-import { getAccountsForUser } from './parentAccount/parentAccountModel'
-import { getAccountTotalsForUser } from './transactions/transactionModel'
+import { getAccountsForUser } from '$lib/models/parentAccountModel'
+import { getAccountTotalsForUser } from '$lib/types/transactionModel'
 
 export const load: PageServerLoad = async ({ depends, locals }) => {
   depends('data:accounts')

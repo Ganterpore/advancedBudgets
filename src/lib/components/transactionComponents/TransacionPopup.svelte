@@ -1,14 +1,14 @@
 <script lang="ts">
-  import Button from '$lib/components/Button.svelte'
-  import Input from '$lib/components/Input.svelte'
-  import Popup from '$lib/components/Popup.svelte'
-  import Alert from '$lib/components/Alert.svelte'
   import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store'
   import { invalidate } from '$app/navigation';
-  import { TransactionType } from "./types";
-  import type { AccountNode, AccountTree } from "../parentAccount/types";
-  import type { TransactionData } from "./[type=accountHierarchy]/[id]/+server";
   import { currencyToString } from "$lib/utils";
+  import type { AccountNode, AccountTree } from '$lib/types/accountTypes'
+  import type { TransactionData } from '../../../routes/(authed)/transactions/[type=accountHierarchy]/[id]/+server'
+  import Popup from '$lib/components/sharedComponents/Popup.svelte'
+  import Alert from '$lib/components/sharedComponents/Alert.svelte'
+  import Input from '$lib/components/sharedComponents/Input.svelte'
+  import Button from '$lib/components/sharedComponents/Button.svelte'
+  import { TransactionType } from '$lib/types/transactionTypes'
 
   export let accounts: AccountTree
   let accountList: { name: string, id: number }[]

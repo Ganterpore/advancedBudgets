@@ -1,6 +1,6 @@
 import type { Writable } from 'svelte/store'
 import { writable } from 'svelte/store'
-import type { TransactionType } from "../routes/(authed)/transactions/types";
+import type { TransactionType } from '$lib/types/transactionTypes'
 
 export const openPopup = writable()
 export const selectedParentAccount: Writable<number> = writable()

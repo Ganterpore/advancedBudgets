@@ -2,10 +2,10 @@
   import EpBack from '~icons/ep/back';
   import { page } from '$app/stores'
   import {openPopup} from '$lib/store.ts'
-  import Button from '$lib/components/Button.svelte'
-  import Navigation from '$lib/components/Navigation.svelte'
-  import ParentAccountPopup from './parentAccount/ParentAccountPopup.svelte'
   import { goto } from '$app/navigation'
+  import Button from "$lib/components/sharedComponents/Button.svelte";
+  import Navigation from "$lib/components/sharedComponents/Navigation.svelte";
+  import ParentAccountPopup from "$lib/components/accountComponents/ParentAccountPopup.svelte";
   export let data
 
   async function openAccountPopup () {

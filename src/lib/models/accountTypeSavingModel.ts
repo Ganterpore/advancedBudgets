@@ -1,5 +1,5 @@
-import type { AccountTypeSaving, ExpandedSavingsAccount } from './types'
 import { connect } from '$lib/db'
+import type { AccountTypeSaving, ExpandedSavingsAccount } from '$lib/types/accountTypes'
 
 
 export async function newSavingsAccount(props: Omit<AccountTypeSaving, 'id'>) {

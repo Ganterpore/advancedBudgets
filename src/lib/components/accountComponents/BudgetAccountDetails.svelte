@@ -1,11 +1,11 @@
 <script lang="ts">
-    import FrequencySelector from "$lib/components/FrequencySelector.svelte";
     import {dayBitMapToString} from "$lib/dayOfWeekFunctons";
     import {getOrdinalNum} from "$lib/utils";
-    import Input from "$lib/components/Input.svelte";
-    import type { AccountTypeBudget } from './types'
-    import { FrequencyCategory } from '$lib/types'
     import { currencyToString } from "$lib/utils.js";
+    import type { AccountTypeBudget } from '$lib/types/accountTypes'
+    import { FrequencyCategory } from '$lib/types/sharedTypes'
+    import Input from '$lib/components/sharedComponents/Input.svelte'
+    import FrequencySelector from '$lib/components/timeSelectors/FrequencySelector.svelte'
 
     export let name
     export let dataObject: Omit<AccountTypeBudget, 'id'>

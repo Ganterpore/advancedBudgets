@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { accountTypeDescriptions, accountTypeIcons } from './types'
+  import { accountTypeDescriptions, accountTypeIcons } from '$lib/types/accountTypes'
+
   export let id: string
 
   $: Icon = id ? accountTypeIcons[id] : undefined

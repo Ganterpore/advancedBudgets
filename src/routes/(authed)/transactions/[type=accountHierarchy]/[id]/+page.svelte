@@ -1,6 +1,7 @@
 <script>
-  import List from '$lib/components/List.svelte'
-  import TransactionListItem from './TransactionListItem.svelte'
+
+  import List from "$lib/components/sharedComponents/List.svelte";
+  import TransactionListItem from "$lib/components/transactionComponents/TransactionListItem.svelte";
 
   export let data
 </script>

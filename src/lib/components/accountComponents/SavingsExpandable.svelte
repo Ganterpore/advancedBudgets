@@ -1,14 +1,14 @@
 <script lang="ts">
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
-  import Expandable from "$lib/components/Expandable.svelte";
-  import type { Account } from "../types";
-  import type { AccountTotals } from "../../transactions/types";
-  import type { AccountTypeSaving } from "./types";
   import SavingsProgress from "./SavingsProgress.svelte";
-  import Button from "$lib/components/Button.svelte";
+
   import { openPopup, selectedTransactionAccount, selectedTransactionType } from "$lib/store";
-  import { TransactionType } from "../../transactions/types";
   import { currencyToString } from "$lib/utils.js";
+  import type { Account, AccountTypeSaving } from '$lib/types/accountTypes'
+  import type { AccountTotals } from '$lib/types/transactionTypes'
+  import { TransactionType } from '$lib/types/transactionTypes'
+  import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
+    import Button from '../sharedComponents/Button.svelte';
 
   export let parent
   export let accounts: Account[]

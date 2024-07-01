@@ -1,13 +1,12 @@
 <script lang="ts">
   import * as svelte from 'svelte'
-  import List from "$lib/components/List.svelte"
-  import type { Account } from "./types";
-  import { AccountType } from "./types";
   import AccountHeader from "./AccountHeader.svelte";
-  import type { AccountTotals } from "../transactions/types";
-  import Expandable from "$lib/components/Expandable.svelte";
-  import SavingsExpandable from "./savings/SavingsExpandable.svelte";
-  import type { AccountTypeSaving } from "./savings/types";
+  import type { Account, AccountTypeSaving } from '$lib/types/accountTypes'
+  import type { AccountTotals } from '$lib/types/transactionTypes'
+  import { AccountType } from '$lib/types/accountTypes'
+  import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
+  import SavingsExpandable from '$lib/components/accountComponents/SavingsExpandable.svelte'
+  import List from '$lib/components/sharedComponents/List.svelte'
 
   export let parent: number
   export let accounts: Account[]

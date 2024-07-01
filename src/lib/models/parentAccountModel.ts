@@ -1,8 +1,11 @@
-import type { AccountTree, DBResultAccountsWithChildren, ParentAccount } from './types'
 import { connect } from '$lib/db'
-import { AccountType } from "../account/types";
-import type { AccountTypeSaving } from "../account/savings/types";
-import type { AccountTypeBudget } from "../account/budget/types";
+import type {
+  AccountTree, AccountTypeBudget,
+  AccountTypeSaving,
+  DBResultAccountsWithChildren,
+  ParentAccount
+} from '$lib/types/accountTypes'
+import { AccountType } from '$lib/types/accountTypes'
 
 
 export async function newParentAccount(accountInfo: Omit<ParentAccount, 'id'>): Promise<number> {

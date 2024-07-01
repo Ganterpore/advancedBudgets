@@ -1,5 +1,5 @@
-import type { ParentAccountTotals, Transaction, TransactionWithParent } from './types'
 import { connect } from '$lib/db'
+import type { ParentAccountTotals, Transaction, TransactionWithParent } from '$lib/types/transactionTypes'
 
 export async function newTransaction (transaction: Omit<Transaction, 'id'|'transactionTime'>) {
   const db = await connect()

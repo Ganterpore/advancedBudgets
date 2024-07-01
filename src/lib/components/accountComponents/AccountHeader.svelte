@@ -2,14 +2,12 @@
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
   import MaterialSymbolsCheck from '~icons/material-symbols/check';
   import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store.ts'
-  import { AccountType, accountTypeIcons } from './types'
-  import Button from '$lib/components/Button.svelte'
-  import { currencyToString } from '$lib/utils'
-  import SavingsProgress from "./savings/SavingsProgress.svelte";
-  import type { AccountTypeBudget } from "./budget/types";
-  import type { AccountTypeSaving } from "./savings/types";
-  import { TransactionType } from "../transactions/types";
-  import { getHighlightColour } from "./savings/utils";
+  import { currencyToString, getHighlightColour } from '$lib/utils'
+  import { TransactionType } from '$lib/types/transactionTypes'
+  import { AccountType, accountTypeIcons } from '$lib/types/accountTypes'
+  import type { AccountTypeBudget, AccountTypeSaving } from '$lib/types/accountTypes'
+  import SavingsProgress from '$lib/components/accountComponents/SavingsProgress.svelte'
+  import Button from '$lib/components/sharedComponents/Button.svelte'
 
   export let id
   export let name

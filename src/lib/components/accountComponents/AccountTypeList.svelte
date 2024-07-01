@@ -1,7 +1,7 @@
 <script lang="ts">
   import AccountTypeListItem from './AccountTypeListItem.svelte'
-  import List from '$lib/components/List.svelte'
-  import { AccountType } from './types'
+  import { AccountType } from '$lib/types/accountTypes'
+  import List from '$lib/components/sharedComponents/List.svelte'
   export let onSelected: () => void = () => {}
 
 </script>

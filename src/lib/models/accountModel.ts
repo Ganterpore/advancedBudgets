@@ -1,5 +1,5 @@
 import { connect } from '$lib/db'
-import type { Account } from './types'
+import type { Account } from '$lib/types/accountTypes'
 
 export async function newAccount(account: Omit<Account, 'id'>): Promise<number> {
   const db = await connect()

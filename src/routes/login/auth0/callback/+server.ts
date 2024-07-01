@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit'
 import { auth0, lucia } from '$lib/server/auth'
 import { PUBLIC_AUTH0_DOMAIN } from '$env/static/public'
-import { getUserByAuthId, newUser } from '../../userModel'
+import { getUserByAuthId, newUser } from '$lib/models/userModel'
 
 export const GET: RequestHandler = async (event) => {
   const code = event.url.searchParams.get('code')

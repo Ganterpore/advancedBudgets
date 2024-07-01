@@ -1,9 +1,9 @@
-import type { SuggestedTransaction } from "./types";
-import { getSavingsAccountsOnParent } from "./accountTypeSavingModel";
-import { getParentAccount } from "../../parentAccount/parentAccountModel";
-import { getAccountTotalsForUser } from "../../transactions/transactionModel";
 import { currencyToString } from "$lib/utils";
 import { error } from '@sveltejs/kit';
+import type { SuggestedTransaction } from '$lib/types/accountTypes'
+import { getSavingsAccountsOnParent } from '$lib/models/accountTypeSavingModel'
+import { getAccountTotalsForUser } from '$lib/types/transactionModel'
+import { getParentAccount } from '$lib/models/parentAccountModel'
 
 type AccountDetails = {
   id: number,

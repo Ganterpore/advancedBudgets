@@ -1,10 +1,8 @@
-import { newAccount } from './accountModel'
-import type { Account } from './types'
-import { AccountType } from './types'
-import type { AccountTypeBudget } from "./budget/types";
-import { newBudgetAccount } from "./budget/accountTypeBudgetModel";
-import { newSavingsAccount } from "./savings/accountTypeSavingModel";
-import type { AccountTypeSaving } from "./savings/types";
+import type { Account, AccountTypeBudget, AccountTypeSaving } from '$lib/types/accountTypes'
+import { newAccount } from '$lib/models/accountModel'
+import { AccountType } from '$lib/types/accountTypes'
+import { newBudgetAccount } from '$lib/models/accountTypeBudgetModel'
+import { newSavingsAccount } from '$lib/models/accountTypeSavingModel'
 
 
 export async function createNewAccount (account: Account){

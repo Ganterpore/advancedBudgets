@@ -1,5 +1,5 @@
-import type { AccountTypeBudget } from './types'
 import { connect } from '$lib/db'
+import type { AccountTypeBudget } from '$lib/types/accountTypes'
 
 export async function newBudgetAccount(props: Omit<AccountTypeBudget, 'id'>) {
   const db = await connect()

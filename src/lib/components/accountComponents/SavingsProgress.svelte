@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tweened } from "svelte/motion";
-  import { getHighlightColour } from "./utils";
+  import { getHighlightColour } from '$lib/utils'
 
   export let savingsGoal
   export let currentValue

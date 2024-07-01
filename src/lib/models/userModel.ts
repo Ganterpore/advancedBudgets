@@ -1,5 +1,5 @@
 import { connect } from '$lib/db'
-import type { User } from './types'
+import type { User } from 'lucia'
 
 export async function newUser ({ authId, username }: {authId: string, username: string}): Promise<number> {
   const db = await connect()

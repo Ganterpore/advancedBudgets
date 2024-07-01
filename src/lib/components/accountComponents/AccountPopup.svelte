@@ -1,20 +1,18 @@
 <script lang="ts">
   import EpBack from '~icons/ep/back'
   import { openPopup, selectedParentAccount } from '$lib/store.ts'
-  import Button from '$lib/components/Button.svelte'
-  import Input from '$lib/components/Input.svelte'
-  import Popup from '$lib/components/Popup.svelte'
-  import Alert from '$lib/components/Alert.svelte'
-  import AccountTypeList from './AccountTypeList.svelte'
-  import AccountTypeListItem from './AccountTypeListItem.svelte'
+  import type { Account, AccountTypeBudget, AccountTypeSaving } from '$lib/types/accountTypes'
+  import { FrequencyCategory } from '$lib/types/sharedTypes'
+  import { AccountType } from '$lib/types/accountTypes'
   import { invalidate } from '$app/navigation'
-  import { FrequencyCategory } from '$lib/types'
-  import type { Account } from './types'
-  import { AccountType } from './types'
-  import type { AccountTypeSaving } from "./savings/types";
-  import type { AccountTypeBudget } from "./budget/types";
-  import BudgetAccountDetails from "./budget/BudgetAccountDetails.svelte";
-  import SavingsAccountDetails from "./savings/SavingsAccountDetails.svelte";
+  import Popup from '$lib/components/sharedComponents/Popup.svelte'
+  import AccountTypeList from '$lib/components/accountComponents/AccountTypeList.svelte'
+  import Button from '$lib/components/sharedComponents/Button.svelte'
+  import AccountTypeListItem from '$lib/components/accountComponents/AccountTypeListItem.svelte'
+  import Alert from '$lib/components/sharedComponents/Alert.svelte'
+  import BudgetAccountDetails from '$lib/components/accountComponents/BudgetAccountDetails.svelte'
+  import SavingsAccountDetails from '$lib/components/accountComponents/SavingsAccountDetails.svelte'
+  import Input from '$lib/components/sharedComponents/Input.svelte'
 
   let accountName: string
   let error: string

@@ -1,11 +1,11 @@
 import type { RequestEvent, RequestHandler } from "@sveltejs/kit";
 import { error, json } from "@sveltejs/kit";
-import { getTotalOnAccount, newTransaction } from "../../transactionModel";
 import { AccountHierarchy } from "../../../../../params/accountHierarchy";
-import { TransactionType } from "../../types";
-import { assignTransaction } from "../../../account/savings/savingsController";
-import { completeAccount, getSavingsAccountOnAccountId } from "../../../account/savings/accountTypeSavingModel";
 import { currencyToString } from "$lib/utils";
+import { TransactionType } from '$lib/types/transactionTypes'
+import { assignTransaction } from '$lib/controllers/savingsController'
+import { getTotalOnAccount, newTransaction } from '$lib/types/transactionModel'
+import { completeAccount, getSavingsAccountOnAccountId } from '$lib/models/accountTypeSavingModel'
 
 export type TransactionData = {
   amount: number,
@@ -15,8 +15,6 @@ export type TransactionData = {
 }
 
 async function validateFields ({ request, cookies, params }: RequestEvent<Partial<Record<string, string>>, string | null>) {
-  const authToken = cookies.get('auth_token')
-  if (!authToken) throw error(401)
   const { type, id: accountId } = params
   const data = await request.json()
 

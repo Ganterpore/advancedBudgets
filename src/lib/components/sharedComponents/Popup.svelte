@@ -59,6 +59,8 @@
         font-size: 28px;
         font-weight: bold;
         cursor: pointer;
+        background: none;
+        border: none;
     }
     .close-button:hover,
     .close-button:focus {

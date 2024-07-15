@@ -1,5 +1,8 @@
 import type { Handle, RequestEvent } from '@sveltejs/kit'
 import { lucia } from '$lib/server/auth'
+import { IGNORE_AUTH } from '$env/static/private'
+import { dev } from '$app/environment'
+import { getUserByAuthId, newUser } from '$lib/models/userModel'
 
 const handleLuciaAuthentication = async (event: RequestEvent) => {
   const sessionId = event.cookies.get(lucia.sessionCookieName)
@@ -29,6 +32,19 @@ const handleLuciaAuthentication = async (event: RequestEvent) => {
 }
 
 export const handle: Handle = async ({event, resolve}) => {
+  if (dev && IGNORE_AUTH === 'true') {
+    if (!event.locals.user) {
+      const user = await getUserByAuthId('abc123')
+      if (!user) {
+        const id = await newUser({authId: 'abc123', username: 'Alice'})
+        event.locals.user = { id: id.toString() }
+      } else {
+        event.locals.user = { id: user.id }
+      }
+    }
+    return resolve(event)
+  }
+  console.log('abcdef')
   await handleLuciaAuthentication(event)
   // If not authed, redirect to login page
   if (!event.url.pathname.startsWith('/login') && !event.locals.user) {

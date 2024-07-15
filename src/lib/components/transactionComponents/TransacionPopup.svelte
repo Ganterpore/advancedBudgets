@@ -22,15 +22,29 @@
     : accountList.find(account => account.id === $selectedTransactionAccount)
 
   let transactionName: string
-  let transactionValue: number | string
-  let previousTransactionValue
+  let transactionValue: number | string | undefined
+  let previousTransactionValue: number | string | undefined
   function onNegativePressed (event: InputEvent) {
     if (event.data === '-') {
-      transactionValue = -1 * previousTransactionValue
+      if (!previousTransactionValue|| previousTransactionValue === '0') {
+        transactionValue = '-0'
+      } else if (previousTransactionValue === '-0') {
+        transactionValue = '0'
+      } else {
+        transactionValue = -1 * previousTransactionValue
+      }
     }
     previousTransactionValue = transactionValue
   }
-  $: transactionValue = Number(transactionValue)
+  function removeLeadingZeros (n: number | string | undefined) {
+    if (!n) return 0
+    if (typeof n === 'number') return n
+    if ((n.startsWith('0') || n.startsWith('-0') ) && Number(n) !== 0) {
+      return Number(n)
+    }
+    return n
+  }
+  $: transactionValue = removeLeadingZeros(transactionValue)
   $: actualValue = parseInt((Number(transactionValue) * 100).toString())
   let error: string
 

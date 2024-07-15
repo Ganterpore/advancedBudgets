@@ -1,10 +1,10 @@
-import { fail, redirect } from '@sveltejs/kit'
+import { redirect } from '@sveltejs/kit'
 import { lucia } from '$lib/server/auth'
 import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (!locals.session) {
-    return fail(401);
+    throw redirect(303, '/login')
   }
   await lucia.invalidateSession(locals.session.id);
   const sessionCookie = lucia.createBlankSessionCookie();
@@ -12,5 +12,5 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
     path: ".",
     ...sessionCookie.attributes
   });
-  throw redirect(303, '/login');
+  throw redirect(303, '/login')
 };

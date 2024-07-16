@@ -7,3 +7,12 @@ export async function newAccount(account: Omit<Account, 'id'>): Promise<number> 
     [account.name, account.type, account.parent])
   return res.rows[0].id
 }
+
+export async function getAccount (accountId: number): Promise<Account> {
+  const db = await connect()
+  const res = await db.query(
+    'SELECT * from ACCOUNTS WHERE ID=$1',
+    [accountId]
+  )
+  return res.rows[0]
+}

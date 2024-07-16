@@ -2,9 +2,14 @@
 
   import List from "$lib/components/sharedComponents/List.svelte";
   import TransactionListItem from "$lib/components/transactionComponents/TransactionListItem.svelte";
+  import AppBar from "$lib/components/sharedComponents/AppBar.svelte";
+  import {goto} from "$app/navigation";
 
   export let data
 </script>
+
+<AppBar title="{data.account.name}"
+        leftButton={{ name: 'Back', action: () => goto('/') }} />
 
 <div class="container">
   <div class="listContainer">

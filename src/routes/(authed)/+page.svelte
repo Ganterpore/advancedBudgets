@@ -6,7 +6,7 @@
   export let data
 
   function onSelected (isParent: boolean, id: string) {
-    const url = `/transactions/${isParent ? 'parentAccount/' : 'account/'}${id}`
+    const url = `/${isParent ? 'parentAccount/' : 'account/'}${id}`
     throw goto(url)
   }
 </script>

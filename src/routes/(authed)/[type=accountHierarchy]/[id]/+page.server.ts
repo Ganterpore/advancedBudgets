@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types'
-import { AccountHierarchy } from '../../../../../params/accountHierarchy'
+import { AccountHierarchy } from '../../../../params/accountHierarchy'
 import { getTransactionsOnAccount, getTransactionsOnParentAccount } from '$lib/types/transactionModel'
 
 export const load: PageServerLoad = async ({ params }) => {

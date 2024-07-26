@@ -1,7 +1,6 @@
 import { connect } from '$lib/db'
 import type { AccountTypeSaving, ExpandedSavingsAccount } from '$lib/types/accountTypes'
 
-
 export async function newSavingsAccount(props: Omit<AccountTypeSaving, 'id'>) {
   const db = await connect()
   const res = await db.query('INSERT INTO account_type_saving("account", "multiplier", "target", "completed") VALUES($1, $2, $3, $4) RETURNING id',
@@ -36,4 +35,15 @@ export async function completeAccount (id: number) {
     set "completed"=true
     where id=$1
   `, [id])
+}
+
+export async function updateSavingsAccount (props: AccountTypeSaving): Promise<void> {
+  const db = await connect()
+  console.log(props.multiplier)
+  console.log(`UPDATE account_type_saving
+    SET ("account", "multiplier", "target", "completed") = ($1, $2, $3, $4) 
+    WHERE ID=$5`)
+  console.log([props.account, props.multiplier, props.target, props.completed ?? false, props.id])
+  await db.query(`UPDATE account_type_saving SET ("account", "multiplier", "target", "completed") = ($1, $2, $3, $4) WHERE ID=$5`,
+    [props.account, props.multiplier, props.target, props.completed ?? false, props.id])
 }

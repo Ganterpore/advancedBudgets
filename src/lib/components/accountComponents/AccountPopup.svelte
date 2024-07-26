@@ -20,27 +20,47 @@
 
   let accountType: AccountType | undefined
 
-  let additionalSavingsDetails: Omit<AccountTypeSaving, 'id'|'account'>
-  $: if (accountType === AccountType.SAVING)  additionalSavingsDetails = {
-    multiplier: 1,
-    target: 0
+  export let account: Account | undefined = undefined
+
+  let additionalSavingsDetails: Omit<AccountTypeSaving, 'id'|'account'> & Partial<AccountTypeSaving>
+  let additionalBudgetDetails: Omit<AccountTypeBudget, 'id'|'account'> & Partial<AccountTypeBudget>
+  function getAccountDetails (account: Account | undefined) {
+    if (!account) return
+    accountType = account.type
+    accountName = account.name
+    if (account.additionalAccountData) {
+      if ('multiplier' in account.additionalAccountData) {
+        additionalSavingsDetails = account.additionalAccountData as AccountTypeSaving
+      } else {
+        additionalBudgetDetails = account.additionalAccountData as AccountTypeBudget
+      }
+    }
   }
-  let additionalBudgetDetails: Omit<AccountTypeBudget, 'id'|'account'>
+  getAccountDetails(account)
+  $: if (accountType === AccountType.SAVING) additionalSavingsDetails = {
+    multiplier: additionalSavingsDetails?.multiplier ?? 100,
+    target: additionalSavingsDetails?.target ?? 0,
+    account: additionalSavingsDetails?.account ?? undefined,
+    id: additionalSavingsDetails?.id ?? undefined
+  }
   $: if (accountType === AccountType.BUDGET) additionalBudgetDetails = {
-    regularBudget: 0,
-    budgetMax: 0,
-    frequency: 1,
-    frequencyCategory: FrequencyCategory.MONTHLY,
-    startDate: new Date(),
-    dayOf: 1
+    regularBudget: additionalBudgetDetails?.regularBudget ?? 0,
+    budgetMax: additionalBudgetDetails?.budgetMax ?? 0,
+    frequency: additionalBudgetDetails?.frequency ?? 1,
+    frequencyCategory: additionalBudgetDetails?.frequencyCategory ?? FrequencyCategory.MONTHLY,
+    startDate: additionalBudgetDetails?.startDate ?? new Date(),
+    dayOf: additionalBudgetDetails?.dayOf ?? 1,
+    account: additionalBudgetDetails?.account ?? undefined,
+    id: additionalBudgetDetails?.id ?? undefined
   }
 
   async function createAccount () {
-    const accountBody: Omit<Account, 'id'> = {
+    const accountBody: Omit<Account, 'id'|'additionalAccountData'> & Partial<Account> = {
       name: accountName,
       type: accountType!,
-      parent: $selectedParentAccount
+      parent: account?.parent ?? $selectedParentAccount,
     }
+    if (account?.id) accountBody.id = account.id
     if (accountType === AccountType.BUDGET) {
       accountBody.additionalAccountData = additionalBudgetDetails
     } else if (accountType === AccountType.SAVING) {
@@ -64,8 +84,8 @@
   }
 
   function onClose () {
-    accountType = undefined
-    accountName = ''
+    accountType = account?.type ?? undefined
+    accountName = account?.name ?? ''
     error = ''
   }
 

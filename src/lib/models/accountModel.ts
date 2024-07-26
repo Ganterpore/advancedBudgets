@@ -16,3 +16,11 @@ export async function getAccount (accountId: number): Promise<Account> {
   )
   return res.rows[0]
 }
+
+export async function updateAccount (account: Account): Promise<void> {
+  const db = await connect()
+  await db.query(
+    `UPDATE accounts SET ("name", "type", "parent") = ($1, $2, $3)
+    WHERE ID=$4`,
+    [account.name, account.type, account.parent, account.id])
+}

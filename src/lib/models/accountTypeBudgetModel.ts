@@ -9,3 +9,23 @@ export async function newBudgetAccount(props: Omit<AccountTypeBudget, 'id'>) {
     [props.account, props.regularBudget, props.budgetMax, props.frequency, props.frequencyCategory, props.startDate, props.dayOf])
   return res.rows[0].id
 }
+
+export async function updateBudgetAccount (budgetAccount: AccountTypeBudget): Promise<void> {
+  const db = await connect()
+  await db.query(
+    `UPDATE account_type_budget SET 
+        ("account", "regularBudget", "budgetMax", "frequency", "frequencyCategory", "startDate", "dayOf") 
+        = ($1, $2, $3, $4, $5, $6, $7)
+        WHERE ID=$8`,
+    [
+      budgetAccount.account,
+      budgetAccount.regularBudget,
+      budgetAccount.budgetMax,
+      budgetAccount.frequency,
+      budgetAccount.frequencyCategory,
+      budgetAccount.startDate,
+      budgetAccount.dayOf,
+      budgetAccount.id
+    ])
+
+}

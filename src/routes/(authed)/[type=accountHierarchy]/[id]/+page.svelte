@@ -1,15 +1,27 @@
-<script>
-
+<script lang="ts">
   import List from "$lib/components/sharedComponents/List.svelte";
   import TransactionListItem from "$lib/components/transactionComponents/TransactionListItem.svelte";
   import AppBar from "$lib/components/sharedComponents/AppBar.svelte";
   import {goto} from "$app/navigation";
+  import {openPopup, selectedParentAccount} from "$lib/store";
+  import ParentAccountPopup from '$lib/components/accountComponents/ParentAccountPopup.svelte'
+  import AccountPopup from '$lib/components/accountComponents/AccountPopup.svelte'
 
   export let data
+
+  async function editAccount () {
+    if (data.isParent) {
+      $openPopup = 'newAccount'
+    } else {
+      $openPopup = 'childAccount'
+      $selectedParentAccount = data.account.parent
+    }
+  }
 </script>
 
-<AppBar title="{data.account.name}"
-        leftButton={{ name: 'Back', action: () => goto('/') }} />
+<AppBar title="{data.account?.name ?? 'Transactions'}"
+        leftButton={{ name: 'Back', action: () => goto('/') }}
+        rightButton={{ name: 'Edit', action: editAccount}}/>
 
 <div class="container">
   <div class="listContainer">
@@ -22,6 +34,9 @@
     }))}/>
   </div>
 </div>
+
+<ParentAccountPopup/>
+<AccountPopup account={data.account}/>
 
 <style>
   .container {

@@ -4,21 +4,22 @@
   import RangeInput from '$lib/components/sharedComponents/RangeInput.svelte'
   import Input from '$lib/components/sharedComponents/Input.svelte'
 
+  const multipliers = [25, 50, 100, 125, 150, 200, 300, 500, 900]
+
   export let dataObject: Omit<AccountTypeSaving, 'id'>
-  let savingsTarget
-  $: sliderValue = 0
+  let savingsTarget = dataObject?.target ? dataObject.target / 100 : ''
+  let sliderValue = dataObject?.multiplier ? multiplierToSliderValue(dataObject.multiplier) : 100
   $: dataObject.multiplier = sliderValueToMultiplierValue(sliderValue)
   $: dataObject.target = savingsTarget * 100
   $: highlightColour = getHighlightColour(false, dataObject.multiplier)
 
   function sliderValueToMultiplierValue (sliderValue: number): number {
-    if (sliderValue === 0) return 100
-    if (sliderValue === -3) return 25
-    const sign = Math.sign(sliderValue)
-    const abs = Math.abs(sliderValue)
-    if (abs === 1) return  sign * 25 + sliderValueToMultiplierValue(sliderValue - sign)
-    const multiplier = (2 ** (abs - 2)) * 25 * sign
-    return multiplier + sliderValueToMultiplierValue(sliderValue - sign)
+    return multipliers[sliderValue]
+  }
+  function multiplierToSliderValue (multiplier: number): number {
+    return multipliers.reduce((closestIndex, currentValue, currentIndex, array) => {
+      return Math.abs(multiplier - currentValue) < Math.abs(multiplier - array[closestIndex]) ? currentIndex : closestIndex
+    }, 0)
   }
 </script>
 
@@ -26,7 +27,7 @@
   <Input type="number" step="0.01" autofocus name="target" bind:value={savingsTarget} label="Savings Target" />
   <div class="multiplier_container"><p class="centered">Multiplier:&nbsp;&nbsp;&nbsp;</p><p class="multiplier">     {dataObject.multiplier / 100}X</p></div>
   <p style="font-style: italic">Determines how quickly this savings goal will reach it's target.</p>
-  <RangeInput min="-2" max="6" step="1" bind:value={sliderValue} ticks={['½', '1', '1.5', '3', '9']} />
+  <RangeInput min="0" max="8" step="1" bind:value={sliderValue} ticks={['½', '1', '1.5', '3', '9']} />
 </div>
 
 <style>

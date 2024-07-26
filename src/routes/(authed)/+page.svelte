@@ -10,7 +10,7 @@
 
   function onSelected (isParent: boolean, id: string) {
     const url = `/${isParent ? 'parentAccount/' : 'account/'}${id}`
-    throw goto(url)
+    goto(url)
   }
   async function openAccountPopup () {
     $openPopup = 'newAccount'

@@ -32,6 +32,7 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
     if (!accountTree[account.id]) accountTree[account.id] = {
       id: account.id,
       name: account.name,
+      user: account.user,
       children: {}
     }
     const parentAccount = accountTree[account.id]
@@ -39,14 +40,16 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
       parentAccount.children[account.accountId!] = {
         id: account.accountId!,
         name: account.accountName!,
-        type: account.accountType!
+        type: account.accountType!,
+        parent: account.id
       }
       if (account.accountType === AccountType.SAVING) {
         parentAccount.children[account.accountId!].additionalAccountData = {
           multiplier: account.multiplier,
           target: account.target,
-          completed: account.completed
-        } as Partial<AccountTypeSaving>
+          completed: account.completed,
+          id: account.savings_id!
+        } as AccountTypeSaving
       }
       if (account.accountType === AccountType.BUDGET) {
         parentAccount.children[account.accountId!].additionalAccountData = {
@@ -56,7 +59,8 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
           frequencyCategory: account.frequencyCategory,
           startDate: account.startDate,
           dayOf: account.dayOf,
-        } as Partial<AccountTypeBudget>
+          id: account.budget_id!
+        } as AccountTypeBudget
       }
     }
   }
@@ -67,9 +71,9 @@ export async function getAccountsForUser (userId: number): Promise<AccountTree> 
   const db = await connect()
   const res = await db.query(
     `
-    SELECT A.id, A.name, S.id as "accountId", S.name as "accountName", S.type as "accountType",
-    ats.multiplier, ats.target, ats.completed,
-    atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate"
+    SELECT A.id, A.name, A.user, S.id as "accountId", S.name as "accountName", S.type as "accountType",
+    ats.multiplier, ats.target, ats.completed, ats.id as savings_id,
+    atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate", atb."id" as budget_id
     FROM PARENT_ACCOUNTS A
     LEFT JOIN ACCOUNTS S 
     ON A.ID = S.PARENT

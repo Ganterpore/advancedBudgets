@@ -5,22 +5,26 @@
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
   import Input from '$lib/components/sharedComponents/Input.svelte'
   import Button from '$lib/components/sharedComponents/Button.svelte'
+  import type { ParentAccount } from '$lib/types/accountTypes'
 
-  let accountName: string
+  export let account: Pick<ParentAccount, 'name'> & Partial<ParentAccount> = {
+    name: ''
+  }
   let error: string
-  if (!accountName) accountName = ''
 
-  async function createAccount (account: string) {
+  async function createAccount () {
     const res = await fetch('/parentAccount', {
       method: 'POST',
-      body: JSON.stringify({ account }),
+      body: JSON.stringify({ account: account.name, id: account.id }),
       headers: {
         'Content-Type': 'application/json'
       }
     })
     const body = await res.json()
     if (res.status === 201) {
-      accountName = ''
+      if (!account.id) {
+        account.name = ''
+      }
       error = ''
       $openPopup = false
       await invalidate('data:accounts')
@@ -30,7 +34,9 @@
   }
 
   function onClose () {
-    accountName = ''
+    if (!account.id) {
+      account.name = ''
+    }
     error = ''
   }
 </script>
@@ -42,7 +48,7 @@
     <Alert>{error}</Alert>
   {/if}
   <form class="form">
-    <Input label="Name" name="accountName" autofocus bind:value={accountName}/>
-    <Button on:click={() => createAccount(accountName)}>Create</Button>
+    <Input label="Name" name="accountName" autofocus bind:value={account.name}/>
+    <Button on:click={() => createAccount()}>Create</Button>
   </form>
 </Popup>

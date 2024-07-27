@@ -26,6 +26,14 @@ export async function getParentAccount (accountId: number): Promise<ParentAccoun
   return res.rows[0]
 }
 
+export async function updateParentAccount(accountInfo: ParentAccount): Promise<void> {
+  const db = await connect()
+  await db.query(
+    'UPDATE PARENT_ACCOUNTS SET ("user", "name") = ($1, $2) WHERE ID=$3',
+    [accountInfo.user, accountInfo.name, accountInfo.id]
+  )
+}
+
 function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTree {
   const accountTree: AccountTree = {}
   for (const account of accounts) {

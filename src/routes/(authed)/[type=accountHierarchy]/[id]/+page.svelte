@@ -35,7 +35,7 @@
   </div>
 </div>
 
-<ParentAccountPopup/>
+<ParentAccountPopup account={data.account}/>
 <AccountPopup account={data.account}/>
 
 <style>

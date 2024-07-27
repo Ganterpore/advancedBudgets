@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types'
 import { json} from '@sveltejs/kit'
 import { createNewAccount, updateAccount } from '$lib/controllers/accountController'
 import { AccountHierarchy } from '../../../params/accountHierarchy'
-import { newParentAccount } from '$lib/models/parentAccountModel'
+import { newParentAccount, updateParentAccount } from '$lib/models/parentAccountModel'
 
 export const POST: RequestHandler = async ({ request, params, locals }) => {
   const { type } = params
@@ -14,7 +14,12 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
       if (!accountName) return json({ error: 'Account Name must not be empty' }, { status: 400 })
 
       if (data.id) {
-        // TODO update instead
+        id = data.id
+        await updateParentAccount({
+          id,
+          user: Number(locals.user!.id),
+          name: accountName.toString()
+        })
       } else {
         id = await newParentAccount({user: Number(locals.user!.id), name: accountName.toString()})
       }

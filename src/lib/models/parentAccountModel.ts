@@ -6,6 +6,8 @@ import type {
   ParentAccount
 } from '$lib/types/accountTypes'
 import { AccountType } from '$lib/types/accountTypes'
+import { getTotalsOnParentAccount } from '$lib/types/transactionModel'
+import { error } from '@sveltejs/kit'
 
 
 export async function newParentAccount(accountInfo: Omit<ParentAccount, 'id'>): Promise<number> {
@@ -26,12 +28,33 @@ export async function getParentAccount (accountId: number): Promise<ParentAccoun
   return res.rows[0]
 }
 
+export async function updateParentAccount(accountInfo: ParentAccount): Promise<void> {
+  const db = await connect()
+  await db.query(
+    'UPDATE PARENT_ACCOUNTS SET ("user", "name") = ($1, $2) WHERE ID=$3',
+    [accountInfo.user, accountInfo.name, accountInfo.id]
+  )
+}
+
+export async function archiveParentAccount (accountId: number): Promise<void> {
+  const total = await getTotalsOnParentAccount(accountId)
+  if (total !== 0) throw error(400, 'Cannot archive account unless the total is zero')
+  const db = await connect()
+  await db.query(
+    `UPDATE PARENT_ACCOUNTS SET "archived" = true
+      WHERE ID=$1`,
+    [accountId]
+  )
+}
+
 function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTree {
   const accountTree: AccountTree = {}
   for (const account of accounts) {
     if (!accountTree[account.id]) accountTree[account.id] = {
       id: account.id,
       name: account.name,
+      user: account.user,
+      archived: account.archived,
       children: {}
     }
     const parentAccount = accountTree[account.id]
@@ -39,14 +62,17 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
       parentAccount.children[account.accountId!] = {
         id: account.accountId!,
         name: account.accountName!,
-        type: account.accountType!
+        type: account.accountType!,
+        archived: account.accountArchived,
+        parent: account.id
       }
       if (account.accountType === AccountType.SAVING) {
         parentAccount.children[account.accountId!].additionalAccountData = {
           multiplier: account.multiplier,
           target: account.target,
-          completed: account.completed
-        } as Partial<AccountTypeSaving>
+          completed: account.completed,
+          id: account.savings_id!
+        } as AccountTypeSaving
       }
       if (account.accountType === AccountType.BUDGET) {
         parentAccount.children[account.accountId!].additionalAccountData = {
@@ -56,7 +82,8 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
           frequencyCategory: account.frequencyCategory,
           startDate: account.startDate,
           dayOf: account.dayOf,
-        } as Partial<AccountTypeBudget>
+          id: account.budget_id!
+        } as AccountTypeBudget
       }
     }
   }
@@ -67,9 +94,10 @@ export async function getAccountsForUser (userId: number): Promise<AccountTree> 
   const db = await connect()
   const res = await db.query(
     `
-    SELECT A.id, A.name, S.id as "accountId", S.name as "accountName", S.type as "accountType",
-    ats.multiplier, ats.target, ats.completed,
-    atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate"
+    SELECT A.id, A.name, A.user, A.archived,
+    S.id as "accountId", S.name as "accountName", S.type as "accountType", S.archived as "accountArchived",
+    ats.multiplier, ats.target, ats.completed, ats.id as savings_id,
+    atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate", atb."id" as budget_id
     FROM PARENT_ACCOUNTS A
     LEFT JOIN ACCOUNTS S 
     ON A.ID = S.PARENT

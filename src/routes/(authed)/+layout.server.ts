@@ -1,8 +1,12 @@
 import type { LayoutServerLoad } from './$types'
-import { getUserById } from '$lib/models/userModel'
-export const load: LayoutServerLoad = async ({ locals }) => {
-  const user = locals.user ? await getUserById(Number(locals.user.id)) : undefined
+import { connect } from '$lib/db'
+import { getAccountsForUser } from '$lib/models/parentAccountModel'
+
+export const load: LayoutServerLoad = async ({ depends, locals }) => {
+  await connect()
+  depends('data:accounts')
+  const accounts = await getAccountsForUser(Number(locals.user!.id))
   return {
-    user
+    accounts
   }
 }

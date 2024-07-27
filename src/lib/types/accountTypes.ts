@@ -35,7 +35,8 @@ export type Account = {
   name: string
   type: AccountType
   parent: number
-  additionalAccountData?: Partial<AccountTypeSaving> | Partial<AccountTypeBudget>
+  additionalAccountData?: AccountTypeSaving | AccountTypeBudget
+  archived?: boolean
 }
 
 export const accountTypeIcons = {
@@ -66,11 +67,12 @@ export type ParentAccount = {
   id: number
   user: number
   name: string
+  archived?: boolean
 }
 
-export interface AccountNode extends Omit<ParentAccount, 'user'> {
+export interface AccountNode extends ParentAccount {
   children: {
-    [id: number]: Omit<Account, 'parent'>
+    [id: number]: Account
   }
 }
 
@@ -78,10 +80,12 @@ export interface AccountTree {
   [id: number]: AccountNode
 }
 
-export interface DBResultAccountsWithChildren extends Omit<ParentAccount, 'user'> {
+export interface DBResultAccountsWithChildren extends ParentAccount {
+  archived?: boolean
   accountId?: number
   accountName?: string
   accountType?: AccountType
+  accountArchived?: boolean
   multiplier?: number
   target?: number
   completed?: boolean
@@ -91,4 +95,6 @@ export interface DBResultAccountsWithChildren extends Omit<ParentAccount, 'user'
   frequencyCategory?: FrequencyCategory
   startDate?: Date
   dayOf?: number
+  savings_id?: number
+  budget_id?: number
 }

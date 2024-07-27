@@ -1,6 +1,7 @@
 import { connect } from '$lib/db'
 import type { AccountTypeSaving, ExpandedSavingsAccount } from '$lib/types/accountTypes'
-
+import { getTotalOnAccount } from '$lib/types/transactionModel'
+import { error } from '@sveltejs/kit'
 
 export async function newSavingsAccount(props: Omit<AccountTypeSaving, 'id'>) {
   const db = await connect()
@@ -36,4 +37,14 @@ export async function completeAccount (id: number) {
     set "completed"=true
     where id=$1
   `, [id])
+}
+
+export async function updateSavingsAccount (props: AccountTypeSaving): Promise<void> {
+  const total = await getTotalOnAccount(props.id)
+  if (total > props.target) {
+    throw error(400, 'Cannot reduce the target to lower than the current value')
+  }
+  const db = await connect()
+  await db.query(`UPDATE account_type_saving SET ("account", "multiplier", "target", "completed") = ($1, $2, $3, $4) WHERE ID=$5`,
+    [props.account, props.multiplier, props.target, props.completed ?? false, props.id])
 }

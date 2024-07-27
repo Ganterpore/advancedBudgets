@@ -1,4 +1,8 @@
-<button on:click>
+<script>
+    export let secondary = false
+</script>
+
+<button on:click class="{secondary ? 'secondary' : ''}">
     <slot />
 </button>
 
@@ -40,5 +44,10 @@
         background-color: var(--theme-secondary);
         box-shadow: rgba(0, 0, 0, .06) 0 2px 4px;
         transform: translateY(0);
+    }
+    .secondary {
+        background-color: transparent;
+        border-color: var(--theme-highlight);
+        color: var(--theme-highlight);
     }
 </style>

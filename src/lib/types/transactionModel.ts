@@ -79,3 +79,15 @@ export async function getTransactionsOnParentAccount (accountId: number): Promis
   )
   return res.rows
 }
+
+export async function getTotalsOnParentAccount (accountId: number): Promise<number> {
+  const db = await connect()
+  const res = await db.query(
+    `select SUM(amount) as total 
+                    from transactions t
+                    join accounts a on account=a.id
+                    where a.parent=$1`,
+    [accountId]
+  )
+  return parseInt(res.rows[0].total)
+}

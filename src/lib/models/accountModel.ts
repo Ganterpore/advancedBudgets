@@ -1,5 +1,7 @@
 import { connect } from '$lib/db'
 import type { Account } from '$lib/types/accountTypes'
+import { getTotalOnAccount } from '$lib/types/transactionModel'
+import { error } from '@sveltejs/kit'
 
 export async function newAccount(account: Omit<Account, 'id'>): Promise<number> {
   const db = await connect()
@@ -23,4 +25,15 @@ export async function updateAccount (account: Account): Promise<void> {
     `UPDATE accounts SET ("name", "type", "parent") = ($1, $2, $3)
     WHERE ID=$4`,
     [account.name, account.type, account.parent, account.id])
+}
+
+export async function archiveAccount (accountId: number): Promise<void> {
+  const total = await getTotalOnAccount(accountId)
+  if (total !== 0) throw error(400, 'Cannot archive account unless the total is zero')
+  const db = await connect()
+  await db.query(
+    `UPDATE accounts SET "archived" = true
+      WHERE ID=$1`,
+    [accountId]
+  )
 }

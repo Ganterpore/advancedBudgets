@@ -6,6 +6,7 @@
   import {openPopup, selectedParentAccount} from "$lib/store";
   import ParentAccountPopup from '$lib/components/accountComponents/ParentAccountPopup.svelte'
   import AccountPopup from '$lib/components/accountComponents/AccountPopup.svelte'
+  import ArchiveAccountPopup from '$lib/components/accountComponents/ArchiveAccountPopup.svelte'
 
   export let data
 
@@ -17,11 +18,17 @@
       $selectedParentAccount = data.account.parent
     }
   }
+  async function archiveAccount () {
+    $openPopup = 'archiveAccount'
+  }
 </script>
 
 <AppBar title="{data.account?.name ?? 'Transactions'}"
         leftButton={{ name: 'Back', action: () => goto('/') }}
-        rightButton={{ name: 'Edit', action: editAccount}}/>
+        rightButtons={[
+            { name: 'Edit', action: editAccount},
+            { name: 'Archive', action: archiveAccount }
+          ]}/>
 
 <div class="container">
   <div class="listContainer">
@@ -37,6 +44,7 @@
 
 <ParentAccountPopup account={data.account}/>
 <AccountPopup account={data.account}/>
+<ArchiveAccountPopup accountId={data.account.id} isParent={data.isParent} />
 
 <style>
   .container {

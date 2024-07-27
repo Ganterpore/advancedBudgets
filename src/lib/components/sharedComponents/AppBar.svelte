@@ -5,7 +5,7 @@
 
   export let title: string
   export let leftButton: ButtonContent | undefined = undefined
-  export let rightButton: ButtonContent | undefined = undefined
+  export let rightButtons: ButtonContent[] | undefined = undefined
 </script>
 
 <Navigation>
@@ -14,7 +14,9 @@
   {/if}
   <h1>{title}</h1>
   <div style="flex-grow: 1"></div>
-  {#if rightButton}
-    <Button on:click={rightButton.action}>{rightButton.name}</Button>
+  {#if rightButtons}
+    {#each rightButtons as rightButton}
+      <Button on:click={rightButton.action}>{rightButton.name}</Button>
+    {/each}
   {/if}
 </Navigation>

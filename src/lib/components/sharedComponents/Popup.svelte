@@ -3,7 +3,7 @@
   import { fade, fly } from 'svelte/transition'
 
   export let id
-  export let onClose
+  export let onClose = undefined
   $: isHidden = id !== $openPopup
 
   function onCloseWrapper () {

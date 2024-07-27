@@ -6,6 +6,8 @@ import type {
   ParentAccount
 } from '$lib/types/accountTypes'
 import { AccountType } from '$lib/types/accountTypes'
+import { getTotalsOnParentAccount } from '$lib/types/transactionModel'
+import { error } from '@sveltejs/kit'
 
 
 export async function newParentAccount(accountInfo: Omit<ParentAccount, 'id'>): Promise<number> {
@@ -34,6 +36,17 @@ export async function updateParentAccount(accountInfo: ParentAccount): Promise<v
   )
 }
 
+export async function archiveParentAccount (accountId: number): Promise<void> {
+  const total = await getTotalsOnParentAccount(accountId)
+  if (total !== 0) throw error(400, 'Cannot archive account unless the total is zero')
+  const db = await connect()
+  await db.query(
+    `UPDATE PARENT_ACCOUNTS SET "archived" = true
+      WHERE ID=$1`,
+    [accountId]
+  )
+}
+
 function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTree {
   const accountTree: AccountTree = {}
   for (const account of accounts) {
@@ -41,6 +54,7 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
       id: account.id,
       name: account.name,
       user: account.user,
+      archived: account.archived,
       children: {}
     }
     const parentAccount = accountTree[account.id]
@@ -49,6 +63,7 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
         id: account.accountId!,
         name: account.accountName!,
         type: account.accountType!,
+        archived: account.accountArchived,
         parent: account.id
       }
       if (account.accountType === AccountType.SAVING) {
@@ -79,7 +94,8 @@ export async function getAccountsForUser (userId: number): Promise<AccountTree> 
   const db = await connect()
   const res = await db.query(
     `
-    SELECT A.id, A.name, A.user, S.id as "accountId", S.name as "accountName", S.type as "accountType",
+    SELECT A.id, A.name, A.user, A.archived,
+    S.id as "accountId", S.name as "accountName", S.type as "accountType", S.archived as "accountArchived",
     ats.multiplier, ats.target, ats.completed, ats.id as savings_id,
     atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate", atb."id" as budget_id
     FROM PARENT_ACCOUNTS A

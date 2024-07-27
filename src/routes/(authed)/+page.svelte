@@ -20,7 +20,7 @@
 
 <AppBar title="Welcome {data.user?.username ?? ''}"
         leftButton={{ name: 'Log Out', action: handleLogout }}
-        rightButton={{ name: 'Add Account', action: openAccountPopup }}/>
+        rightButtons={[{ name: 'Add Account', action: openAccountPopup }]}/>
 
 <ParentAccountList totals={data.totals} accounts={data.accounts} onSelect={onSelected} />
 <ParentAccountPopup/>

@@ -73,12 +73,12 @@
         'Content-Type': 'application/json'
       }
     })
-    const body = await res.json()
     if (res.status === 201) {
       onClose()
       $openPopup = false
       await invalidate('data:accounts')
     } else {
+      const body = await res.json()
       error = body.error ?? body.message
     }
   }

@@ -36,7 +36,7 @@
     return account => !(account.additionalAccountData as AccountTypeSaving).completed
   }
   let accountMap: { [key: AccountType]: Account[] }
-  $: accountMap = accounts.reduce(
+  $: accountMap = accounts.filter(a => !a.archived).reduce(
     (am, a) => {
       if (!am[a.type]) {
         am[a.type] = []

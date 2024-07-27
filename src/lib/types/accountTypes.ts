@@ -36,6 +36,7 @@ export type Account = {
   type: AccountType
   parent: number
   additionalAccountData?: AccountTypeSaving | AccountTypeBudget
+  archived?: boolean
 }
 
 export const accountTypeIcons = {
@@ -66,6 +67,7 @@ export type ParentAccount = {
   id: number
   user: number
   name: string
+  archived?: boolean
 }
 
 export interface AccountNode extends ParentAccount {
@@ -79,9 +81,11 @@ export interface AccountTree {
 }
 
 export interface DBResultAccountsWithChildren extends ParentAccount {
+  archived?: boolean
   accountId?: number
   accountName?: string
   accountType?: AccountType
+  accountArchived?: boolean
   multiplier?: number
   target?: number
   completed?: boolean

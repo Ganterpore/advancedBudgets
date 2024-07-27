@@ -79,7 +79,7 @@
       $openPopup = false
       await invalidate('data:accounts')
     } else {
-      error = body.error
+      error = body.error ?? body.message
     }
   }
 

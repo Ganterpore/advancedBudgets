@@ -100,9 +100,11 @@
   <AccountTypeList onSelected={onSelected}/>
   {:else }
     <div class="topBar">
-      <Button on:click={() => accountType = undefined}>
-        <EpBack />
-      </Button>
+      {#if !account?.id}
+        <Button on:click={() => accountType = undefined}>
+          <EpBack />
+        </Button>
+      {/if}
       <AccountTypeListItem id={accountType} />
     </div>
     {#if error}

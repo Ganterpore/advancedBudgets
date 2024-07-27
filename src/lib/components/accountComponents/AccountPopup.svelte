@@ -110,15 +110,13 @@
     {#if error}
       <Alert>{error}</Alert>
     {/if}
-      {#if accountType === AccountType.BUDGET}
-        <BudgetAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
-      {:else if accountType === AccountType.SAVING}
-        <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
-      {/if}
-    <form class="form">
-      <Input autofocus={![AccountType.SAVING, AccountType.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
-      <div><Button on:click={() => createAccount()} >Create</Button></div>
-    </form>
+    <Input autofocus={![AccountType.SAVING, AccountType.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
+    {#if accountType === AccountType.BUDGET}
+      <BudgetAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
+    {:else if accountType === AccountType.SAVING}
+      <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
+    {/if}
+    <div><Button on:click={() => createAccount()} >Create</Button></div>
   {/if}
 </Popup>
 

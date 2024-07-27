@@ -35,7 +35,7 @@
   $: maxText = `You will never accumulate more than ${currencyToString(dataObject.budgetMax ?? 0)} in the account.`
 </script>
 
-<Input autofocus type="number" step="0.01" name="regularBudget" bind:value={budget} on:input={adjustBudgetMax} label="Budget Amount" />
+<Input type="number" step="0.01" name="regularBudget" bind:value={budget} on:input={adjustBudgetMax} label="Budget Amount" />
 <FrequencySelector bind:value={dataObject.frequency} bind:type={dataObject.frequencyCategory} bind:daysOf={dataObject.dayOf} />
 <Input type="number" step="0.01" name="budgetMax" bind:value={max}
              on:focusout={adjustBudgetMax} label="Max" />

@@ -40,7 +40,7 @@ export async function completeAccount (id: number) {
 }
 
 export async function updateSavingsAccount (props: AccountTypeSaving): Promise<void> {
-  const total = await getTotalOnAccount(props.id)
+  const total = await getTotalOnAccount(props.account)
   if (total > props.target) {
     throw error(400, 'Cannot reduce the target to lower than the current value')
   }

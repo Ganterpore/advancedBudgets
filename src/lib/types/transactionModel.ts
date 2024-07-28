@@ -62,8 +62,7 @@ export async function getTotalOnAccount (accountId: number): Promise<number> {
   const res = await db.query(
     `select SUM(amount) as total 
                     from transactions t
-                     join accounts a on account=a.id 
-                     WHERE account=$1`,
+                    WHERE account=$1`,
     [accountId]
   )
   return parseInt(res.rows[0].total)

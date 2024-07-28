@@ -26,6 +26,9 @@
 </div>
 
 <style>
+  p {
+    margin: 10px;
+  }
   .header {
       display: flex;
       justify-content: space-between;

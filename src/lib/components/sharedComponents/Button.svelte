@@ -25,7 +25,8 @@
         line-height: 1.25;
         margin: 0;
         min-height: 3rem;
-        padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+        min-width: 50px;
+        padding: 5px 10px;
         position: relative;
         text-decoration: none;
         transition: all 250ms;

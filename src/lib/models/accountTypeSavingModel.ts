@@ -18,7 +18,7 @@ export async function getSavingsAccountsOnParent (parentId: number): Promise<Exp
     FROM ACCOUNTS S 
     inner join account_type_saving ats
     on ats.account=S.id
-    WHERE S.parent=$1 AND not ats.completed`,
+    WHERE S.parent=$1 AND not ats.completed AND S.archived is not true`,
     [parentId]
   )
   return res.rows as ExpandedSavingsAccount[]
@@ -40,7 +40,7 @@ export async function completeAccount (id: number) {
 }
 
 export async function updateSavingsAccount (props: AccountTypeSaving): Promise<void> {
-  const total = await getTotalOnAccount(props.id)
+  const total = await getTotalOnAccount(props.account)
   if (total > props.target) {
     throw error(400, 'Cannot reduce the target to lower than the current value')
   }

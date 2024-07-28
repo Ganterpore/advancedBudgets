@@ -20,3 +20,10 @@
     {/each}
   {/if}
 </Navigation>
+
+<style>
+  h1 {
+      margin: 5px;
+      align-self: center;
+  }
+</style>

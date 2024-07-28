@@ -26,7 +26,7 @@
 <style>
     .progress-container {
         height: 20px;
-        margin: 0 20px;
+        margin: 0 0 0 20px;
     }
     .progress-bar {
         height: 6px;

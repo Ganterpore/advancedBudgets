@@ -15,7 +15,15 @@
   export let type
   export let additionalAccountData: AccountTypeSaving | AccountTypeBudget
 
-  $: valueString = currencyToString(value ?? 0)
+  function getValueString () {
+    let valueString = currencyToString(value ?? 0)
+    if (type === AccountType.SAVING) {
+      valueString += ` / ${(additionalAccountData as AccountTypeSaving).target / 100}`
+    }
+    return valueString
+  }
+
+  $: valueString = getValueString()
   $: Icon = type ? accountTypeIcons[type] : undefined
   $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
   $: highlightColour = getHighlightColour(false, (additionalAccountData as AccountTypeSaving)?.multiplier)
@@ -28,20 +36,27 @@
   }
 </script>
 
-<div class="header" style="--multiplier-highlight:{highlightColour}">
-  <div class="icon">
-    <svelte:component this={Icon}/>
-  </div>
-  <p>{name}</p>
-  {#if type===AccountType.SAVING}
-    <p class="multiplier">{additionalAccountData.multiplier/100}X</p>
-  {/if}
-  <div class="separator" ></div>
-  <p>{valueString}</p>
-  {#if type===AccountType.SAVING}
-    <p>{` / ${additionalAccountData.target / 100}`}</p>
-  {/if}
+<div class="close-flex">
+  <div style="flex-grow: 1">
+    <div class="header" style="--multiplier-highlight:{highlightColour}">
+      <div class="icon">
+        {#if type===AccountType.SAVING}
+          <p class="multiplier">{additionalAccountData.multiplier/100}X</p>
+        {:else}
+          <svelte:component this={Icon}/>
+        {/if}
+      </div>
+      <div class="text-box">
+        <p>{name}</p>
+        <div class="separator" ></div>
+        <p>{valueString}</p>
+      </div>
 
+    </div>
+    {#if type===AccountType.SAVING}
+      <SavingsProgress backgroundColor="#4a4de7" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />
+    {/if}
+  </div>
   {#if isCompletable}
     <Button on:click={(e) => addTransaction(e, true)}>
       <MaterialSymbolsCheck/>
@@ -52,17 +67,34 @@
     </Button>
   {/if}
 </div>
-{#if type===AccountType.SAVING}
-  <SavingsProgress backgroundColor="#4a4de7" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />
-{/if}
 
 <style>
+    p {
+      margin: 5px;
+      align-self: center;
+    }
+    .text-box {
+      display: flex;
+      gap: 5px;
+      justify-content: end;
+      flex-wrap: wrap;
+      flex-grow: 1;
+    }
     .icon {
-        padding: 10px 25px;
+        padding: 10px 10px;
+        display: flex;
+        align-items: center;
+    }
+    .close-flex {
+      display: flex;
+      margin: 0;
+      justify-content: space-between;
+      gap: 0;
+      flex-grow: 1;
     }
     .header {
         display: flex;
-        justify-content: start;
+        justify-content: space-between;
         gap: 5px;
     }
     .separator {

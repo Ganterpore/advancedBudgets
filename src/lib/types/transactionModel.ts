@@ -52,7 +52,8 @@ export async function getTransactionsOnAccount (accountId: number): Promise<Tran
     `select t.id, amount, description, account, a.name as "accountName" 
                     from transactions t
                      join accounts a on account=a.id 
-                     WHERE account=$1`,
+                     WHERE account=$1
+                     order by t."transactionTime" desc`,
     [accountId]
   )
   return res.rows
@@ -73,7 +74,8 @@ export async function getTransactionsOnParentAccount (accountId: number): Promis
     `select t.id, amount, description, account, a.name as "accountName" 
                     from transactions t
                     join accounts a on account=a.id
-                    where a.parent=$1`,
+                    where a.parent=$1
+                    order by t."transactionTime" desc`,
     [accountId]
   )
   return res.rows

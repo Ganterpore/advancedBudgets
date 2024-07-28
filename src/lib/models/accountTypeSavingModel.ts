@@ -18,7 +18,7 @@ export async function getSavingsAccountsOnParent (parentId: number): Promise<Exp
     FROM ACCOUNTS S 
     inner join account_type_saving ats
     on ats.account=S.id
-    WHERE S.parent=$1 AND not ats.completed`,
+    WHERE S.parent=$1 AND not ats.completed AND S.archived is not true`,
     [parentId]
   )
   return res.rows as ExpandedSavingsAccount[]

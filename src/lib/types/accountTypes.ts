@@ -11,6 +11,11 @@ export enum AccountType {
   OWED = 'Owed'
 }
 
+export enum BudgetAccountType {
+  NEED = 'Needs',
+  WANT = 'Wants'
+}
+
 export type AccountTypeBudget = {
   id: number
   account: number
@@ -20,6 +25,7 @@ export type AccountTypeBudget = {
   frequencyCategory: FrequencyCategory
   startDate: Date
   dayOf: number
+  type: BudgetAccountType
 }
 
 export type AccountTypeSaving = {
@@ -97,4 +103,5 @@ export interface DBResultAccountsWithChildren extends ParentAccount {
   dayOf?: number
   savings_id?: number
   budget_id?: number
+  budget_type?: string
 }

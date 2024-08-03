@@ -6,6 +6,7 @@
   import { FrequencyCategory } from '$lib/types/sharedTypes'
   import Input from '$lib/components/sharedComponents/Input.svelte'
   import FrequencySelector from '$lib/components/timeSelectors/FrequencySelector.svelte'
+  import { BudgetAccountType } from '$lib/types/accountTypes'
 
   export let name
   export let dataObject: Omit<AccountTypeBudget, 'id'>
@@ -35,6 +36,13 @@
   $: maxText = `You will never accumulate more than ${currencyToString(dataObject.budgetMax ?? 0)} in the account.`
 </script>
 
+<div>Need or Want
+<select bind:value={dataObject.type}>
+  {#each Object.values(BudgetAccountType) as accountType}
+    <option id={accountType} value={accountType}>{accountType}</option>
+  {/each}
+</select>
+</div>
 <Input type="number" step="0.01" name="regularBudget" bind:value={budget} on:input={adjustBudgetMax} label="Budget Amount" />
 <FrequencySelector bind:value={dataObject.frequency} bind:type={dataObject.frequencyCategory} bind:daysOf={dataObject.dayOf} />
 <Input type="number" step="0.01" name="budgetMax" bind:value={max}

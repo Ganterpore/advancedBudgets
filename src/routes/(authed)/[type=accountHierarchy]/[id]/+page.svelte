@@ -28,7 +28,6 @@
     else monthMapping[key].negativeSum += transaction.amount
     return monthMapping
   }, {})
-  console.log(transactionsByMonth)
 
   async function editAccount () {
     if (data.isParent) {

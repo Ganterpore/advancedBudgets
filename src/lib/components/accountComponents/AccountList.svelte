@@ -83,9 +83,18 @@
       name: AccountType.INCOME
     }
   }
+  const sortOrder = [
+    AccountType.INCOME,
+    AccountType.BUDGET,
+    `${AccountType.BUDGET} - ${BudgetAccountType.NEED}`,
+    `${AccountType.BUDGET} - ${BudgetAccountType.WANT}`,
+    AccountType.STORAGE,
+    AccountType.OWED,
+    AccountType.SAVING
+  ]
 </script>
 
-{#each Object.keys(accountMap) as category (category)}
+{#each Object.keys(accountMap).sort((acc1, acc2) => sortOrder.indexOf(acc1) - sortOrder.indexOf(acc2)) as category (category)}
   <svelte:component this={headerTypeObjects[category]} {...propsFor[category]} >
     <List selectable secondary onSelected={(id) => onSelect(false, id)}
           list={accountMap[category].map(a => {

@@ -14,6 +14,7 @@
   export let onSelect: (isParent: boolean, id: string) => void
 
   const headerTypeObjects: { [key: AccountType]: svelte.ComponentType } = {
+    [AccountType.INCOME]: Expandable,
     [AccountType.STORAGE]: Expandable,
     [AccountType.SAVING]: SavingsExpandable,
     [AccountType.BUDGET]: Expandable,
@@ -77,6 +78,9 @@
     },
     [AccountType.STORAGE]: {
       name: AccountType.STORAGE
+    },
+    [AccountType.INCOME]: {
+      name: AccountType.INCOME
     }
   }
 </script>

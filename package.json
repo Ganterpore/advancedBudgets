@@ -17,6 +17,7 @@
 		"migrate:down": "dotenv -e .env tsx migrate.ts down"
 	},
 	"devDependencies": {
+		"@iconify-json/bx": "^1.1.10",
 		"@iconify-json/ep": "^1.1.15",
 		"@iconify-json/fa-solid": "^1.1.8",
 		"@iconify-json/fluent": "^1.1.53",

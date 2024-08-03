@@ -46,7 +46,7 @@ export const GET: RequestHandler = async (event) => {
       }
     })
   } catch (e) {
-    console.log(e)
+    console.error(e)
     return new Response(null, {
       status: 303,
       headers: { location: '/login' }

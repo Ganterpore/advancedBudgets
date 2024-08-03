@@ -15,7 +15,7 @@
   export let type
   export let additionalAccountData: AccountTypeSaving | AccountTypeBudget
 
-  function getValueString () {
+  function getValueString (value) {
     let valueString = currencyToString(value ?? 0)
     if (type === AccountType.SAVING) {
       valueString += ` / ${(additionalAccountData as AccountTypeSaving).target / 100}`
@@ -23,7 +23,7 @@
     return valueString
   }
 
-  $: valueString = getValueString()
+  $: valueString = getValueString(value)
   $: Icon = type ? accountTypeIcons[type] : undefined
   $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
   $: highlightColour = getHighlightColour(false, (additionalAccountData as AccountTypeSaving)?.multiplier)

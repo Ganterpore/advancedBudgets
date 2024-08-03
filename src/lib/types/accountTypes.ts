@@ -2,13 +2,20 @@ import FluentBox16Regular from '~icons/fluent/box-16-regular';
 import MapGroceryOrSupermarket from '~icons/map/grocery-or-supermarket';
 import FaSolidPiggyBank from '~icons/fa-solid/piggy-bank';
 import LaHandshakeSolid from '~icons/la/handshake-solid';
+import BxDollar from '~icons/bx/dollar';
 import type { FrequencyCategory } from '$lib/types/sharedTypes'
 
 export enum AccountType {
   STORAGE = 'Storage',
   BUDGET = 'Budget',
   SAVING = 'Saving',
-  OWED = 'Owed'
+  OWED = 'Owed',
+  INCOME = 'Income Stream'
+}
+
+export enum BudgetAccountType {
+  NEED = 'Needs',
+  WANT = 'Wants'
 }
 
 export type AccountTypeBudget = {
@@ -20,6 +27,7 @@ export type AccountTypeBudget = {
   frequencyCategory: FrequencyCategory
   startDate: Date
   dayOf: number
+  type: BudgetAccountType
 }
 
 export type AccountTypeSaving = {
@@ -43,9 +51,11 @@ export const accountTypeIcons = {
   [AccountType.STORAGE]: FluentBox16Regular,
   [AccountType.BUDGET]: MapGroceryOrSupermarket,
   [AccountType.SAVING]: FaSolidPiggyBank,
-  [AccountType.OWED]: LaHandshakeSolid
+  [AccountType.OWED]: LaHandshakeSolid,
+  [AccountType.INCOME]: BxDollar
 }
 export const accountTypeDescriptions = {
+  [AccountType.INCOME]: 'Used for tracking income from all of your income streams when budgeting; Salary, interest book sales etc.',
   [AccountType.STORAGE]: 'This is a generic unlimited storage source. Use it for saving for retirement, for placing money in a splurge account, or for any other tracking of your funds.',
   [AccountType.BUDGET]: 'Use this for budgeting. Create an account for tracking spending on groceries, bills or car maintenance.',
   [AccountType.SAVING]: 'Create a Savings account when you have a specific goal in mind; Saving for a book, car or house!',
@@ -97,4 +107,5 @@ export interface DBResultAccountsWithChildren extends ParentAccount {
   dayOf?: number
   savings_id?: number
   budget_id?: number
+  budget_type?: string
 }

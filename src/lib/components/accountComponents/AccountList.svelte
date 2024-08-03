@@ -1,9 +1,9 @@
 <script lang="ts">
   import * as svelte from 'svelte'
-  import AccountHeader from "./AccountHeader.svelte";
+  import AccountHeader from './AccountHeader.svelte'
   import type { Account, AccountTypeSaving } from '$lib/types/accountTypes'
+  import { AccountType, BudgetAccountType } from '$lib/types/accountTypes'
   import type { AccountTotals } from '$lib/types/transactionTypes'
-  import { AccountType } from '$lib/types/accountTypes'
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
   import SavingsExpandable from '$lib/components/accountComponents/SavingsExpandable.svelte'
   import List from '$lib/components/sharedComponents/List.svelte'
@@ -14,9 +14,12 @@
   export let onSelect: (isParent: boolean, id: string) => void
 
   const headerTypeObjects: { [key: AccountType]: svelte.ComponentType } = {
+    [AccountType.INCOME]: Expandable,
     [AccountType.STORAGE]: Expandable,
     [AccountType.SAVING]: SavingsExpandable,
     [AccountType.BUDGET]: Expandable,
+    [`${AccountType.BUDGET} - ${BudgetAccountType.WANT}`]: Expandable,
+    [`${AccountType.BUDGET} - ${BudgetAccountType.NEED}`]: Expandable,
     [AccountType.OWED]: Expandable
   }
   function sortAccounts (category: AccountType): (a: Account, b: Account) => number {
@@ -38,31 +41,48 @@
   let accountMap: { [key: AccountType]: Account[] }
   $: accountMap = accounts.filter(a => !a.archived).reduce(
     (am, a) => {
-      if (!am[a.type]) {
-        am[a.type] = []
+      let type: string = a.type
+      if (type === AccountType.BUDGET && a.additionalAccountData?.type) {
+        type = `${type} - ${a.additionalAccountData.type}`
       }
-      if (filterAccounts(a.type)(a)) am[a.type].push(a)
-      am[a.type].sort(sortAccounts(a.type))
+      if (!am[type]) {
+        am[type] = []
+      }
+      if (filterAccounts(a.type)(a)) am[type].push(a)
+      am[type].sort(sortAccounts(a.type))
       return am
     },
     {}
   )
-  let propsFor: { [key: AccountType]: unknown } = {}
-  $: Object.values(AccountType).map(category => {
-    propsFor[category] = {}
-    switch (category) {
-      case AccountType.SAVING:
-        propsFor[category].parent = parent
-        propsFor[category].accounts = accountMap[category]
-        propsFor[category].totals = {}
-        accountMap[category]?.forEach(a => propsFor[category].totals[a.id] = totals[a.id])
-      // eslint-disable-next-line no-fallthrough
-      case AccountType.BUDGET:
-      case AccountType.OWED:
-      case AccountType.STORAGE:
-        propsFor[category].name = category
+  $: propsFor = {
+    [AccountType.SAVING]: {
+      name: AccountType.SAVING,
+      parent,
+      accounts: accountMap ? accountMap[AccountType.SAVING] : [],
+      totals: accountMap ? accountMap[AccountType.SAVING].reduce((totalsMap, acc) => {
+        totalsMap[acc.id] = totals[acc.id]
+        return totalsMap
+      }, {}) : {}
+    },
+    [AccountType.BUDGET]: {
+      name: AccountType.BUDGET
+    },
+    [`${AccountType.BUDGET} - ${BudgetAccountType.WANT}`]: {
+      name: 'Budget - Wants'
+    },
+    [`${AccountType.BUDGET} - ${BudgetAccountType.NEED}`]: {
+      name: 'Budget - Needs'
+    },
+    [AccountType.OWED]: {
+      name: AccountType.OWED
+    },
+    [AccountType.STORAGE]: {
+      name: AccountType.STORAGE
+    },
+    [AccountType.INCOME]: {
+      name: AccountType.INCOME
     }
-  })
+  }
 </script>
 
 {#each Object.keys(accountMap) as category (category)}

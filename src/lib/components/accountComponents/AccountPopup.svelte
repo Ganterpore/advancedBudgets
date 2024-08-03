@@ -2,8 +2,8 @@
   import EpBack from '~icons/ep/back'
   import { openPopup, selectedParentAccount } from '$lib/store.ts'
   import type { Account, AccountTypeBudget, AccountTypeSaving } from '$lib/types/accountTypes'
+  import { AccountType, BudgetAccountType } from '$lib/types/accountTypes'
   import { FrequencyCategory } from '$lib/types/sharedTypes'
-  import { AccountType } from '$lib/types/accountTypes'
   import { invalidate } from '$app/navigation'
   import Popup from '$lib/components/sharedComponents/Popup.svelte'
   import AccountTypeList from '$lib/components/accountComponents/AccountTypeList.svelte'
@@ -51,7 +51,8 @@
     startDate: additionalBudgetDetails?.startDate ?? new Date(),
     dayOf: additionalBudgetDetails?.dayOf ?? 1,
     account: additionalBudgetDetails?.account ?? undefined,
-    id: additionalBudgetDetails?.id ?? undefined
+    id: additionalBudgetDetails?.id ?? undefined,
+    type: additionalBudgetDetails?.type ?? BudgetAccountType.WANT
   }
 
   async function createAccount () {

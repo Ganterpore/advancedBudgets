@@ -44,7 +44,6 @@ export const handle: Handle = async ({event, resolve}) => {
     }
     return resolve(event)
   }
-  console.log('abcdef')
   await handleLuciaAuthentication(event)
   // If not authed, redirect to login page
   if (!event.url.pathname.startsWith('/login') && !event.locals.user) {

@@ -1,9 +1,7 @@
 <script lang="ts">
-  import { dayBitMapToString } from '$lib/dayOfWeekFunctons'
-  import { getOrdinalNum } from '$lib/utils'
+  import { frequencyDetailsToString } from '$lib/dayOfWeekFunctons'
   import { currencyToString } from '$lib/utils.js'
   import type { AccountTypeBudget } from '$lib/types/accountTypes'
-  import { FrequencyCategory } from '$lib/types/sharedTypes'
   import Input from '$lib/components/sharedComponents/Input.svelte'
   import FrequencySelector from '$lib/components/timeSelectors/FrequencySelector.svelte'
   import { BudgetAccountType } from '$lib/types/accountTypes'
@@ -22,13 +20,7 @@
   function buildMessageString (accountDetails: Omit<AccountTypeBudget, 'id'>, name) {
     let string = ''
     string += `You will receive ${currencyToString(accountDetails.regularBudget ?? 0)} to spend ${name ? `on ${name} ` : ''}`
-    string += `every ${accountDetails.frequency > 1 ? accountDetails.frequency + ' ' : ''}
-                  ${accountDetails.frequencyCategory}${accountDetails.frequency > 1 ? 's' + ' ' : ''}`
-    if (accountDetails.frequencyCategory === FrequencyCategory.DAILY) return string
-    string += `${accountDetails.dayOf > 0 ? ' on the ' : ''}
-                ${accountDetails.frequencyCategory === FrequencyCategory.WEEKLY
-      ? dayBitMapToString(accountDetails.dayOf)
-      : accountDetails.dayOf + getOrdinalNum(accountDetails.dayOf)}.`
+    string += frequencyDetailsToString(accountDetails)
     return string
   }
 

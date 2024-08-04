@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
     import {FrequencyCategory} from "$lib/types/sharedTypes";
     import {getOrdinalNum} from "$lib/utils";
     import DayOfWeekSelector from "$lib/components/timeSelectors/DayOfWeekSelector.svelte";
 
-    export let type
-    export let value
-    export let daysOf
+    export let type: FrequencyCategory
+    export let value: number
+    export let daysOf: number
 </script>
 
 <div>

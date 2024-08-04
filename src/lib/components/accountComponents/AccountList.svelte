@@ -59,7 +59,7 @@
       name: AccountType.SAVING,
       parent,
       accounts: accountMap ? accountMap[AccountType.SAVING] : [],
-      totals: accountMap ? accountMap[AccountType.SAVING].reduce((totalsMap, acc) => {
+      totals: accountMap && accountMap[AccountType.SAVING] ? accountMap[AccountType.SAVING].reduce((totalsMap, acc) => {
         totalsMap[acc.id] = totals[acc.id]
         return totalsMap
       }, {}) : {}

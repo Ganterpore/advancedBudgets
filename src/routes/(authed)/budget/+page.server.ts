@@ -34,16 +34,6 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     }
   }
 
-  depends('data:excess')
-  const excessAccounts = await getAllExcessAccounts(userId)
-  const excessAccountsWithNames = excessAccounts.map(ex => {
-    const account: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[ex.account])
-    return {
-      ...ex,
-      name: `${account.name}: ${account.children[ex.account].name}`
-    }
-  })
-
   depends('data:values')
   const incomeSinceLast = await getTotalOnIncomeAccountsSince(userId, budget.lastBudget)
   const budgetStartDate = getNextOccurrence(budget, budget.lastBudget)
@@ -101,6 +91,25 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     incomeLeft = 0
   }
 
+  depends('data:excess')
+  const excessAccounts = await getAllExcessAccounts(userId)
+  const totalProportion = excessAccounts.reduce((total, acc) => total + Number(acc.proportion), 0)
+  const excessIncome = incomeLeft
+  const excessAccountsWithNames = excessAccounts.map(ex => {
+    const account: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[ex.account])
+    const actualAmountAdded = Math.floor((ex.proportion / totalProportion) * excessIncome)
+    incomeLeft -= actualAmountAdded
+    return {
+      ...ex,
+      name: `${account.name}: ${account.children[ex.account].name}`,
+      actualAmountAdded
+    }
+  })
+  if (incomeLeft > 0) {
+    excessAccountsWithNames[0].actualAmountAdded += incomeLeft
+    incomeLeft = 0
+  }
+
   // TODO track which and how much to excess accounts
   return {
     budget,
@@ -110,6 +119,6 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     isReadyToRelease,
     amountToNeeds,
     amountToWants,
-    excess: incomeLeft
+    excess: excessIncome
   }
 }

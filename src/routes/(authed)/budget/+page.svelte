@@ -92,7 +92,7 @@ Income since your last budget: {currencyToString(data.incomeSinceLast)}
 </div>
 
 <br>
-You have {currencyToString(excess)} to spend anywhere you'd like
+Your excess {currencyToString(excess)} will be distributed to the accounts as follows
 <BucketAssignment allAccounts={data.accounts} excessAccounts={excessAccounts}
   addAccountCallback={addExcessAccount} updateAccountCallback={updateExcessAccount}
   removeAccountCallback={deleteExcessAccount} />

@@ -2,6 +2,7 @@
   import type { BudgetExcess } from '$lib/types/budgetTypes'
   import type { AccountTree } from '$lib/types/accountTypes'
   import AllAccountsDropdown from '$lib/components/accountComponents/AllAccountsDropdown.svelte'
+  import { currencyToString } from '$lib/utils'
 
   export let allAccounts: AccountTree
   export let addAccountCallback: (id) => Promise<void>
@@ -41,9 +42,14 @@
         {#if isEditing}
           <input class="proportionInput" type="number" bind:value={account.proportion} />
         {/if}
-        {((account.proportion / totalProportion) * 100).toFixed(2)}%
+        {#if isEditing || account.actualAmountAdded === 0}
+          {((account.proportion / totalProportion) * 100).toFixed(2)}%
+        {/if}
         {#if isEditing}
           <button on:click={() => removeAccountCallback(account.id)}>x</button>
+        {/if}
+        {#if !isEditing && account.actualAmountAdded !== 0}
+          {currencyToString(account.actualAmountAdded)}
         {/if}
       </div>
     {/each}

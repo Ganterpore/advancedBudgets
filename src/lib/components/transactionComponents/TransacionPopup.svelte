@@ -9,6 +9,7 @@
   import Input from '$lib/components/sharedComponents/Input.svelte'
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import { TransactionType } from '$lib/types/transactionTypes'
+  import AllAccountsDropdown from '$lib/components/accountComponents/AllAccountsDropdown.svelte'
 
   export let accounts: AccountTree
   let accountList: { name: string, id: number }[]
@@ -147,13 +148,7 @@
         {:else}
           <p>{'<--'}</p>
         {/if}
-        <select bind:value={transferTo}>
-          {#each accountList as accountItem}
-            {#if accountItem.id !== account.id}
-              <option id={accountItem.id} value={accountItem.id}>{accountItem.concatName}</option>
-            {/if}
-          {/each}
-        </select>
+        <AllAccountsDropdown accounts={accounts}  selectedAccount={transferTo} accountsToIgnore={[account.id]} />
         {#if transferAvailable}
           <Button on:click={toggleTransfer}>X</Button>
         {/if}

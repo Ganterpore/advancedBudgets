@@ -5,13 +5,15 @@ import type { Budget } from '$lib/types/budgetTypes'
 import { getTotalOnIncomeAccountsSince } from '$lib/types/transactionModel'
 import { getNextOccurrence, numberOfOccurrencesBetween } from '$lib/dayOfWeekFunctons'
 import { getAllBudgetAccountsForUser } from '$lib/models/accountTypeBudgetModel'
+import type { AccountNode } from '$lib/types/accountTypes'
 import { BudgetAccountType } from '$lib/types/accountTypes'
 import type { ExpandedBudgetAccount } from '$lib/types/accountTypes'
+import { getAllExcessAccounts } from '$lib/models/budgetExcessModel'
 
 export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const userId = Number(locals.user!.id)
   const layout = await parent()
-  const { totals } = layout
+  const { totals, accounts } = layout
 
   depends('data:budget')
   let budget: Budget | undefined = await budgetModel.getBudgetForUser(userId)
@@ -31,6 +33,16 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
       id
     }
   }
+
+  depends('data:excess')
+  const excessAccounts = await getAllExcessAccounts(userId)
+  const excessAccountsWithNames = excessAccounts.map(ex => {
+    const account: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[ex.account])
+    return {
+      ...ex,
+      name: `${account.name}: ${account.children[ex.account].name}`
+    }
+  })
 
   depends('data:values')
   const incomeSinceLast = await getTotalOnIncomeAccountsSince(userId, budget.lastBudget)
@@ -92,6 +104,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   // TODO track which and how much to excess accounts
   return {
     budget,
+    excessAccounts: excessAccountsWithNames,
     incomeSinceLast,
     budgetStartDate,
     isReadyToRelease,

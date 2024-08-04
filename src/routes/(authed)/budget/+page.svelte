@@ -1,16 +1,19 @@
-<script>
+<script lang="ts">
   import BottomNavigation from "$lib/components/sharedComponents/BottomNavigation.svelte";
   import FrequencySelector from "$lib/components/timeSelectors/FrequencySelector.svelte";
   import {frequencyDetailsToString} from "$lib/dayOfWeekFunctons";
   import {currencyToString} from "$lib/utils";
   import SavingsProgress from "$lib/components/accountComponents/SavingsProgress.svelte";
+  import BucketAssignment from "$lib/components/budgetComponents/BucketAssignment.svelte";
+  import type { BudgetExcess } from '$lib/types/budgetTypes'
+  import { invalidate } from '$app/navigation'
 
   export let data
-  const { budget, budgetStartDate, amountToNeeds, amountToWants, excess } = data
-  const maxNeeds = amountToNeeds.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
-  const currentNeeds = amountToNeeds.reduce((total, curr) => total + curr.actualAmountAdded, 0)
-  const maxWants = amountToWants.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
-  const currentWants = amountToWants.reduce((total, curr) => total + curr.actualAmountAdded, 0)
+  $: ({ budget, budgetStartDate, amountToNeeds, amountToWants, excess, excessAccounts } = data)
+  $: maxNeeds = amountToNeeds.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
+  $: currentNeeds = amountToNeeds.reduce((total, curr) => total + curr.actualAmountAdded, 0)
+  $: maxWants = amountToWants.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
+  $: currentWants = amountToWants.reduce((total, curr) => total + curr.actualAmountAdded, 0)
 
   let isEditing = false
 
@@ -25,6 +28,40 @@
       })
     }
     isEditing = !isEditing
+  }
+  async function addExcessAccount (accountId: number) {
+    const excess: Omit<BudgetExcess, 'id'|'user'> = {
+      account: accountId,
+      proportion: 10
+    }
+    await fetch('budget/excessAccount', {
+      method: 'POST',
+      body: JSON.stringify(excess),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    await invalidate('data:excess')
+  }
+  async function updateExcessAccount (excess: BudgetExcess) {
+    await fetch('budget/excessAccount', {
+      method: 'POST',
+      body: JSON.stringify(excess),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    await invalidate('data:excess')
+  }
+  async function deleteExcessAccount (accountId: number) {
+    await fetch('budget/excessAccount', {
+      method: 'DELETE',
+      body: JSON.stringify({ id: accountId }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    await invalidate('data:excess')
   }
 </script>
 
@@ -56,6 +93,9 @@ Income since your last budget: {currencyToString(data.incomeSinceLast)}
 
 <br>
 You have {currencyToString(excess)} to spend anywhere you'd like
+<BucketAssignment allAccounts={data.accounts} excessAccounts={excessAccounts}
+  addAccountCallback={addExcessAccount} updateAccountCallback={updateExcessAccount}
+  removeAccountCallback={deleteExcessAccount} />
 
 <BottomNavigation/>
 

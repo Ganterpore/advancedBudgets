@@ -8,3 +8,10 @@ export type Budget = {
   dayOf: number,
   lastBudget: Date
 }
+
+export type BudgetExcess = {
+  id: number,
+  user: number,
+  account: number,
+  proportion: number
+}

@@ -51,11 +51,13 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const createBudgetMap = (b: ExpandedBudgetAccount) => {
     const numberOfOccurencesThisBudget = numberOfOccurrencesBetween(b, budgetStartDate, budgetEndDate)
     const maxAmountToAdd = numberOfOccurencesThisBudget * b.regularBudget
-    const amountInAccount = totals[b.parent].children[b.account] ?? 0
+    const amountInAccount = totals[b.parent]?.children[b.account] ?? 0
     const cappedAmountToAdd = Math.min(maxAmountToAdd, b.budgetMax - amountInAccount)
+    const parentName = accounts[b.parent].name
     return {
       id: b.account,
       name: b.name,
+      parentName,
       type: b.type,
       maxAmountToAdd: isReadyToRelease ? cappedAmountToAdd : maxAmountToAdd,
       actualAmountAdded: 0

@@ -84,10 +84,16 @@ Income since your last budget: {currencyToString(data.incomeSinceLast)}
   <div class="progress">
     <p>{((currentNeeds / maxNeeds) * 100).toFixed(2)}% progress to achieving budgeted needs ({currencyToString(maxNeeds)})</p>
     <SavingsProgress savingsGoal={maxNeeds} currentValue={currentNeeds} />
+    <div style="padding-left: 25px">{#each amountToNeeds as need}
+      <p>{currencyToString(need.actualAmountAdded)} being added to {need.parentName}: {need.name}</p>
+    {/each}</div>
   </div>
   <div class="progress">
     <p>{((currentWants / maxWants) * 100).toFixed(2)}% progress to achieving budgeted wants ({currencyToString(maxWants)})</p>
     <SavingsProgress savingsGoal={maxWants} currentValue={currentWants} />
+    <div style="padding-left: 25px">{#each amountToWants as need}
+      <p>{currencyToString(need.actualAmountAdded)} being added to {need.parentName}: {need.name}</p>
+    {/each}</div>
   </div>
 </div>
 

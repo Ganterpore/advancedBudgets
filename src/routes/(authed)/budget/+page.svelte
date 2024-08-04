@@ -7,15 +7,17 @@
   import BucketAssignment from "$lib/components/budgetComponents/BucketAssignment.svelte";
   import type { BudgetExcess } from '$lib/types/budgetTypes'
   import { invalidate } from '$app/navigation'
+  import Button from '$lib/components/sharedComponents/Button.svelte'
 
   export let data
-  $: ({ budget, budgetStartDate, amountToNeeds, amountToWants, excess, excessAccounts } = data)
+  $: ({ totals, isReadyToRelease, budget, budgetStartDate, amountToNeeds, amountToWants, excess, excessAccounts, parentTransactions } = data)
   $: maxNeeds = amountToNeeds.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
   $: currentNeeds = amountToNeeds.reduce((total, curr) => total + curr.actualAmountAdded, 0)
   $: maxWants = amountToWants.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
   $: currentWants = amountToWants.reduce((total, curr) => total + curr.actualAmountAdded, 0)
 
   let isEditing = false
+  let isReleasingBudget = false
 
   async function edit () {
     if (isEditing) {
@@ -28,6 +30,9 @@
       })
     }
     isEditing = !isEditing
+  }
+  async function releaseBudget () {
+    isReleasingBudget = !isReleasingBudget
   }
   async function addExcessAccount (accountId: number) {
     const excess: Omit<BudgetExcess, 'id'|'user'> = {
@@ -85,14 +90,16 @@ Income since your last budget: {currencyToString(data.incomeSinceLast)}
     <p>{((currentNeeds / maxNeeds) * 100).toFixed(2)}% progress to achieving budgeted needs ({currencyToString(maxNeeds)})</p>
     <SavingsProgress savingsGoal={maxNeeds} currentValue={currentNeeds} />
     <div style="padding-left: 25px">{#each amountToNeeds as need}
-      <p>{currencyToString(need.actualAmountAdded)} being added to {need.parentName}: {need.name}</p>
+      <p>{currencyToString(need.actualAmountAdded)} being added to {need.parentName}: {need.name}
+      to bring it up to {currencyToString((totals[need.parent]?.children[need.id] ?? 0) + need.actualAmountAdded)}</p>
     {/each}</div>
   </div>
   <div class="progress">
     <p>{((currentWants / maxWants) * 100).toFixed(2)}% progress to achieving budgeted wants ({currencyToString(maxWants)})</p>
     <SavingsProgress savingsGoal={maxWants} currentValue={currentWants} />
-    <div style="padding-left: 25px">{#each amountToWants as need}
-      <p>{currencyToString(need.actualAmountAdded)} being added to {need.parentName}: {need.name}</p>
+    <div style="padding-left: 25px">{#each amountToWants as want}
+      <p>{currencyToString(want.actualAmountAdded)} being added to {want.parentName}: {want.name}
+        to bring it up to {currencyToString((totals[want.parent]?.children[want.id] ?? 0) + want.actualAmountAdded)}</p>
     {/each}</div>
   </div>
 </div>
@@ -102,6 +109,16 @@ Your excess {currencyToString(excess)} will be distributed to the accounts as fo
 <BucketAssignment allAccounts={data.accounts} excessAccounts={excessAccounts}
   addAccountCallback={addExcessAccount} updateAccountCallback={updateExcessAccount}
   removeAccountCallback={deleteExcessAccount} />
+
+{#if isReleasingBudget}
+  <p>In Order to release your budget you will need to make the following physical transactions between your accounts:</p>
+  {#each parentTransactions as t}
+    <p>Transfer {currencyToString(t.amount)} from {t.from} to {t.to}</p>
+  {/each}
+{/if}
+{#if isReadyToRelease}
+  <Button on:click={releaseBudget}>{isReleasingBudget ? 'Release budget' : 'Prepare Budget Release'}</Button>
+{/if}
 
 <BottomNavigation/>
 

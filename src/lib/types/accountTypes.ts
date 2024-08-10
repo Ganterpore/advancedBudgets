@@ -67,6 +67,10 @@ export interface ExpandedSavingsAccount extends AccountTypeSaving {
   type: string
   parent: number
 }
+export interface ExpandedBudgetAccount extends AccountTypeBudget {
+  name: string
+  parent: number
+}
 
 export type SuggestedTransaction = {
   account: number,

@@ -6,6 +6,7 @@
   import AppBar from '$lib/components/sharedComponents/AppBar.svelte'
   import { openPopup } from '$lib/store'
   import ParentAccountPopup from '$lib/components/accountComponents/ParentAccountPopup.svelte'
+  import BottomNavigation from '$lib/components/sharedComponents/BottomNavigation.svelte'
   export let data
 
   function onSelected (isParent: boolean, id: string) {
@@ -22,7 +23,16 @@
         leftButton={{ name: 'Log Out', action: handleLogout }}
         rightButtons={[{ name: 'Add Account', action: openAccountPopup }]}/>
 
-<ParentAccountList totals={data.totals} accounts={data.accounts} onSelect={onSelected} />
-<ParentAccountPopup/>
-<AccountPopup/>
-<TransactionPopup accounts={data.accounts} />
+<div class="main">
+  <ParentAccountList totals={data.totals} accounts={data.accounts} onSelect={onSelected} />
+  <ParentAccountPopup/>
+  <AccountPopup/>
+  <TransactionPopup accounts={data.accounts} />
+</div>
+<BottomNavigation selected="spending"/>
+
+<style>
+  .main {
+      padding-bottom: 50px;
+  }
+</style>

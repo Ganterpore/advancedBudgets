@@ -18,6 +18,11 @@ export const accountColumn: ColumnDefinition = {
   references: 'accounts(id)',
   onDelete: 'CASCADE'
 }
+export const parentAccountColumn: ColumnDefinition = {
+  type: 'integer',
+  references: 'parent_accounts(id)',
+  onDelete: 'CASCADE'
+}
 
 export const priorityColumn: ColumnDefinition = {
   type: 'integer',

@@ -1,5 +1,5 @@
 import { connect } from '$lib/db'
-import type { AccountTypeBudget } from '$lib/types/accountTypes'
+import type { AccountTypeBudget, ExpandedBudgetAccount } from '$lib/types/accountTypes'
 
 export async function newBudgetAccount(props: Omit<AccountTypeBudget, 'id'>) {
   const db = await connect()
@@ -28,5 +28,18 @@ export async function updateBudgetAccount (budgetAccount: AccountTypeBudget): Pr
       budgetAccount.type,
       budgetAccount.id
     ])
+}
 
+export async function getAllBudgetAccountsForUser (userId: number): Promise<ExpandedBudgetAccount[]> {
+  const db = await connect()
+  const res = await db.query(
+    `
+    SELECT b.*, S.name, S.parent
+    FROM ACCOUNTS S 
+    inner join account_type_budget b on b.account=S.id
+    inner join parent_accounts pa on S.parent=pa.id
+    WHERE pa."user"=$1 AND S.archived is not true`,
+    [userId]
+  )
+  return res.rows
 }

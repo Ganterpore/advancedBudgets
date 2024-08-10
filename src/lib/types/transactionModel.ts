@@ -92,3 +92,17 @@ export async function getTotalsOnParentAccount (accountId: number): Promise<numb
   )
   return parseInt(res.rows[0].total)
 }
+
+export async function getTotalOnIncomeAccounts (userId: number): Promise<{ account: number, parent: number, total: number}[]> {
+  const db = await connect()
+  const res = await db.query(`
+    select t.account, a.parent, SUM(t.amount) as total from transactions t
+    left join accounts a on t.account=a.id
+    left join parent_accounts pa on a.parent =pa.id 
+    
+    where a."type" = 'Income Stream'
+    and "user"=$1
+    group by (t.account, a.parent)
+  `, [userId])
+  return res.rows.map(i => ({ ...i, total: parseInt(i.total)}))
+}

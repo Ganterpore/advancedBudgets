@@ -1,8 +1,9 @@
 <script>
     export let secondary = false
+    export let warning = false
 </script>
 
-<button on:click class="{secondary ? 'secondary' : ''}">
+<button {...$$restProps} on:click class="{secondary ? 'secondary' : ''} {warning ? 'warning' : ''}">
     <slot />
 </button>
 
@@ -50,5 +51,13 @@
         background-color: transparent;
         border-color: var(--theme-highlight);
         color: var(--theme-highlight);
+    }
+    .warning {
+        background-color: var(--theme-alert);
+    }
+    .warning.secondary {
+        background-color: transparent;
+        border-color: var(--theme-alert);
+        color: var(--theme-alert);
     }
 </style>

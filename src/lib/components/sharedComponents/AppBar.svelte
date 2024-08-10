@@ -4,6 +4,7 @@
   import type { ButtonContent } from '$lib/types/appBar'
 
   export let title: string
+  export let subtext: string = ''
   export let leftButton: ButtonContent | undefined = undefined
   export let rightButtons: ButtonContent[] | undefined = undefined
 </script>
@@ -13,6 +14,7 @@
     <Button on:click={leftButton.action}>{leftButton.name}</Button>
   {/if}
   <h1>{title}</h1>
+  <p>{subtext}</p>
   <div style="flex-grow: 1"></div>
   {#if rightButtons}
     {#each rightButtons as rightButton}
@@ -23,7 +25,11 @@
 
 <style>
   h1 {
-      margin: 5px;
-      align-self: center;
+    margin: 5px;
+    align-self: center;
+  }
+  p {
+    align-self: end;
+    font-style: italic;
   }
 </style>

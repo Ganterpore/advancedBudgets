@@ -29,7 +29,7 @@
   <AccountPopup/>
   <TransactionPopup accounts={data.accounts} />
 </div>
-<BottomNavigation/>
+<BottomNavigation selected="spending"/>
 
 <style>
   .main {

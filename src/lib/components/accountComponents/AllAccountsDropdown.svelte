@@ -13,7 +13,7 @@
   }, [])
 </script>
 
-<select bind:value={selectedAccount}>
+<select {...$$restProps } bind:value={selectedAccount}>
   {#each accountList as accountItem}
     {#if !accountsToIgnore.includes(accountItem.id)}
       <option id={accountItem.id} value={accountItem.id}>{accountItem.concatName}</option>

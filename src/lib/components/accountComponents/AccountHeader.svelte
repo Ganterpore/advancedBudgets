@@ -69,40 +69,40 @@
 </div>
 
 <style>
-    p {
-      margin: 5px;
-      align-self: center;
-    }
-    .text-box {
+  p {
+    margin: 5px;
+    align-self: center;
+  }
+  .text-box {
+    display: flex;
+    gap: 5px;
+    justify-content: end;
+    flex-wrap: wrap;
+    flex-grow: 1;
+  }
+  .icon {
+      padding: 10px 10px;
       display: flex;
-      gap: 5px;
-      justify-content: end;
-      flex-wrap: wrap;
-      flex-grow: 1;
-    }
-    .icon {
-        padding: 10px 10px;
-        display: flex;
-        align-items: center;
-    }
-    .close-flex {
-      display: flex;
-      margin: 0;
-      justify-content: space-between;
-      gap: 0;
-      flex-grow: 1;
-    }
-    .header {
-        display: flex;
-        justify-content: space-between;
-        gap: 5px;
-    }
-    .separator {
-        flex-grow: 1;
-    }
-    .multiplier {
-        font-weight: bold;
-        color: var(--theme-secondary-text);
-        text-shadow: -1px -1px 5px var(--multiplier-highlight), 1px -1px 5px var(--multiplier-highlight), -1px 1px 5px var(--multiplier-highlight), 1px 1px 5px var(--multiplier-highlight);
-    }
+      align-items: center;
+  }
+  .close-flex {
+    display: flex;
+    margin: 0;
+    justify-content: space-between;
+    gap: 0;
+    flex-grow: 1;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+  }
+  .separator {
+    flex-grow: 1;
+  }
+  .multiplier {
+    font-weight: bold;
+    color: var(--theme-secondary-text);
+    text-shadow: -1px -1px 5px var(--multiplier-highlight), 1px -1px 5px var(--multiplier-highlight), -1px 1px 5px var(--multiplier-highlight), 1px 1px 5px var(--multiplier-highlight);
+  }
 </style>

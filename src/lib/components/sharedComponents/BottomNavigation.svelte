@@ -1,6 +1,10 @@
+<script>
+  export let selected
+</script>
+
 <nav>
-  <a href="/">Spending</a>
-  <a href="budget">Budget</a>
+  <a class="{selected==='spending' ? 'selected' : ''}" href="/"><p>Spending</p></a>
+  <a class="{selected==='budget' ? 'selected' : ''}" href="budget"><p>Budget</p></a>
 </nav>
 
 <style>
@@ -27,13 +31,16 @@
     height: 100%;
     text-decoration: none;
     font-size: larger;
-    border-color: black;
+    border-color: var(--theme-background);
     border-width: 3px;
     border-style: solid;
     margin: 0;
     padding: 0;
   }
-
+  .selected {
+    background-color: var(--theme-secondary);
+    color: var(--theme-secondary-text);
+  }
   a:hover {
     background-color: var(--theme-highlight);
     color: var(--theme-secondary-text);

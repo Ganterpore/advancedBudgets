@@ -10,7 +10,7 @@
   import Button from '$lib/components/sharedComponents/Button.svelte'
 
   export let data
-  $: ({ totals, isReadyToRelease, budget, budgetStartDate, amountToNeeds, amountToWants, excess, excessAccounts, parentTransactions } = data)
+  $: ({ totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, excessAccounts, parentTransactions, transactions } = data)
   $: maxNeeds = amountToNeeds.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
   $: currentNeeds = amountToNeeds.reduce((total, curr) => total + curr.actualAmountAdded, 0)
   $: maxWants = amountToWants.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
@@ -32,6 +32,28 @@
     isEditing = !isEditing
   }
   async function releaseBudget () {
+    if (isReleasingBudget && isReadyToRelease) {
+      const res = await fetch('transactions', {
+        method: 'POST',
+        body: JSON.stringify(transactions),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      await invalidate('data:values')
+      // TODO add error handling
+      if(res.ok) {
+        budget.lastBudget = new Date()
+        await fetch('', {
+          method: 'POST',
+          body: JSON.stringify(budget),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        await invalidate('data:budget')
+      }
+    }
     isReleasingBudget = !isReleasingBudget
   }
   async function addExcessAccount (accountId: number) {

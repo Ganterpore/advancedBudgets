@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types'
 import * as budgetModel from '$lib/models/budgetModel'
 import { FrequencyCategory } from '$lib/types/sharedTypes'
 import type { Budget } from '$lib/types/budgetTypes'
-import { getTotalOnIncomeAccountsSince } from '$lib/types/transactionModel'
+import { getTotalOnIncomeAccounts } from '$lib/types/transactionModel'
 import { getNextOccurrence, numberOfOccurrencesBetween } from '$lib/dayOfWeekFunctons'
 import { getAllBudgetAccountsForUser } from '$lib/models/accountTypeBudgetModel'
 import type { AccountNode, ExpandedBudgetAccount } from '$lib/types/accountTypes'
@@ -39,15 +39,17 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const transactions: (TransactionData & { account: number, parent: number })[] = []
 
   depends('data:values')
-  const incomeOnAccounts = await getTotalOnIncomeAccountsSince(userId)
+  const incomeOnAccounts = await getTotalOnIncomeAccounts(userId)
   for (const income of incomeOnAccounts) {
-    transactions.push({
-      parent: income.parent,
-      account: income.account,
-      description: 'Budget - Income',
-      type: TransactionType.INDIVIDUAL,
-      amount: -1 * income.total
-    })
+    if (income.total > 0) {
+      transactions.push({
+        parent: income.parent,
+        account: income.account,
+        description: 'Budget - Income',
+        type: TransactionType.INDIVIDUAL,
+        amount: -1 * income.total
+      })
+    }
   }
   const incomeSinceLast = incomeOnAccounts.reduce((total, i) => total + i.total, 0)
   const budgetStartDate = getNextOccurrence(budget, budget.lastBudget)
@@ -88,15 +90,17 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     const adding = Math.floor(a.maxAmountToAdd * percentageNeedsPayable)
     a.actualAmountAdded = adding
     incomeLeft -= adding
-    transactions.push({
-      parent: a.parent,
-      account: a.id,
-      amount: adding,
-      description: 'Budget - Needs',
-      type: TransactionType.INDIVIDUAL
-    })
+    if (adding > 0) {
+      transactions.push({
+        parent: a.parent,
+        account: a.id,
+        amount: adding,
+        description: 'Budget - Needs',
+        type: TransactionType.INDIVIDUAL
+      })
+    }
   })
-  if (incomeLeft < 10) {
+  if (incomeLeft < 10 && amountToNeeds[0]) {
     amountToNeeds[0].actualAmountAdded += incomeLeft
     incomeLeft = 0
   }
@@ -109,15 +113,17 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     const adding = Math.floor(a.maxAmountToAdd * percentageWantsPayable)
     a.actualAmountAdded = adding
     incomeLeft -= adding
-    transactions.push({
-      parent: a.parent,
-      account: a.id,
-      amount: adding,
-      description: 'Budget - Wants',
-      type: TransactionType.INDIVIDUAL
-    })
+    if (adding > 0) {
+      transactions.push({
+        parent: a.parent,
+        account: a.id,
+        amount: adding,
+        description: 'Budget - Wants',
+        type: TransactionType.INDIVIDUAL
+      })
+    }
   })
-  if (incomeLeft < 10) {
+  if (incomeLeft < 10 && amountToWants[0]) {
     amountToWants[0].actualAmountAdded += incomeLeft
     incomeLeft = 0
   }
@@ -128,22 +134,24 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const excessIncome = incomeLeft
   const excessAccountsWithNames = excessAccounts.map(ex => {
     const parentAccount: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[ex.account])
-    const actualAmountAdded = Math.floor((ex.proportion / totalProportion) * excessIncome)
+    const actualAmountAdded = totalProportion ? Math.floor((ex.proportion / totalProportion) * excessIncome) : 0
     incomeLeft -= actualAmountAdded
-    transactions.push({
-      parent: parentAccount.id,
-      account: ex.account,
-      amount: actualAmountAdded,
-      description: 'Budget - Excess',
-      type: TransactionType.INDIVIDUAL
-    })
+    if (actualAmountAdded > 0) {
+      transactions.push({
+        parent: parentAccount.id,
+        account: ex.account,
+        amount: actualAmountAdded,
+        description: 'Budget - Excess',
+        type: TransactionType.INDIVIDUAL
+      })
+    }
     return {
       ...ex,
       name: `${parentAccount.name}: ${parentAccount.children[ex.account].name}`,
       actualAmountAdded
     }
   })
-  if (incomeLeft > 0) {
+  if (incomeLeft > 0 && excessAccountsWithNames[0]) {
     excessAccountsWithNames[0].actualAmountAdded += incomeLeft
     incomeLeft = 0
   }
@@ -164,6 +172,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     excessAccounts: excessAccountsWithNames,
     incomeSinceLast,
     budgetStartDate,
+    budgetEndDate,
     isReadyToRelease,
     amountToNeeds,
     amountToWants,

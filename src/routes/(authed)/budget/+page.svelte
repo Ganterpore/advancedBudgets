@@ -10,6 +10,7 @@
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import AppBar from '$lib/components/sharedComponents/AppBar.svelte'
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
+  import Alert from '$lib/components/sharedComponents/Alert.svelte'
 
   export let data
   $: ({ totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, excessAccounts, parentTransactions, transactions } = data)
@@ -20,6 +21,7 @@
 
   let isEditing = false
   let isReleasingBudget = false
+  let error
 
   async function edit () {
     if (isEditing) {
@@ -55,6 +57,9 @@
           }
         })
         await invalidate('data:budget')
+      } else {
+        const body = await res.json()
+        error = body.error ?? body.message
       }
     }
     isReleasingBudget = !isReleasingBudget
@@ -140,6 +145,9 @@
   {#if isReadyToRelease}
     <div class="title"><h3>Final Steps</h3></div>
     <div class="release-box">
+      {#if error}
+        <Alert>{error}</Alert>
+      {/if}
       {#if isReleasingBudget}
         <p>In Order to release your budget you will need to make the following physical transactions between your accounts:</p>
         {#each parentTransactions as t}

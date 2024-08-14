@@ -170,6 +170,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   return {
     budget,
     excessAccounts: excessAccountsWithNames,
+    incomeOnAccounts,
     incomeSinceLast,
     budgetStartDate,
     budgetEndDate,

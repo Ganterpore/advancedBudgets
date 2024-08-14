@@ -11,6 +11,7 @@ import { getAllExcessAccounts } from '$lib/models/budgetExcessModel'
 import type { TransactionData } from '../transactions/[type=accountHierarchy]/[id]/+server'
 import { TransactionType } from '$lib/types/transactionTypes'
 import { minimizeTransactions } from '$lib/helpers/transactionHelpers'
+import { getAllBudgetSavingsAccounts } from '$lib/models/budgetSavingsModel'
 
 export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const userId = Number(locals.user!.id)
@@ -128,6 +129,34 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     incomeLeft = 0
   }
 
+  depends('data:budgetSavings')
+  const budgetSavingsAccounts = await getAllBudgetSavingsAccounts(userId)
+  const savingsIncome = incomeLeft
+  const totalSavingsRequired = budgetSavingsAccounts.reduce((total, acc) => total + Number(acc.max), 0)
+  const budgetSavingsAccountsWithNames = budgetSavingsAccounts.map(acc => {
+    const parentAccount: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[acc.account])
+    const amountAdded = Math.min(
+      acc.max,
+      totalSavingsRequired ? (acc.max / totalSavingsRequired) * savingsIncome : 0
+    )
+    console.log(amountAdded)
+    incomeLeft -= amountAdded
+    if (amountAdded > 0) {
+      transactions.push({
+        parent: parentAccount.id,
+        account: acc.account,
+        amount: amountAdded,
+        description: 'Budget - Excess',
+        type: TransactionType.INDIVIDUAL
+      })
+    }
+    return {
+      ...acc,
+      name: `${parentAccount.name}: ${parentAccount.children[acc.account].name}`,
+      actualAmountAdded: amountAdded
+    }
+  })
+
   depends('data:excess')
   const excessAccounts = await getAllExcessAccounts(userId)
   const totalProportion = excessAccounts.reduce((total, acc) => total + Number(acc.proportion), 0)
@@ -169,6 +198,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   )
   return {
     budget,
+    savingsAccounts: budgetSavingsAccountsWithNames,
     excessAccounts: excessAccountsWithNames,
     incomeOnAccounts,
     incomeSinceLast,

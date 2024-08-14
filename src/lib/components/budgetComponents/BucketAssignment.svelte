@@ -1,24 +1,26 @@
 <script lang="ts">
-  import type { BudgetExcess } from '$lib/types/budgetTypes'
   import type { AccountTree } from '$lib/types/accountTypes'
   import AllAccountsDropdown from '$lib/components/accountComponents/AllAccountsDropdown.svelte'
   import { currencyToString } from '$lib/utils'
   import Input from '$lib/components/sharedComponents/Input.svelte'
   import Button from '$lib/components/sharedComponents/Button.svelte'
 
+  type Bucket = { id: number, account: number, name: string, plannedAmount: number, actualAmount: number }
+
   export let allAccounts: AccountTree
   export let addAccountCallback: (id) => Promise<void>
-  export let updateAccountCallback: (BudgetExcess) => Promise<void>
+  export let updateAccountCallback: (Bucket) => Promise<void>
   export let removeAccountCallback: (id) => Promise<void>
-  export let excessAccounts: (BudgetExcess & { name: string })[]
+  export let selectedAccounts: Bucket[]
+  export let type: 'percent' | 'max' = 'percent'
 
   let accountToAdd = allAccounts[0]?.children[0]
-  $: totalProportion = excessAccounts.reduce((total, acc) => total + Number(acc.proportion), 0)
+  $: totalProportion = selectedAccounts.reduce((total, acc) => total + Number(acc.plannedAmount), 0)
 
   let isEditing = false
   async function edit () {
     if (isEditing) {
-      for (const account of excessAccounts) {
+      for (const account of selectedAccounts) {
         await updateAccountCallback(account)
       }
     }
@@ -29,7 +31,7 @@
 <div class="main">
     <div class="newAccount">
       {#if isEditing}
-          <AllAccountsDropdown style="flex-grow: 1" accounts={allAccounts} bind:selectedAccount={accountToAdd} accountsToIgnore={excessAccounts.map(e => e.account)} />
+          <AllAccountsDropdown style="flex-grow: 1" accounts={allAccounts} bind:selectedAccount={accountToAdd} accountsToIgnore={selectedAccounts.map(e => e.account)} />
           <Button on:click={() => addAccountCallback(accountToAdd)}>Add</Button>
       {/if}
       <div style="flex-grow: 1"></div>
@@ -38,22 +40,27 @@
 
 
   <div class="excessList">
-    {#each excessAccounts as account}
+    {#each selectedAccounts as account}
       <div class="excessListItem">
         <p>{account.name}</p>
         <div style="flex-grow: 1"></div>
         <div class="inner">
           {#if isEditing}
-            <Input style="width: 5ch" type="number" bind:value={account.proportion} />
+            {#if type==='max'}${/if}
+            <Input style="width: 5ch" type="number" bind:value={account.plannedAmount} />
           {/if}
-          {#if isEditing || account.actualAmountAdded === 0}
-            {((account.proportion / totalProportion) * 100).toFixed(2)}%
+          {#if isEditing || account.actualAmount === 0}
+            {#if type === 'percent'}
+              {((account.plannedAmount / totalProportion) * 100).toFixed(2)}%
+            {:else if !isEditing && type === 'max'}
+              up to ${account.plannedAmount}
+            {/if}
           {/if}
           {#if isEditing}
             <Button warning={true} on:click={() => removeAccountCallback(account.id)}>x</Button>
           {/if}
-          {#if !isEditing && account.actualAmountAdded !== 0}
-            {currencyToString(account.actualAmountAdded)}
+          {#if !isEditing && account.actualAmount !== 0}
+            {currencyToString(account.actualAmount)}
           {/if}
         </div>
         <hr/>

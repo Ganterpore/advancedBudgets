@@ -15,3 +15,10 @@ export type BudgetExcess = {
   account: number,
   proportion: number
 }
+
+export type BudgetSavings = {
+  id: number,
+  user: number,
+  account: number,
+  max: number
+}

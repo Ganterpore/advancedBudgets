@@ -1,7 +1,6 @@
 <script lang="ts">
   import BottomNavigation from "$lib/components/sharedComponents/BottomNavigation.svelte";
   import FrequencySelector from "$lib/components/timeSelectors/FrequencySelector.svelte";
-  import {frequencyDetailsToString} from "$lib/dayOfWeekFunctons";
   import {currencyToString} from "$lib/utils";
   import SavingsProgress from "$lib/components/accountComponents/SavingsProgress.svelte";
   import BucketAssignment from "$lib/components/budgetComponents/BucketAssignment.svelte";
@@ -13,7 +12,7 @@
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
 
   export let data
-  $: ({ totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, excessAccounts, parentTransactions, transactions } = data)
+  $: ({ incomeOnAccounts, totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, excessAccounts, parentTransactions, transactions } = data)
   $: maxNeeds = amountToNeeds.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
   $: currentNeeds = amountToNeeds.reduce((total, curr) => total + curr.actualAmountAdded, 0)
   $: maxWants = amountToWants.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
@@ -101,7 +100,7 @@
 </script>
 
 <AppBar title="Budget"
-        subtext="{frequencyDetailsToString(budget)}"
+        subtext="from {budgetStartDate.toDateString()} to {budgetEndDate.toDateString()}"
         rightButtons={[{ name: isEditing ? 'Save' : 'Edit', action: edit }]}/>
 
 <div class="header">
@@ -112,10 +111,18 @@
   </div>
 </div>
 
-<p>Your next budget starts on {budgetStartDate.toDateString()}. You have earned {currencyToString(data.incomeSinceLast)} since your last budget</p>
 
 <div class="outer">
   <div class="main">
+    <div class="title"><h3>Income</h3>{currencyToString(data.incomeSinceLast)}</div>
+    {#each incomeOnAccounts as income}
+      <div style="padding-left: 25px; display: flex">
+        <p>{data.accounts[income.parent]?.children[income.account]?.name} ({((income.total * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
+        <div style="flex-grow: 1"></div>
+        <p>{currencyToString(income.total)}</p>
+      </div>
+    {/each}
+
     <div class="title"><h3>Budget</h3>{currencyToString(currentNeeds + currentWants)}</div>
     <Expandable name="Needs">
       <div slot="header" class="progress">
@@ -130,7 +137,7 @@
     <hr/>
     <Expandable name="Wants">
       <div slot="header" class="progress">
-        <p>{((currentWants / maxWants) * 100).toFixed(2)}% progress towards ({currencyToString(maxWants)})</p>
+        <p>{((currentWants / maxWants) * 100).toFixed(2)}% progress towards {currencyToString(maxWants)}</p>
           <SavingsProgress savingsGoal={maxWants} currentValue={currentWants} />
       </div>
       <div style="padding-left: 25px">{#each amountToWants as want}
@@ -196,6 +203,7 @@
     padding-bottom: 50px;
   }
   .main {
+    margin: 20px 0;
     background: var(--theme-plain);
     display: flex;
     flex-direction: column;

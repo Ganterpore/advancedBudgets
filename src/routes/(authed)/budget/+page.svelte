@@ -160,11 +160,12 @@
   <div class="main">
     <div class="title"><h3>Income</h3>{currencyToString(data.incomeSinceLast)}</div>
     {#each incomeOnAccounts as income}
-      <div style="padding-left: 25px; display: flex">
+      <div class="income-list-item">
         <p>{data.accounts[income.parent]?.children[income.account]?.name} ({((income.total * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
         <div style="flex-grow: 1"></div>
         <p>{currencyToString(income.total)}</p>
       </div>
+      <hr/>
     {/each}
 
     <div class="title"><h3>Budget</h3>{currencyToString(currentNeeds + currentWants)}</div>
@@ -278,6 +279,15 @@
     display: flex;
     flex-direction: row;
     float: right;
+  }
+  .income-list-item {
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-left: 25px;
+    display: flex;
+  }
+  .income-list-item p {
+    margin: 0;
   }
   .button-array {
     display: flex;

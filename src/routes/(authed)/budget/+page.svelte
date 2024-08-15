@@ -10,6 +10,7 @@
   import AppBar from '$lib/components/sharedComponents/AppBar.svelte'
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
+  import { FrequencyCategory } from '$lib/types/sharedTypes'
 
   export let data
   $: ({ incomeOnAccounts, totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions } = data)
@@ -24,6 +25,20 @@
 
   async function edit () {
     if (isEditing) {
+      // Reset the last budget to a recent instance of the budget when changed
+      const prevBudgetDate = new Date()
+      switch (budget.frequencyCategory) {
+        case FrequencyCategory.MONTHLY:
+          prevBudgetDate.setMonth(prevBudgetDate.getMonth() - budget.frequency)
+          break
+        case FrequencyCategory.WEEKLY:
+          prevBudgetDate.setDate(prevBudgetDate.getDate() - budget.frequency * 7)
+          break
+        case FrequencyCategory.DAILY:
+          prevBudgetDate.setDate(prevBudgetDate.getDate() - budget.frequency)
+          break
+      }
+      budget.lastBudget = prevBudgetDate
       await fetch('', {
         method: 'POST',
         body: JSON.stringify(budget),

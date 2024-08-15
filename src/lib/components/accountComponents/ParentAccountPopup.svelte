@@ -1,36 +1,23 @@
 <script lang="ts">
   import { openPopup } from '$lib/store.js'
-  import { invalidate } from '$app/navigation'
   import Popup from '$lib/components/sharedComponents/Popup.svelte'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
-  import Input from '$lib/components/sharedComponents/Input.svelte'
-  import Button from '$lib/components/sharedComponents/Button.svelte'
   import type { ParentAccount } from '$lib/types/accountTypes'
+  import Toggle from '$lib/components/sharedComponents/Toggle.svelte'
+  import ParentAccountForm from '$lib/components/accountComponents/ParentAccountForm.svelte'
 
   export let account: Pick<ParentAccount, 'name'> & Partial<ParentAccount> = {
     name: ''
   }
   let error: string
+  let accountType: 'Cash' | 'Investment' = 'Cash'
 
-  async function createAccount () {
-    const res = await fetch('/parentAccount', {
-      method: 'POST',
-      body: JSON.stringify({ account: account.name, id: account.id }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    const body = await res.json()
-    if (res.status === 201) {
-      if (!account.id) {
-        account.name = ''
-      }
-      error = ''
-      $openPopup = false
-      await invalidate('data:accounts')
-    } else {
-      error = body.error
+  async function onSubmit () {
+    if (!account.id) {
+      account.name = ''
     }
+    error = ''
+    $openPopup = false
   }
 
   function onClose () {
@@ -43,12 +30,10 @@
 
 <Popup id="newAccount" onClose={onClose}>
   <h1 style="margin: 0">Create a new account</h1>
+  <Toggle value1="Cash" value2="Investment" bind:selected={accountType} />
   <p style="font-style: italic">This should reflect a real world bank account</p>
   {#if error}
     <Alert>{error}</Alert>
   {/if}
-  <form class="form">
-    <Input label="Name" name="accountName" autofocus bind:value={account.name}/>
-    <Button on:click={() => createAccount()}>Create</Button>
-  </form>
+  <ParentAccountForm account={account} onSubmit={onSubmit} />
 </Popup>

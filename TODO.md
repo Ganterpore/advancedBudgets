@@ -11,16 +11,20 @@
    - [x] Track percentage saving made
    - [x] Global Saving for things
    - [x] Set budget limits
- - [ ] Proper Login Page
+ - [x] Proper Login Page
  - [x] Deployments
- - [ ] CRUD everything
+ - [x] CRUD everything
  - [ ] Salary Budgeting
-   - [ ] Set frequency of budget accounts
-   - [ ] Income storage accounts
-   - [ ] Paydays, auto transfers
-   - [ ] Track how over/under budget you are
+   - [x] Set frequency of budget accounts
+   - [x] Income storage accounts
+   - [x] Paydays, auto transfers
+   - [x] Track how over/under budget you are
    - [ ] Track inflation
-   - [ ] Excess Salary
+   - [ ] Income from capital gains
+     - [ ] Create Investment account
+     - [ ] Calculate returns from withdrawal rate
+   - [x] Excess Salary
+ - [ ] Retirement planning
  - [ ] Bank Integrations
 
 # Other Tasks

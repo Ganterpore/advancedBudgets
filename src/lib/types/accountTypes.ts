@@ -47,6 +47,22 @@ export type Account = {
   archived?: boolean
 }
 
+export type Investment = {
+  id: number,
+  user: number,
+  name: string,
+  expectedROI: number,
+  withdrawalRate: number,
+  amount: number
+}
+
+export type InvestmentValue = {
+  id: number,
+  investment: number,
+  amount: number,
+  onDate: Date
+}
+
 export const accountTypeIcons = {
   [AccountType.STORAGE]: FluentBox16Regular,
   [AccountType.BUDGET]: MapGroceryOrSupermarket,

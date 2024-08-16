@@ -22,6 +22,8 @@
    - [ ] Track inflation
    - [ ] Income from capital gains
      - [ ] Create Investment account
+     - [ ] Refactor all accounts pages / forms
+     - [ ] Show historic values on page
      - [ ] Calculate returns from withdrawal rate
    - [x] Excess Salary
  - [ ] Retirement planning

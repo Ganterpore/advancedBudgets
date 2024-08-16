@@ -11,6 +11,7 @@
   let error
 </script>
 
+<p style="font-style: italic">This should reflect a real world bank account</p>
 <form class="form" method="post" action="/parentAccount"
   use:enhance={() => {
     return async ({ result, update }) => {
@@ -30,3 +31,12 @@
   <Input label="Name" name="account" autofocus bind:value={account.name}/>
   <Button>Create</Button>
 </form>
+
+<style>
+  .form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+  }
+</style>

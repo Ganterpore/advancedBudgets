@@ -10,6 +10,8 @@
   export let onSubmit: () => void
   let error
 
+  let amountDollars = investment.amount / 100
+  $: investment.amount = amountDollars * 100
   let percentRoi = investment.expectedROI / 100
   $: investment.expectedROI = percentRoi * 100
   let percentWithdraw = investment.withdrawalRate / 100
@@ -33,7 +35,7 @@
   <!-- Used to send the id to the server without showing it to the user-->
   {#if investment.id}<input style="display: none" name="id" value={investment.id} />{/if}
   <Input label="Name" name="account" autofocus bind:value={investment.name}/>
-  <Input label="Initial Value" name="amount" autofocus bind:value={investment.amount}/>
+  <Input label="Initial Value" name="amount" autofocus bind:value={amountDollars}/>
   <div class="percents">
     <div class="inputWithTooltip">
       <Input type="number" label="Estimated ROI" name="expectedROIPercent" bind:value={percentRoi}>
@@ -55,7 +57,7 @@
       </p>
     </div>
   </div>
-  <Button style="width: 100%">Create</Button>
+  <Button style="width: 100%">{investment.id ? 'Update' : 'Create'}</Button>
 </form>
 
 <style>

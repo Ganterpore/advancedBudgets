@@ -42,15 +42,16 @@ export async function getInvestmentsOnUser (userId: number): Promise<Investment[
      WHERE "user"=$1`,
     [userId])
   const accounts: Omit<Investment, 'amount'>[] = res.rows
+  const accountIds = accounts.map(acc => acc.id)
   const valueResults = await db.query(`
     SELECT * FROM investment_value iv
     INNER JOIN 
-      (SELECT investment, MAX(onDate) AS latestDate
+      (SELECT investment, MAX("onDate") AS "latestDate"
        FROM investment_value
        GROUP BY investment
-      ) latest ON iv.investment = latest.investment AND iv.onDate = latest.latestDate
-    WHERE investment in ($1)
-  `, [accounts.map(acc => acc.id)])
+      ) latest ON iv.investment = latest.investment AND iv."onDate" = latest."latestDate"
+    WHERE iv.investment in ($1)
+  `, [accountIds.join(', ')])
   const investmentValues: InvestmentValue[] = valueResults.rows
   return accounts.map(acc => {
     const amount = investmentValues.find(inv => inv.investment === acc.id)
@@ -64,8 +65,8 @@ export async function getInvestmentsOnUser (userId: number): Promise<Investment[
 export async function updateInvestmentAccount (investment: Investment): Promise<void> {
   const db = await connect()
   await db.query(`
-    UPDATE investment_account SET ("user", "name", "expectedROI", "withdrawalRate")
-     VALUES($1, $2, $3, $4) 
+    UPDATE investment_account
+     SET ("user", "name", "expectedROI", "withdrawalRate") = ($1, $2, $3, $4) 
      WHERE ID=$5`,
     [investment.user, investment.name, investment.expectedROI, investment.withdrawalRate, investment.id])
   await db.query(`

@@ -22,6 +22,8 @@
   .container p {
     margin: 0 0 0 10px;
     padding: 0;
+    font-size: small;
+    color: var(--theme-text);
   }
   .textbox {
     display: flex;

@@ -16,6 +16,7 @@
     expectedROI: 600,
     withdrawalRate: 0
   }
+  export let isOpen = undefined
 
   async function onSubmit () {
     if (!account.id) {
@@ -27,12 +28,14 @@
       investment.withdrawalRate = 0
     }
     $openPopup = false
+    if (isOpen !== undefined) isOpen = false
   }
 
   function onClose () {
     if (!account.id) {
       account.name = ''
     }
+    if (isOpen !== undefined) isOpen = false
   }
 
   $: isUpdating = account.id || investment.id
@@ -45,7 +48,7 @@
 </script>
 
 <div class="container">
-  <Popup id="newAccount" onClose={onClose}>
+  <Popup id="newAccount" onClose={onClose} bind:isOpen={isOpen}>
     <h1 style="margin: 0">{isUpdating ? 'Update' : 'Add'} Account</h1>
     <Toggle disabled={isUpdating} value1="Cash" value2="Investment" bind:selected={accountType} />
 

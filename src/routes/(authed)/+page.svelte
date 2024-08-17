@@ -7,6 +7,7 @@
   import { openPopup } from '$lib/store'
   import ParentAccountPopup from '$lib/components/accountComponents/ParentAccountPopup.svelte'
   import BottomNavigation from '$lib/components/sharedComponents/BottomNavigation.svelte'
+  import InvestmentList from '$lib/components/accountComponents/InvestmentList.svelte'
   export let data
 
   function onSelected (isParent: boolean, id: string) {
@@ -25,6 +26,7 @@
 
 <div class="main">
   <ParentAccountList totals={data.totals} accounts={data.accounts} onSelect={onSelected} />
+  <InvestmentList investments={data.investments.filter(i => !i.archived)} />
   <ParentAccountPopup/>
   <AccountPopup/>
   <TransactionPopup accounts={data.accounts} />

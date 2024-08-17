@@ -22,7 +22,7 @@ export const actions: Actions = {
       name: accountName.toString(),
       expectedROI: Number(expectedROIPercent) * 100,
       withdrawalRate: Number(withdrawalRate) * 100,
-      amount: Number(amount)
+      amount: Number(amount) * 100
     }
     if (!accountId || isNaN(accountId)) {
       await createInvestmentAccount(investment)

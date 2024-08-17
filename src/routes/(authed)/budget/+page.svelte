@@ -12,6 +12,7 @@
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
   import { FrequencyCategory } from '$lib/types/sharedTypes'
   import type { AccountNode } from '$lib/types/accountTypes'
+  import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
 
   export let data
   $: ({ incomeOnAccounts, investmentIncome, totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions } = data)
@@ -23,6 +24,7 @@
   let isEditing = false
   let isReleasingBudget = false
   let error
+  let isLoading = false
 
   function allBuckets (): { id: string, name: string, plannedAmount: number, actualAmount: number }[] {
     const accountList = Object.values(data.accounts ?? {}).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
@@ -63,6 +65,8 @@
   }
   async function releaseBudget () {
     if (isReleasingBudget && isReadyToRelease) {
+      if (isLoading) return
+      isLoading = true
       const res = await fetch('transactions', {
         method: 'POST',
         body: JSON.stringify(transactions),
@@ -83,9 +87,10 @@
         await invalidate('data:budget')
       } else {
         const body = await res.json()
-        error = body.error ?? body.message
+        error = body.error ?? body.message ?? body
       }
     }
+    isLoading = false
     isReleasingBudget = !isReleasingBudget
   }
   async function addSavingsAccount (accountId: string) {
@@ -269,7 +274,10 @@
         {/if}
         {#if isReleasingBudget}
           <div class="button-array">
-            <Button style="flex-grow: 1" warning={true} on:click={releaseBudget}>Release budget</Button>
+            <Button disabled={isLoading} style="flex-grow: 1" warning={true} on:click={releaseBudget}>
+              { isLoading ? 'Releasing Budget' : 'Release Budget'}
+              {#if isLoading}<LoadingSpinner/>{/if}
+            </Button>
             <Button secondary={true} on:click={() => isReleasingBudget=false}>Cancel</Button>
           </div>
         {/if}

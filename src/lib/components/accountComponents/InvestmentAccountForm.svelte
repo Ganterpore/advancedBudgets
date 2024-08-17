@@ -5,10 +5,12 @@
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
   import { enhance } from '$app/forms'
   import { invalidate } from '$app/navigation'
+  import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
 
   export let investment: Investment
   export let onSubmit: () => void
   let error
+  let isLoading = false
 
   let amountDollars = investment.amount / 100
   $: investment.amount = amountDollars * 100
@@ -20,7 +22,9 @@
 
 <form class="form" method="post" action="/accounts/investment"
   use:enhance={() => {
+    isLoading = true
     return async ({ result, update }) => {
+      isLoading = false
       if (result.type === 'error') {
         error = result.error.message
       } else {
@@ -57,7 +61,10 @@
       </p>
     </div>
   </div>
-  <Button style="width: 100%">{investment.id ? 'Update' : 'Create'}</Button>
+  <Button disabled={isLoading} style="width: 100%">
+    {investment.id ? 'Update' : 'Create'}
+    {#if isLoading}<LoadingSpinner/>{/if}
+  </Button>
 </form>
 
 <style>

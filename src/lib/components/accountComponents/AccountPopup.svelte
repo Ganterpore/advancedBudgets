@@ -13,10 +13,12 @@
   import BudgetAccountDetails from '$lib/components/accountComponents/BudgetAccountDetails.svelte'
   import SavingsAccountDetails from '$lib/components/accountComponents/SavingsAccountDetails.svelte'
   import Input from '$lib/components/sharedComponents/Input.svelte'
+  import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
 
   let accountName: string
   let error: string
   if (!accountName) accountName = ''
+  let loading = false
 
   let accountType: AccountType | undefined
 
@@ -56,6 +58,7 @@
   }
 
   async function createAccount () {
+    loading = true
     const accountBody: Omit<Account, 'id'|'additionalAccountData'> & Partial<Account> = {
       name: accountName,
       type: accountType!,
@@ -74,6 +77,7 @@
         'Content-Type': 'application/json'
       }
     })
+    loading = false
     if (res.status === 201) {
       onClose()
       $openPopup = false
@@ -88,6 +92,7 @@
     accountType = account?.type ?? undefined
     accountName = account?.name ?? ''
     error = ''
+    loading = false
   }
 
   function onSelected (id: string) {
@@ -117,7 +122,12 @@
     {:else if accountType === AccountType.SAVING}
       <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
     {/if}
-    <div><Button on:click={() => createAccount()}>{account?.id ? 'Update' : 'Create'}</Button></div>
+    <div><Button disabled={loading} on:click={() => !loading && createAccount()}>
+      {account?.id ? 'Update' : 'Create'}
+      {#if loading}
+        <LoadingSpinner/>
+      {/if}
+    </Button></div>
   {/if}
 </Popup>
 

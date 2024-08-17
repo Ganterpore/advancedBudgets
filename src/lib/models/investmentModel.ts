@@ -53,8 +53,8 @@ export async function getInvestmentsOnUser (userId: number): Promise<Investment[
        FROM investment_value
        GROUP BY investment
       ) latest ON iv.investment = latest.investment AND iv."onDate" = latest."latestDate"
-    WHERE iv.investment in ($1)
-  `, [accountIds.join(', ')])
+    WHERE iv.investment = ANY ($1)
+  `, [accountIds])
   const investmentValues: InvestmentValue[] = valueResults.rows
   return accounts.map(acc => {
     const amount = investmentValues.find(inv => inv.investment === acc.id)

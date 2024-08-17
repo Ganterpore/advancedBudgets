@@ -110,6 +110,7 @@
     transactionName = 'Transaction'
     error = ''
     transactionValue = 0
+    previousTransactionValue = undefined
     $selectedTransactionAccount = 0
     $selectedTransactionType = TransactionType.UNSELECTED
   }

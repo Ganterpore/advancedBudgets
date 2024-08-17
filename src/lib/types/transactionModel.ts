@@ -66,7 +66,7 @@ export async function getTotalOnAccount (accountId: number): Promise<number> {
                     WHERE account=$1`,
     [accountId]
   )
-  return parseInt(res.rows[0].total)
+  return parseInt(res.rows[0].total ?? 0)
 }
 export async function getTransactionsOnParentAccount (accountId: number): Promise<TransactionWithParent[]> {
   const db = await connect()
@@ -90,7 +90,7 @@ export async function getTotalsOnParentAccount (accountId: number): Promise<numb
                     where a.parent=$1`,
     [accountId]
   )
-  return parseInt(res.rows[0].total)
+  return parseInt(res.rows[0].total ?? 0)
 }
 
 export async function getTotalOnIncomeAccounts (userId: number): Promise<{ account: number, parent: number, total: number}[]> {

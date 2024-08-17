@@ -3,6 +3,7 @@ import { getTotalOnAccount, newTransaction } from '$lib/types/transactionModel'
 import { error, json } from '@sveltejs/kit'
 import { currencyToString } from '$lib/utils'
 import type { TransactionData } from '../../routes/(authed)/transactions/[type=accountHierarchy]/[id]/+server'
+import { archiveAccount } from '$lib/models/accountModel'
 
 export async function handleIndividualTransaction (accountId: number, data: TransactionData, props?: { validateWithoutSending?: boolean}) {
   const savingsAccount = await getSavingsAccountOnAccountId(accountId)
@@ -55,5 +56,6 @@ export async function handleCompletion (accountId: number, data: TransactionData
   }
   // Mark the account as completed
   await completeAccount(savingsAccount.id)
+  await archiveAccount(savingsAccount.account)
   return res
 }

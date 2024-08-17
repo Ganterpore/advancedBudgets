@@ -60,6 +60,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     budgetStartDate.getTime(),
     Date.now()
   )))
+  budgetEndDate.setDate(budgetEndDate.getDate() + 1)
   const startOfYear = new Date(0)
   startOfYear.setFullYear(budget.lastBudget.getFullYear())
   const endOfYear = new Date(startOfYear)
@@ -88,8 +89,8 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const wantsBudgets = budgetAccounts.filter(b => b.type ===BudgetAccountType.WANT)
 
   const createBudgetMap = (b: ExpandedBudgetAccount) => {
-    const numberOfOccurencesThisBudget = numberOfOccurrencesBetween(b, budgetStartDate, budgetEndDate)
-    const maxAmountToAdd = numberOfOccurencesThisBudget * b.regularBudget
+    const numberOfOccurrencesThisBudget = numberOfOccurrencesBetween(b, budgetStartDate, budgetEndDate)
+    const maxAmountToAdd = numberOfOccurrencesThisBudget * b.regularBudget
     const amountInAccount = totals[b.parent]?.children[b.account] ?? 0
     const cappedAmountToAdd = Math.min(maxAmountToAdd, b.budgetMax - amountInAccount)
     const parentName = accounts[b.parent].name

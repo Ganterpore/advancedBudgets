@@ -10,8 +10,10 @@
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import { TransactionType } from '$lib/types/transactionTypes'
   import AllAccountsDropdown from '$lib/components/accountComponents/AllAccountsDropdown.svelte'
+  import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
 
   export let accounts: AccountTree
+  let isLoading = false
   let accountList: { name: string, id: number }[]
   $: accountList = Object.values(accounts ?? {}).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
     const children = parentAccount.children
@@ -82,6 +84,8 @@
   }
 
   async function createTransaction () {
+    if (isLoading) return
+    isLoading = true
     const body: TransactionData = {
       amount: actualValue,
       description: transactionName,
@@ -98,6 +102,7 @@
     })
     await invalidate('data:values')
     const responseBody = await res.json()
+    isLoading = false
     if (res.status === 201) {
       onClose()
       $openPopup = false
@@ -110,6 +115,8 @@
     transactionName = 'Transaction'
     error = ''
     transactionValue = 0
+    previousTransactionValue = undefined
+    isLoading = false
     $selectedTransactionAccount = 0
     $selectedTransactionType = TransactionType.UNSELECTED
   }
@@ -126,7 +133,7 @@
       <Input type="number" step="0.01" name="transactionValue" autofocus
              label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"}
              bind:value={transactionValue} on:input={onNegativePressed}/>
-      <Button on:click={createTransaction} >Create</Button>
+      <Button disabled={isLoading} on:click={createTransaction} >Create{#if isLoading}<LoadingSpinner/>{/if}</Button>
     </div>
 
     {#if transferAvailable && !isTransferring}
@@ -148,7 +155,7 @@
         {:else}
           <p>{'<--'}</p>
         {/if}
-        <AllAccountsDropdown accounts={accounts}  bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
+        <AllAccountsDropdown accounts={accounts} bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
         {#if transferAvailable}
           <Button on:click={toggleTransfer}>X</Button>
         {/if}

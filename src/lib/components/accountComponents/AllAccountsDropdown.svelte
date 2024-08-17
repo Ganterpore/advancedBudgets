@@ -4,11 +4,12 @@
   export let accounts: AccountTree
   export let selectedAccount: number
   export let accountsToIgnore: number[] = []
+  export let ignoreArchived = true
 
   let accountList: Account & { concatName: string }[]
   $: accountList = Object.values(accounts ?? {}).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
-    const children = parentAccount.children
-    const childAccountList = Object.values(children).map(account => ({ ...account, concatName: `${parentAccount.name}: ${account.name}` }))
+    let children = parentAccount.children
+    const childAccountList = Object.values(children).filter(a => ignoreArchived ? !a.archived : true).map(account => ({ ...account, concatName: `${parentAccount.name}: ${account.name}` }))
     return [...accs, ...childAccountList]
   }, [])
 </script>

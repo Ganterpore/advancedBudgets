@@ -78,6 +78,7 @@ export const getNextOccurrence = (frequencyObj: FrequencyObject, after: Date) =>
     }
     nextDate.setDate(dayOf)
   }
+  nextDate.setHours(0, 0, 0, 0)
   return nextDate
 }
 

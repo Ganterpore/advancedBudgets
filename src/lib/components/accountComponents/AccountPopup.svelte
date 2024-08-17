@@ -117,7 +117,7 @@
     {:else if accountType === AccountType.SAVING}
       <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
     {/if}
-    <div><Button on:click={() => createAccount()} >Create</Button></div>
+    <div><Button on:click={() => createAccount()}>{account?.id ? 'Update' : 'Create'}</Button></div>
   {/if}
 </Popup>
 

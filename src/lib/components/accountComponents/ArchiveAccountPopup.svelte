@@ -3,7 +3,7 @@
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import { openPopup } from '$lib/store'
   import { AccountHierarchy } from '../../../params/accountHierarchy'
-  import { invalidate } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
 
   export let accountId: number
@@ -21,6 +21,7 @@
     if (res.status === 204) {
       $openPopup = false
       await invalidate('data:accounts')
+      await goto('/')
     } else {
       const body = await res.json()
       error = body.error ?? body.message

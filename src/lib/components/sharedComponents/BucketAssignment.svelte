@@ -51,7 +51,7 @@
         <div class="inner">
           {#if isEditing}
             {#if type==='max'}${/if}
-            <Input style="width: 5ch" type="number" bind:value={bucket.plannedAmount} />
+            <Input style="width: {type === 'percent' ? 5 : 10}ch" type="number" bind:value={bucket.plannedAmount} />
           {/if}
           {#if isEditing || bucket.actualAmount === 0}
             {#if type === 'percent'}

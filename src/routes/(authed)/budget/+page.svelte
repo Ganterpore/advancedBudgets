@@ -71,7 +71,6 @@
         }
       })
       await invalidate('data:values')
-      // TODO add error handling
       if(res.ok) {
         budget.lastBudget = new Date()
         await fetch('', {

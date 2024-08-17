@@ -43,6 +43,9 @@ export async function getInvestmentsOnUser (userId: number): Promise<Investment[
     [userId])
   const accounts: Omit<Investment, 'amount'>[] = res.rows
   const accountIds = accounts.map(acc => acc.id)
+  if (accountIds.length === 0) {
+    return []
+  }
   const valueResults = await db.query(`
     SELECT * FROM investment_value iv
     INNER JOIN 

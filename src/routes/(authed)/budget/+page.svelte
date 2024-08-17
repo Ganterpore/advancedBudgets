@@ -3,13 +3,14 @@
   import FrequencySelector from "$lib/components/timeSelectors/FrequencySelector.svelte";
   import {currencyToString} from "$lib/utils";
   import SavingsProgress from "$lib/components/accountComponents/SavingsProgress.svelte";
-  import BucketAssignment from "$lib/components/budgetComponents/BucketAssignment.svelte";
+  import BucketAssignment from "$lib/components/sharedComponents/BucketAssignment.svelte";
   import type { BudgetExcess, BudgetSavings } from '$lib/types/budgetTypes'
   import { invalidate } from '$app/navigation'
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import AppBar from '$lib/components/sharedComponents/AppBar.svelte'
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
+  import type { AccountNode } from '$lib/types/accountTypes'
 
   export let data
   $: ({ incomeOnAccounts, totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions } = data)
@@ -21,6 +22,16 @@
   let isEditing = false
   let isReleasingBudget = false
   let error
+
+  function allBuckets (): { id: string, name: string, plannedAmount: number, actualAmount: number }[] {
+    const accountList = Object.values(data.accounts ?? {}).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
+      const children = parentAccount.children
+      const childAccountList = Object.values(children).map(account => ({ id: `account_${account.id}`, name: `${parentAccount.name}: ${account.name}` }))
+      return [...accs, ...childAccountList]
+    }, [])
+    const investmentList = data.investments.map(inv => ({ id: `investment_${inv.id}`, name: inv.name }))
+    return [...accountList, ...investmentList]
+  }
 
   async function edit () {
     if (isEditing) {
@@ -63,10 +74,12 @@
     }
     isReleasingBudget = !isReleasingBudget
   }
-  async function addSavingsAccount (accountId: number) {
+  async function addSavingsAccount (accountId: string) {
+    const accountSplit = accountId.split('_')
     const budgetSavings: Omit<BudgetSavings, 'id'|'user'> = {
-      account: accountId,
-      max: 10000
+      account: Number(accountSplit[1]),
+      max: 10000,
+      type: accountSplit[0] as 'account'|'investment'
     }
     await fetch('budget/savingsAccount', {
       method: 'POST',
@@ -77,11 +90,13 @@
     })
     await invalidate('data:budgetSavings')
   }
-  async function updateSavingsAccount (budgetSavings: { id: number, account: number, name: string, plannedAmount: number, actualAmount }) {
+  async function updateSavingsAccount (budgetSavings: { id: string, name: string, plannedAmount: number, actualAmount: number }) {
+    const accountSplit = budgetSavings.id.split('_')
     const budgetSavingsAccount : Omit<BudgetSavings, 'user'> = {
-      id: budgetSavings.id,
-      account: budgetSavings.account,
-      max: budgetSavings.plannedAmount * 100
+      id: Number(accountSplit[2]),
+      account: Number(accountSplit[1]),
+      max: budgetSavings.plannedAmount * 100,
+      type: accountSplit[0] as 'account'|'investment'
     }
     await fetch('budget/savingsAccount', {
       method: 'POST',
@@ -92,20 +107,23 @@
     })
     await invalidate('data:budgetSavings')
   }
-  async function deleteSavingsAccount (accountId: number) {
+  async function deleteSavingsAccount (accountId: string) {
+    const accountSplit = accountId.split('_')
     await fetch('budget/savingsAccount', {
       method: 'DELETE',
-      body: JSON.stringify({ id: accountId }),
+      body: JSON.stringify({ id: accountSplit[2] }),
       headers: {
         'Content-Type': 'application/json'
       }
     })
     await invalidate('data:budgetSavings')
   }
-  async function addExcessAccount (accountId: number) {
+  async function addExcessAccount (accountId: string) {
+    const accountSplit = accountId.split('_')
     const excess: Omit<BudgetExcess, 'id'|'user'> = {
-      account: accountId,
-      proportion: 10
+      account: Number(accountSplit[1]),
+      proportion: 10,
+      type: accountSplit[0] as 'account'|'investment'
     }
     await fetch('budget/excessAccount', {
       method: 'POST',
@@ -116,11 +134,13 @@
     })
     await invalidate('data:excess')
   }
-  async function updateExcessAccount (excess: { id: number, account: number, name: string, plannedAmount: number, actualAmount }) {
+  async function updateExcessAccount (excess: { id: string, name: string, plannedAmount: number, actualAmount }) {
+    const accountSplit = excess.id.split('_')
     const excessAccount: Omit<BudgetExcess, 'user'> = {
-      id: excess.id,
-      account: excess.account,
-      proportion: excess.plannedAmount
+      id: Number(accountSplit[2]),
+      account: Number(accountSplit[1]),
+      proportion: excess.plannedAmount,
+      type: accountSplit[0] as 'account'|'investment'
     }
     await fetch('budget/excessAccount', {
       method: 'POST',
@@ -131,10 +151,11 @@
     })
     await invalidate('data:excess')
   }
-  async function deleteExcessAccount (accountId: number) {
+  async function deleteExcessAccount (accountId: string) {
+    const accountSplit = accountId.split('_')
     await fetch('budget/excessAccount', {
       method: 'DELETE',
-      body: JSON.stringify({ id: accountId }),
+      body: JSON.stringify({ id: accountSplit[2] }),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -192,20 +213,22 @@
     </Expandable>
 
     <div class="title"><h3>Savings</h3>{currencyToString(savingsAccounts.reduce((total, acc) => total + acc.actualAmountAdded, 0))}</div>
-    <BucketAssignment allAccounts={data.accounts} selectedAccounts={savingsAccounts.map(acc => ({
-      id: acc.id, account: acc.account, name: acc.name, plannedAmount: acc.max / 100, actualAmount: acc.actualAmountAdded
-    }))}
+    <BucketAssignment bucketsToAdd={allBuckets()}
+                      buckets={savingsAccounts.map(acc => ({
+                        id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.max / 100, actualAmount: acc.actualAmountAdded
+                      }))}
                       type="max"
-                      addAccountCallback={addSavingsAccount} updateAccountCallback={updateSavingsAccount}
-                      removeAccountCallback={deleteSavingsAccount} />
+                       addBucketCallback={addSavingsAccount} updateBucketCallback={updateSavingsAccount}
+                       removeBucketCallback={deleteSavingsAccount} />
 
     <div class="title"><h3>Excess</h3>{currencyToString(excess)}</div>
-    <BucketAssignment allAccounts={data.accounts} selectedAccounts={excessAccounts.map(acc => ({
-      id: acc.id, account: acc.account, name: acc.name, plannedAmount: acc.proportion, actualAmount: acc.actualAmountAdded
-    }))}
+    <BucketAssignment bucketsToAdd={allBuckets()}
+                      buckets={excessAccounts.map(acc => ({
+                        id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.proportion, actualAmount: acc.actualAmountAdded
+                      }))}
                       type="percent"
-                      addAccountCallback={addExcessAccount} updateAccountCallback={updateExcessAccount}
-                      removeAccountCallback={deleteExcessAccount} />
+                      addBucketCallback={addExcessAccount} updateBucketCallback={updateExcessAccount}
+                      removeBucketCallback={deleteExcessAccount} />
     {#if isReadyToRelease}
       <div class="title"><h3>Final Steps</h3></div>
       <div class="release-box">

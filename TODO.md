@@ -21,7 +21,7 @@
    - [x] Track how over/under budget you are
    - [ ] Track inflation
    - [ ] Income from capital gains
-     - [ ] Create Investment account
+     - [x] Create Investment account
      - [ ] Refactor all accounts pages / forms
      - [ ] Show historic values on page
      - [ ] Calculate returns from withdrawal rate

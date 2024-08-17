@@ -19,9 +19,17 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     amount: 'integer',
     onDate: 'datetime'
   })
+  pgm.addColumn('budget_savings_mapping', {
+    type: 'string'
+  })
+  pgm.addColumn('budget_excess_mapping', {
+    type: 'string'
+  })
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
+  pgm.dropColumn('budget_savings_mapping', 'type')
+  pgm.dropColumn('budget_excess_mapping', 'type')
   pgm.dropTable('investment_value')
   pgm.dropTable('investment_account')
 }

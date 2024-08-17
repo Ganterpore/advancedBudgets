@@ -16,7 +16,7 @@ import { getAllBudgetSavingsAccounts } from '$lib/models/budgetSavingsModel'
 export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const userId = Number(locals.user!.id)
   const layout = await parent()
-  const { totals, accounts } = layout
+  const { totals, accounts, investments } = layout
 
   depends('data:budget')
   let budget: Budget | undefined = await budgetModel.getBudgetForUser(userId)
@@ -38,6 +38,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   }
 
   const transactions: (TransactionData & { account: number, parent: number })[] = []
+  const investmentTransactions: (TransactionData & { name: string })[] = []
 
   depends('data:values')
   const incomeOnAccounts = await getTotalOnIncomeAccounts(userId)
@@ -134,25 +135,40 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const savingsIncome = incomeLeft
   const totalSavingsRequired = budgetSavingsAccounts.reduce((total, acc) => total + Number(acc.max), 0)
   const budgetSavingsAccountsWithNames = budgetSavingsAccounts.map(acc => {
-    const parentAccount: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[acc.account])
     const amountAdded = Math.min(
       acc.max,
       totalSavingsRequired ? (acc.max / totalSavingsRequired) * savingsIncome : 0
     )
-    console.log(amountAdded)
     incomeLeft -= amountAdded
-    if (amountAdded > 0) {
-      transactions.push({
-        parent: parentAccount.id,
-        account: acc.account,
-        amount: amountAdded,
-        description: 'Budget - Excess',
-        type: TransactionType.INDIVIDUAL
-      })
+    let name
+    if (acc.type === 'investment') {
+      const investment = investments.find(inv => inv.id === acc.account)
+      name = investment?.name ?? ''
+      if (amountAdded > 0) {
+        investmentTransactions.push({
+          amount: amountAdded,
+          description: 'Budget - Excess',
+          type: TransactionType.INDIVIDUAL,
+          transferTo: acc.account,
+          name
+        })
+      }
+    } else {
+      const parentAccount: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[acc.account])
+      name = `${parentAccount.name}: ${parentAccount.children[acc.account].name}`
+      if (amountAdded > 0) {
+        transactions.push({
+          parent: parentAccount.id,
+          account: acc.account,
+          amount: amountAdded,
+          description: 'Budget - Excess',
+          type: TransactionType.INDIVIDUAL
+        })
+      }
     }
     return {
       ...acc,
-      name: `${parentAccount.name}: ${parentAccount.children[acc.account].name}`,
+      name,
       actualAmountAdded: amountAdded
     }
   })
@@ -162,21 +178,38 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const totalProportion = excessAccounts.reduce((total, acc) => total + Number(acc.proportion), 0)
   const excessIncome = incomeLeft
   const excessAccountsWithNames = excessAccounts.map(ex => {
-    const parentAccount: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[ex.account])
     const actualAmountAdded = totalProportion ? Math.floor((ex.proportion / totalProportion) * excessIncome) : 0
     incomeLeft -= actualAmountAdded
-    if (actualAmountAdded > 0) {
-      transactions.push({
-        parent: parentAccount.id,
-        account: ex.account,
-        amount: actualAmountAdded,
-        description: 'Budget - Excess',
-        type: TransactionType.INDIVIDUAL
-      })
+
+    let name
+    if (ex.type === 'investment') {
+      const investment = investments.find(inv => inv.id === ex.account)
+      name = investment?.name ?? ''
+      if (actualAmountAdded > 0) {
+        investmentTransactions.push({
+          amount: actualAmountAdded,
+          description: 'Budget - Excess',
+          type: TransactionType.INDIVIDUAL,
+          transferTo: ex.account,
+          name
+        })
+      }
+    } else {
+      const parentAccount: AccountNode = Object.values(accounts).find((a: AccountNode) => a.children[ex.account])
+      name = `${parentAccount.name}: ${parentAccount.children[ex.account].name}`
+      if (actualAmountAdded > 0) {
+        transactions.push({
+          parent: parentAccount.id,
+          account: ex.account,
+          amount: actualAmountAdded,
+          description: 'Budget - Excess',
+          type: TransactionType.INDIVIDUAL
+        })
+      }
     }
     return {
       ...ex,
-      name: `${parentAccount.name}: ${parentAccount.children[ex.account].name}`,
+      name,
       actualAmountAdded
     }
   })
@@ -192,6 +225,10 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     const parent = accounts[t.parent]
     if (!parentBalances[parent.name]) parentBalances[parent.name] = 0
     parentBalances[parent.name] += t.amount
+  }
+  for (const t of investmentTransactions) {
+    if (!parentBalances[t.name]) parentBalances[t.name] = 0
+    parentBalances[t.name] += t.amount
   }
   const parentTransactions = minimizeTransactions(
     Object.keys(parentBalances).map(name => ({ name, balance: parentBalances[name] }))

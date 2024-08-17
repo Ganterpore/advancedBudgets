@@ -149,7 +149,7 @@
         {:else}
           <p>{'<--'}</p>
         {/if}
-        <AllAccountsDropdown accounts={accounts}  bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
+        <AllAccountsDropdown accounts={accounts} bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
         {#if transferAvailable}
           <Button on:click={toggleTransfer}>X</Button>
         {/if}

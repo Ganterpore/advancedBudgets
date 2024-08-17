@@ -1,54 +1,67 @@
 <script lang="ts">
   import { openPopup } from '$lib/store.js'
-  import { invalidate } from '$app/navigation'
   import Popup from '$lib/components/sharedComponents/Popup.svelte'
-  import Alert from '$lib/components/sharedComponents/Alert.svelte'
-  import Input from '$lib/components/sharedComponents/Input.svelte'
-  import Button from '$lib/components/sharedComponents/Button.svelte'
-  import type { ParentAccount } from '$lib/types/accountTypes'
+  import type { Investment, ParentAccount } from '$lib/types/accountTypes'
+  import Toggle from '$lib/components/sharedComponents/Toggle.svelte'
+  import ParentAccountForm from '$lib/components/accountComponents/ParentAccountForm.svelte'
+  import InvestmentAccountForm from '$lib/components/accountComponents/InvestmentAccountForm.svelte'
 
+  let accountType: 'Cash' | 'Investment' = 'Cash'
   export let account: Pick<ParentAccount, 'name'> & Partial<ParentAccount> = {
     name: ''
   }
-  let error: string
+  export let investment: Omit<Investment, 'id'|'user'> & Partial<Investment> = {
+    name: '',
+    amount: 0,
+    expectedROI: 600,
+    withdrawalRate: 0
+  }
+  export let isOpen = undefined
 
-  async function createAccount () {
-    const res = await fetch('/parentAccount', {
-      method: 'POST',
-      body: JSON.stringify({ account: account.name, id: account.id }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    const body = await res.json()
-    if (res.status === 201) {
-      if (!account.id) {
-        account.name = ''
-      }
-      error = ''
-      $openPopup = false
-      await invalidate('data:accounts')
-    } else {
-      error = body.error
+  async function onSubmit () {
+    if (!account.id) {
+      account.name = ''
+    } if (!investment.id) {
+      investment.name = ''
+      investment.amount = 0
+      investment.expectedROI = 600
+      investment.withdrawalRate = 0
     }
+    $openPopup = false
+    if (isOpen !== undefined) isOpen = false
   }
 
   function onClose () {
     if (!account.id) {
       account.name = ''
     }
-    error = ''
+    if (isOpen !== undefined) isOpen = false
   }
+
+  $: isUpdating = account.id || investment.id
+  const refreshAccountType = (accountId?: number, investmentId?: number) => {
+    if (accountId) return 'Cash'
+    if (investmentId) return 'Investment'
+    return accountType
+  }
+  $: accountType = refreshAccountType(account.id, investment.id)
 </script>
 
-<Popup id="newAccount" onClose={onClose}>
-  <h1 style="margin: 0">Create a new account</h1>
-  <p style="font-style: italic">This should reflect a real world bank account</p>
-  {#if error}
-    <Alert>{error}</Alert>
-  {/if}
-  <form class="form">
-    <Input label="Name" name="accountName" autofocus bind:value={account.name}/>
-    <Button on:click={() => createAccount()}>Create</Button>
-  </form>
-</Popup>
+<div class="container">
+  <Popup id="newAccount" onClose={onClose} bind:isOpen={isOpen}>
+    <h1 style="margin: 0">{isUpdating ? 'Update' : 'Add'} Account</h1>
+    <Toggle disabled={isUpdating} value1="Cash" value2="Investment" bind:selected={accountType} />
+
+    {#if accountType === 'Cash'}
+      <ParentAccountForm account={account} onSubmit={onSubmit} />
+    {:else if accountType === 'Investment'}
+      <InvestmentAccountForm investment={investment} onSubmit={onSubmit} />
+    {/if}
+  </Popup>
+</div>
+
+<style>
+  .container {
+    transition: width 1s, height 1s;
+  }
+</style>

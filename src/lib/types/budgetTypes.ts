@@ -13,12 +13,14 @@ export type BudgetExcess = {
   id: number,
   user: number,
   account: number,
-  proportion: number
+  proportion: number,
+  type: 'account'|'investment'
 }
 
 export type BudgetSavings = {
   id: number,
   user: number,
   account: number,
-  max: number
+  max: number,
+  type: 'account'|'investment'
 }

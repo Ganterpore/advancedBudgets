@@ -12,6 +12,7 @@ import type { TransactionData } from '../transactions/[type=accountHierarchy]/[i
 import { TransactionType } from '$lib/types/transactionTypes'
 import { minimizeTransactions } from '$lib/helpers/transactionHelpers'
 import { getAllBudgetSavingsAccounts } from '$lib/models/budgetSavingsModel'
+import { getEstimateExcessFromInvestment, getIncomeFromInvestment } from '$lib/helpers/budgetHelpers'
 
 export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const userId = Number(locals.user!.id)
@@ -53,15 +54,35 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
       })
     }
   }
-  const incomeSinceLast = incomeOnAccounts.reduce((total, i) => total + i.total, 0)
   const budgetStartDate = getNextOccurrence(budget, budget.lastBudget)
   const isReadyToRelease = budgetStartDate < new Date()
   const budgetEndDate = getNextOccurrence(budget, new Date(Math.max(
     budgetStartDate.getTime(),
     Date.now()
   )))
+  const startOfYear = new Date(0)
+  startOfYear.setFullYear(budget.lastBudget.getFullYear())
+  const endOfYear = new Date(startOfYear)
+  endOfYear.setFullYear(endOfYear.getFullYear() + 1)
+  const budgetPeriodsPerYear = numberOfOccurrencesBetween(budget, startOfYear, endOfYear)
+  const investmentIncome = investments.map(inv => {
+    const income = getIncomeFromInvestment(inv, budgetPeriodsPerYear)
+    const estimatedTotalIncome = getEstimateExcessFromInvestment(inv, budgetPeriodsPerYear)
+    if (income > 0) {
+      investmentTransactions.push({
+        amount: -1 * income,
+        description: 'Budget - Excess',
+        type: TransactionType.INDIVIDUAL,
+        transferTo: inv.id,
+        name: inv.name
+      })
+    }
+    return { name: inv.name, income, estimatedTotalIncome }
+  })
 
   // Get all the budget accounts for the user
+  const incomeSinceLast = incomeOnAccounts.reduce((total, i) => total + i.total, 0)
+    + investmentIncome.reduce((total, inv) => total + inv.income, 0)
   const budgetAccounts = await getAllBudgetAccountsForUser(userId)
   const needsBudgets = budgetAccounts.filter(b => b.type ===BudgetAccountType.NEED)
   const wantsBudgets = budgetAccounts.filter(b => b.type ===BudgetAccountType.WANT)
@@ -238,6 +259,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     savingsAccounts: budgetSavingsAccountsWithNames,
     excessAccounts: excessAccountsWithNames,
     incomeOnAccounts,
+    investmentIncome,
     incomeSinceLast,
     budgetStartDate,
     budgetEndDate,

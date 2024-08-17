@@ -13,7 +13,7 @@
   import type { AccountNode } from '$lib/types/accountTypes'
 
   export let data
-  $: ({ incomeOnAccounts, totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions } = data)
+  $: ({ incomeOnAccounts, investmentIncome, totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions } = data)
   $: maxNeeds = amountToNeeds.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
   $: currentNeeds = amountToNeeds.reduce((total, curr) => total + curr.actualAmountAdded, 0)
   $: maxWants = amountToWants.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
@@ -185,6 +185,15 @@
         <p>{data.accounts[income.parent]?.children[income.account]?.name} ({((income.total * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
         <div style="flex-grow: 1"></div>
         <p>{currencyToString(income.total)}</p>
+      </div>
+      <hr/>
+    {/each}
+    {#each investmentIncome as income}
+      <div class="income-list-item">
+        <p>{income.name} ({((income.income * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
+        <div style="flex-grow: 1"></div>
+        <p>{currencyToString(income.income)}</p>
+        <p style="font-style: italic"> (+~{currencyToString(income.estimatedTotalIncome)})</p>
       </div>
       <hr/>
     {/each}

@@ -20,10 +20,16 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     onDate: 'datetime'
   })
   pgm.addColumn('budget_savings_mapping', {
-    type: 'string'
+    type: {
+      type: 'string',
+      default: 'account;'
+    }
   })
   pgm.addColumn('budget_excess_mapping', {
-    type: 'string'
+    type: {
+      type: 'string',
+      default: 'account;'
+    }
   })
 }
 

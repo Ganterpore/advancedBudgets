@@ -24,7 +24,8 @@
      - [x] Create Investment account
      - [ ] Refactor all accounts pages / forms
      - [ ] Show historic values on page
-     - [ ] Calculate returns from withdrawal rate
+     - [x] Calculate returns from withdrawal rate
+       - [x] Plus optional estimated returns from estimated ROI
    - [x] Excess Salary
  - [ ] Retirement planning
  - [ ] Bank Integrations

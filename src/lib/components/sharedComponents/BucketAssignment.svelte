@@ -65,6 +65,9 @@
           {/if}
           {#if !isEditing && bucket.actualAmount !== 0}
             {currencyToString(bucket.actualAmount)}
+            {#if type === 'max'}
+              / ${bucket.plannedAmount}
+            {/if}
           {/if}
         </div>
         <hr/>

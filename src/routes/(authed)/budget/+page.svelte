@@ -223,9 +223,13 @@
         <p>{((currentNeeds / maxNeeds) * 100).toFixed(2)}% progress towards {currencyToString(maxNeeds)}</p>
         <SavingsProgress savingsGoal={maxNeeds} currentValue={currentNeeds} />
       </div>
-      <div style="padding-left: 25px">{#each amountToNeeds as need}
-        <p>{currencyToString(need.actualAmountAdded)} to {need.parentName}: {need.name}
-          to bring it up to {currencyToString((totals[need.parent]?.children[need.id] ?? 0) + need.actualAmountAdded)}</p>
+      <div>{#each amountToNeeds as need}
+        <div class="budgetList">
+          <p>{need.parentName}: {need.name}</p>
+          <div style="flex-grow: 1"></div>
+          {#if need.actualAmountAdded < need.maxAmountToAdd}<p>{currencyToString(need.actualAmountAdded)} / </p>{/if}
+          <p>{currencyToString(need.maxAmountToAdd)}</p>
+        </div>
       {/each}</div>
     </Expandable>
     <hr/>
@@ -234,9 +238,13 @@
         <p>{((currentWants / maxWants) * 100).toFixed(2)}% progress towards {currencyToString(maxWants)}</p>
           <SavingsProgress savingsGoal={maxWants} currentValue={currentWants} />
       </div>
-      <div style="padding-left: 25px">{#each amountToWants as want}
-        <p>{currencyToString(want.actualAmountAdded)} to {want.parentName}: {want.name}
-          to bring it up to {currencyToString((totals[want.parent]?.children[want.id] ?? 0) + want.actualAmountAdded)}</p>
+      <div>{#each amountToWants as want}
+        <div class="budgetList">
+          <p>{want.parentName}: {want.name}</p>
+          <div style="flex-grow: 1"></div>
+          {#if want.actualAmountAdded < want.maxAmountToAdd}<p>{currencyToString(want.actualAmountAdded)} / </p>{/if}
+          <p>{currencyToString(want.maxAmountToAdd)}</p>
+        </div>
       {/each}</div>
     </Expandable>
 
@@ -342,6 +350,12 @@
   }
   .income-list-item p {
     margin: 0;
+  }
+  .budgetList {
+    padding-left: 25px;
+    padding-right: 5px;
+    display: flex;
+    flex-direction: row;
   }
   .button-array {
     display: flex;

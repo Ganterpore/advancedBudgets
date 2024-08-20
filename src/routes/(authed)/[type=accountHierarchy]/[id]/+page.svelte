@@ -60,12 +60,9 @@
       </ListItem>
       <div class="list">
         {#each transactionsByMonth[key].transactionList as t}
+          <p class="date">{t.transactionTime.toLocaleString()}</p>
           <ListItem secondary>
-            <TransactionListItem
-              id={t.id}
-              description={t.description}
-              amount={t.amount}
-              accountName={t.accountName} />
+            <TransactionListItem transaction={t} />
           </ListItem>
         {/each}
       </div>
@@ -78,6 +75,11 @@
 <ArchiveAccountPopup accountId={data.account.id} isParent={data.isParent} />
 
 <style>
+  .date {
+    font-size: small;
+    margin: 0;
+    padding: 0 10px;
+  }
   .container {
       display: flex;
       justify-content: center;

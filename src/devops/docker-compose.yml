@@ -8,7 +8,7 @@ services:
       - POSTGRES_PASSWORD=budget
       - POSTGRES_DB=budget
     ports:
-      - "5432:5432"
+      - "5174:5432"
   setup-budget-db:
     image: node:18-alpine
     container_name: setup-budget-db

@@ -17,8 +17,10 @@
 </div>
 <style>
   p {
-    font-size: small;
+    font-size: medium;
     align-self: center;
+    color: var(--theme-secondary-text);
+    font-weight: bold;
   }
   div {
     margin: 10px;

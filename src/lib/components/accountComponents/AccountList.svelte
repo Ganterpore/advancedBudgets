@@ -6,7 +6,7 @@
   import type { AccountTotals } from '$lib/types/transactionTypes'
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
   import SavingsExpandable from '$lib/components/accountComponents/SavingsExpandable.svelte'
-  import List from '$lib/components/sharedComponents/List.svelte'
+  import ListItem from '$lib/components/sharedComponents/ListItem.svelte'
 
   export let parent: number
   export let accounts: Account[]
@@ -95,20 +95,17 @@
 </script>
 
 {#each Object.keys(accountMap).sort((acc1, acc2) => sortOrder.indexOf(acc1) - sortOrder.indexOf(acc2)) as category (category)}
+  <div style="padding: 0 20px; margin: 0;">
   <svelte:component this={headerTypeObjects[category]} {...propsFor[category]} >
-    <List selectable secondary onSelected={(id) => onSelect(false, id)}
-          list={accountMap[category].map(a => {
-        return {
-            id: a.id,
-            header: AccountHeader,
-            headerProps: {
-                name: a.name,
-                id: a.id,
-                type: a.type,
-                additionalAccountData: a.additionalAccountData,
-                value: totals[a.id]
-            }
-        }
-    })} />
+    <div>
+    {#each accountMap[category] as a}
+        <ListItem selectable secondary onSelected={() => onSelect(false, a.id)} >
+          <AccountHeader name={a.name} id={a.id} type={a.type}
+                         additionalAccountData={a.additionalAccountData}
+                         value={totals[a.id]} />
+        </ListItem>
+    {/each}
+    </div>
   </svelte:component>
+    </div>
 {/each}

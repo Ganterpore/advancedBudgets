@@ -1,5 +1,4 @@
 <script lang="ts">
-  import List from "$lib/components/sharedComponents/List.svelte";
   import TransactionListItem from "$lib/components/transactionComponents/TransactionListItem.svelte";
   import AppBar from "$lib/components/sharedComponents/AppBar.svelte";
   import {goto} from "$app/navigation";
@@ -9,6 +8,7 @@
   import ArchiveAccountPopup from '$lib/components/accountComponents/ArchiveAccountPopup.svelte'
   import type { TransactionWithParent } from '$lib/types/transactionTypes'
   import TransactionMonthHeader from '$lib/components/transactionComponents/TransactionMonthHeader.svelte'
+  import ListItem from '$lib/components/sharedComponents/ListItem.svelte'
 
   export let data
   const transactions: TransactionWithParent[] = data.transactions
@@ -51,27 +51,22 @@
 
 <div class="container">
   <div class="listContainer">
-    <List list={Object.keys(transactionsByMonth).map(key => ({
-      id: key,
-      header: TransactionMonthHeader,
-      headerProps: {
-        dateString: key,
-        positiveSum: transactionsByMonth[key].positiveSum,
-        negativeSum: transactionsByMonth[key].negativeSum
-      },
-      child: List,
-      childProps: {
-        secondary: true,
-        list: transactionsByMonth[key].transactionList.map(t => ({
-          id: t.id, header: TransactionListItem, headerProps: {
-            id: t.id,
-            description: t.description,
-            amount: t.amount,
-            accountName: t.accountName
-          }
-        }))
-      }
-    }))} />
+    {#each Object.keys(transactionsByMonth) as key}
+      <ListItem id={key}>
+        <TransactionMonthHeader
+          dateString={key}
+          positiveSum={transactionsByMonth[key].positiveSum}
+          negativeSum={transactionsByMonth[key].negativeSum} />
+      </ListItem>
+      <div class="list">
+        {#each transactionsByMonth[key].transactionList as t}
+          <p class="date">{t.transactionTime.toLocaleString()}</p>
+          <ListItem secondary>
+            <TransactionListItem transaction={t} />
+          </ListItem>
+        {/each}
+      </div>
+    {/each}
   </div>
 </div>
 
@@ -80,6 +75,11 @@
 <ArchiveAccountPopup accountId={data.account.id} isParent={data.isParent} />
 
 <style>
+  .date {
+    font-size: small;
+    margin: 0;
+    padding: 0 10px;
+  }
   .container {
       display: flex;
       justify-content: center;
@@ -87,5 +87,10 @@
   .listContainer {
       max-width: 600px;
       flex-grow: 1;
+  }
+  .list {
+    margin: 0 5px;
+    padding: 10px 0 0 0;
+    background-color: var(--theme-tertiary);
   }
 </style>

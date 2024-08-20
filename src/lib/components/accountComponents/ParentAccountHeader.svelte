@@ -28,6 +28,9 @@
 <style>
   p {
     margin: 10px;
+    font-size: large;
+    color: var(--theme-secondary-text);
+    font-weight: bold;
   }
   .header {
       display: flex;

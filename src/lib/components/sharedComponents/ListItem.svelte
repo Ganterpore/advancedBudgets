@@ -4,7 +4,7 @@
   export let onSelected: () => void = () => {}
 </script>
 
-<div class="content">
+<div class="content" {...$$restProps}>
   <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
   <div class={`list-item ${secondary ? 'secondary' : ''} ${selectable ? 'selectable' : ''}`}
        on:click={() => onSelected()}>
@@ -29,7 +29,6 @@
   .list-item.secondary {
     background-color: var(--theme-primary);
     color: var(--theme-text);
-    font-size: medium;
   }
   .list-item.selectable {
     cursor: pointer;

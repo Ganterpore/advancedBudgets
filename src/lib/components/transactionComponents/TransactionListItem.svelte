@@ -16,9 +16,10 @@
 
 <style>
   .container {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      margin: 0 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0 5px;
+    font-weight: bold;
   }
 </style>

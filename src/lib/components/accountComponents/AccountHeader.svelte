@@ -72,6 +72,9 @@
   p {
     margin: 5px;
     align-self: center;
+    font-size: medium;
+    color: var(--theme-text);
+    font-weight: bold;
   }
   .text-box {
     display: flex;

@@ -19,34 +19,35 @@
 
 <style>
   .container {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
   .icon {
-      padding: 10px 25px;
+    padding: 10px 25px;
   }
   .textContainer {
-      display: flex;
-      flex-direction: column;
-      margin: 0;
-      padding: 0;
-      height: min-content;
-      justify-content: center;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    height: min-content;
+    justify-content: center;
   }
   p {
-      color: var(--theme-text);
+    color: var(--theme-text);
   }
   .name {
-      font-weight: bold;
-      height: min-content;
+    font-weight: bold;
+    height: min-content;
   }
   .description {
-      font-style: italic;
-      font-weight: normal;
-      padding-bottom: 10px;
+    font-style: italic;
+    font-weight: normal;
+    padding-bottom: 10px;
   }
   p {
-      align-items: center;
+    align-items: center;
   }
 </style>

@@ -48,7 +48,7 @@ export const themes: {[name: string]: Theme} = {
     background: '#53221C',
     primary: '#9F091B',
     secondary: '#371C4B',
-    tertiary: '#060c81',
+    tertiary: '#725483',
     highlight: '#000000',
     text: '#FFFFFF',
     'secondary-text': '#EF091B',

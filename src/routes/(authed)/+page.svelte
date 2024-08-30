@@ -17,11 +17,13 @@
   async function openAccountPopup () {
     $openPopup = 'newAccount'
   }
-  const handleLogout = async () => goto('/logout')
+  function openSettings () {
+    goto('/settings')
+  }
 </script>
 
 <AppBar title="Welcome {data.user?.username ?? ''}"
-        leftButton={{ name: 'Log Out', action: handleLogout }}
+        leftButton={{ name: 'Settings', action: openSettings }}
         rightButtons={[{ name: 'Add Account', action: openAccountPopup }]}/>
 
 <div class="main">

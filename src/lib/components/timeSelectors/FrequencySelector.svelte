@@ -8,7 +8,7 @@
     export let daysOf: number
 </script>
 
-<div>
+<div class="container">
     <label>
         Every
         <input type="number" min="1" max="100" bind:value={value} />
@@ -28,3 +28,9 @@
         {/if}
     </label>
 </div>
+
+<style>
+    .container {
+        color: var(--theme-text);
+    }
+</style>

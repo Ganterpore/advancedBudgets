@@ -31,6 +31,7 @@
 <style>
   .expandableHeader {
       background-color: var(--theme-plain);
+      color: var(--theme-text);
       display: flex;
       flex-direction: row;
       justify-content: space-between;

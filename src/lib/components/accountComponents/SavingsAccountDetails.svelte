@@ -32,8 +32,10 @@
 
 <style>
     .container {
-        display: flex;
-        flex-direction: column;
+      display: flex;
+      flex-direction: column;
+      color: var(--theme-text);
+      margin: 5px;
     }
     .centered {
         text-align: center;

@@ -319,6 +319,7 @@
   }
   .outer {
     padding-bottom: 50px;
+    color: var(--theme-text);
   }
   .main {
     margin: 20px 0;
@@ -341,6 +342,8 @@
     display: flex;
     flex-direction: row;
     float: right;
+    background-color: var(--theme-primary);
+    width: 100%;
   }
   .income-list-item {
     padding-top: 5px;

@@ -62,6 +62,8 @@
 
 <style>
   .container {
+    background-color: var(--theme-primary);
     transition: width 1s, height 1s;
+    color: var(--theme-text);
   }
 </style>

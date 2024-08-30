@@ -39,9 +39,20 @@ export const themes: {[name: string]: Theme} = {
     secondary: '#86A376',
     tertiary: '#B3907A',
     highlight: '#86C57C',
-    text: '#86A376',
+    text: '#96C386',
     'secondary-text': '#68423D',
     plain: '#87624A',
     alert: '#9F091B',
+  },
+  vampire: {
+    background: '#53221C',
+    primary: '#9F091B',
+    secondary: '#371C4B',
+    tertiary: '#060c81',
+    highlight: '#000000',
+    text: '#FFFFFF',
+    'secondary-text': '#EF091B',
+    alert: '#ff6700',
+    plain: '#450302',
   }
 }

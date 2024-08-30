@@ -79,6 +79,7 @@
     font-size: small;
     margin: 0;
     padding: 0 10px;
+    color: var(--theme-text);
   }
   .container {
       display: flex;

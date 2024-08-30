@@ -23,9 +23,12 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    background-color: var(--theme-secondary);
+    border-radius: 5px;
   }
   .icon {
     padding: 10px 25px;
+    color: var(--theme-highlight);
   }
   .textContainer {
     display: flex;
@@ -36,7 +39,7 @@
     justify-content: center;
   }
   p {
-    color: var(--theme-text);
+    color: var(--theme-secondary-text);
   }
   .name {
     font-weight: bold;

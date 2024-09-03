@@ -33,10 +33,17 @@
 <AppBar title="Retirement"/>
 
 <div class="container">
+  <div class="text">
+    <RetirementDescriber yearsUntil={yearsUntilRetirement} budgetPeriodsPerYear={budgetPeriodsPerYear}
+                       inflationRate={inflationRate} withdrawalRate={withdrawalRate} interestRate={updatedInterestRate}
+                       currentCapital={updatedCapital} budgetedAmountToCapital={regularDeposit * 100}
+                       currentBudget={budgetPerYear}/>
+  </div>
+
   <div class="percentContainer">
     <NumberClicker unit="%" name="Withdrawal Rate" bind:value={withdrawalRate}/>
     <NumberClicker unit="%" name="Investment Interest Rate" bind:value={roiInterestRate}/>
-    <div>
+    <div class="toggle">
       Reduce Investment income by withdrawal rate?
       <Toggle bind:selected={reduceInterestByWithdrawal} value1="Reduce" value2="Retain" />
     </div>
@@ -49,11 +56,6 @@
     <Input type="number" label="Make one time deposit" bind:value={deposit} />
     <Input type="number" label="Regular deposit" bind:value={regularDeposit} />
   </div>
-
-  <RetirementDescriber yearsUntil={yearsUntilRetirement} budgetPeriodsPerYear={budgetPeriodsPerYear}
-                       inflationRate={inflationRate} withdrawalRate={withdrawalRate} interestRate={updatedInterestRate}
-                       currentCapital={updatedCapital} budgetedAmountToCapital={regularDeposit * 100}
-                       currentBudget={budgetPerYear}/>
 </div>
 
 <BottomNavigation selected="retirement"/>
@@ -61,14 +63,26 @@
 <style>
   .container {
     margin: 10px;
+    background-color: var(--theme-secondary);
+    color: var(--theme-secondary-text);
+    padding-bottom: 75px;
+  }
+  .text {
     background-color: var(--theme-plain);
     color: var(--theme-text);
-    padding-bottom: 75px;
   }
   .percentContainer {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     flex-wrap: wrap;
+  }
+  .toggle {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
   }
 </style>

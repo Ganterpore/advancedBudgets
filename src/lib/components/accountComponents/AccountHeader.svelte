@@ -54,7 +54,7 @@
 
     </div>
     {#if type===AccountType.SAVING}
-      <SavingsProgress backgroundColor="#4a4de7" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />
+      <SavingsProgress backgroundColor="--theme-primaryq" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />
     {/if}
   </div>
   {#if isCompletable}

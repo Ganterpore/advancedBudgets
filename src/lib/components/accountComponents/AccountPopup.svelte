@@ -116,22 +116,28 @@
     {#if error}
       <Alert>{error}</Alert>
     {/if}
-    <Input autofocus={![AccountType.SAVING, AccountType.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
-    {#if accountType === AccountType.BUDGET}
-      <BudgetAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
-    {:else if accountType === AccountType.SAVING}
-      <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
-    {/if}
-    <div><Button disabled={loading} on:click={() => !loading && createAccount()}>
-      {account?.id ? 'Update' : 'Create'}
-      {#if loading}
-        <LoadingSpinner/>
+    <div class="main">
+      <Input autofocus={![AccountType.SAVING, AccountType.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
+      {#if accountType === AccountType.BUDGET}
+        <BudgetAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
+      {:else if accountType === AccountType.SAVING}
+        <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
       {/if}
-    </Button></div>
+      <div><Button disabled={loading} on:click={() => !loading && createAccount()}>
+        {account?.id ? 'Update' : 'Create'}
+        {#if loading}
+          <LoadingSpinner/>
+        {/if}
+      </Button></div>
+    </div>
   {/if}
 </Popup>
 
 <style>
+  .main {
+    width: 100%;
+    padding: 5px 0;
+  }
   .header {
       margin: 0;
       color: var(--theme-text);
@@ -139,9 +145,13 @@
       font-weight: bold;
   }
   .topBar {
-      display: flex;
-      flex-direction: row;
-      justify-content: start;
+    background-color: var(--theme-secondary);
+    color: var(--theme-secondary-text);
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    margin: 10px 0;
+    border-radius: 5px;
   }
   .form {
       display: flex;

@@ -50,7 +50,7 @@
   }
   .content {
     position: relative;
-    background-color: var(--theme-background);
+    background-color: var(--theme-primary);
     margin: 15% auto;
     padding: 20px;
     border-radius: 5px;

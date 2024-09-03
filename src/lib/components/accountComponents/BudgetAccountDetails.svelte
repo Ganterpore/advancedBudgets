@@ -29,11 +29,20 @@
   $: maxText = `You will never accumulate more than ${currencyToString(dataObject.budgetMax ?? 0)} in the account.`
 </script>
 
-<Toggle bind:selected={dataObject.type} value1={BudgetAccountType.WANT} value2={BudgetAccountType.NEED} />
-<p>Is it a want (you can live without it) or a need.</p>
-<Input type="number" step="0.01" name="regularBudget" bind:value={budget} on:input={adjustBudgetMax} label="Budget Amount" />
-<FrequencySelector bind:value={dataObject.frequency} bind:type={dataObject.frequencyCategory} bind:daysOf={dataObject.dayOf} />
-<Input type="number" step="0.01" name="budgetMax" bind:value={max}
-             on:focusout={adjustBudgetMax} label="Max" />
-<p>{message}</p>
-<p>{maxText}</p>
+<div class="container">
+  <Toggle bind:selected={dataObject.type} value1={BudgetAccountType.WANT} value2={BudgetAccountType.NEED} />
+  <p>Is it a want (you can live without it) or a need.</p>
+  <Input type="number" step="0.01" name="regularBudget" bind:value={budget} on:input={adjustBudgetMax} label="Budget Amount" />
+  <FrequencySelector bind:value={dataObject.frequency} bind:type={dataObject.frequencyCategory} bind:daysOf={dataObject.dayOf} />
+  <Input type="number" step="0.01" name="budgetMax" bind:value={max}
+               on:focusout={adjustBudgetMax} label="Max" />
+  <p>{message}</p>
+  <p>{maxText}</p>
+</div>
+
+<style>
+  .container {
+    color: var(--theme-text);
+    margin: 5px;
+  }
+</style>

@@ -5,7 +5,7 @@
   export let savingsGoal
   export let currentValue
   export let multiplier = 100
-  export let backgroundColor = '#3e66b4'
+  export let backgroundColor = '--theme-plain'
 
   const currentPercentTweened = tweened(0, { duration: 500 })
   $: currentPercentTweened.set(Math.min((currentValue * 100 ?? 0) / (savingsGoal ?? 1), 100))

@@ -4,19 +4,30 @@
   import RetirementDescriber from "$lib/components/retirementComponents/RetirementDescriber.svelte";
   import NumberClicker from "$lib/components/sharedComponents/NumberClicker.svelte";
   import Input from "$lib/components/sharedComponents/Input.svelte";
+  import Toggle from "$lib/components/sharedComponents/Toggle.svelte";
+  import Alert from "$lib/components/sharedComponents/Alert.svelte";
 
   let withdrawalRate = 4
   let inflationRate = 3
-  let yearsUntilRetirement = 0
+  let roiInterestRate = 6
+  let yearsUntilRetirement = 10
+  let reduceInterestByWithdrawal = 'Retain'
+  let deposit = 0
 
   export let data
-  let wantsBudget, needsBudget, budgetPeriodsPerYear
-  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear } = data)
+  let wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital
+  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital } = data)
+
+  $: withdrawalRate = Math.max(withdrawalRate, 1)
+  $: roiInterestRate = Math.max(roiInterestRate, 0)
+  $: yearsUntilRetirement = Math.max(yearsUntilRetirement, 1)
 
   $: initialBudget = (wantsBudget + needsBudget) / 100
-  $: withdrawalRate = Math.max(withdrawalRate, 1)
-  $: yearsUntilRetirement = Math.max(yearsUntilRetirement, 0)
+  $: regularDeposit = budgetedAmountToCapital / 100
+
   $: budgetPerYear = initialBudget * 100 * budgetPeriodsPerYear
+  $: updatedCapital = currentCapital + (deposit * 100)
+  $: updatedInterestRate = reduceInterestByWithdrawal === 'Retain' ? roiInterestRate : roiInterestRate - withdrawalRate
 </script>
 
 <AppBar title="Retirement"/>
@@ -24,13 +35,24 @@
 <div class="container">
   <div class="percentContainer">
     <NumberClicker unit="%" name="Withdrawal Rate" bind:value={withdrawalRate}/>
+    <NumberClicker unit="%" name="Investment Interest Rate" bind:value={roiInterestRate}/>
+    <div>
+      Reduce Investment income by withdrawal rate?
+      <Toggle bind:selected={reduceInterestByWithdrawal} value1="Reduce" value2="Retain" />
+    </div>
+    {#if reduceInterestByWithdrawal === 'Reduce' && withdrawalRate > roiInterestRate}
+      <Alert>Withdrawal rate should not be greater than investment return if the reduction method is chosen</Alert>
+    {/if}
     <NumberClicker unit="%" name="Inflation Rate" bind:value={inflationRate}/>
-    <NumberClicker unit="y" name="Years Until Retirement" bind:value={yearsUntilRetirement}/>
-    <Input label="Current budget per budget period" bind:value={initialBudget} />
+    <NumberClicker unit="y" name="Years Until Retirement" bind:value={yearsUntilRetirement} additionalClickerValue={10}/>
+    <Input type="number" label="Current budget per budget period" bind:value={initialBudget} />
+    <Input type="number" label="Make one time deposit" bind:value={deposit} />
+    <Input type="number" label="Regular deposit" bind:value={regularDeposit} />
   </div>
 
-  <RetirementDescriber yearsUntil={yearsUntilRetirement}
-                       inflationRate={inflationRate} withdrawalRate={withdrawalRate}
+  <RetirementDescriber yearsUntil={yearsUntilRetirement} budgetPeriodsPerYear={budgetPeriodsPerYear}
+                       inflationRate={inflationRate} withdrawalRate={withdrawalRate} interestRate={updatedInterestRate}
+                       currentCapital={updatedCapital} budgetedAmountToCapital={regularDeposit * 100}
                        currentBudget={budgetPerYear}/>
 </div>
 
@@ -38,18 +60,15 @@
 
 <style>
   .container {
+    margin: 10px;
     background-color: var(--theme-plain);
     color: var(--theme-text);
+    padding-bottom: 75px;
   }
   .percentContainer {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     flex-wrap: wrap;
-  }
-  .percentInput {
-    display: flex;
-    flex-direction: row;
-    gap: 5ch;
   }
 </style>

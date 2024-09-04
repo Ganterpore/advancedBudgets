@@ -5,6 +5,7 @@
 <nav>
   <a class="{selected==='spending' ? 'selected' : ''}" href="/"><p>Spending</p></a>
   <a class="{selected==='budget' ? 'selected' : ''}" href="budget"><p>Budget</p></a>
+  <a class="{selected==='retirement' ? 'selected' : ''}" href="retirement"><p>Retirement</p></a>
 </nav>
 
 <style>

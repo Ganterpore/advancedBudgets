@@ -13,6 +13,7 @@ import { TransactionType } from '$lib/types/transactionTypes'
 import { minimizeTransactions } from '$lib/helpers/transactionHelpers'
 import { getAllBudgetSavingsAccounts } from '$lib/models/budgetSavingsModel'
 import { getEstimateExcessFromInvestment, getIncomeFromInvestment } from '$lib/helpers/budgetHelpers'
+import { getBudgetPeriodsPerYear } from '$lib/controllers/budgetController'
 
 export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const userId = Number(locals.user!.id)
@@ -61,11 +62,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     Date.now()
   )))
   budgetEndDate.setDate(budgetEndDate.getDate() + 1)
-  const startOfYear = new Date(0)
-  startOfYear.setFullYear(budget.lastBudget.getFullYear())
-  const endOfYear = new Date(startOfYear)
-  endOfYear.setFullYear(endOfYear.getFullYear() + 1)
-  const budgetPeriodsPerYear = numberOfOccurrencesBetween(budget, startOfYear, endOfYear)
+  const budgetPeriodsPerYear = getBudgetPeriodsPerYear(budget)
   const investmentIncome = investments.map(inv => {
     const income = getIncomeFromInvestment(inv, budgetPeriodsPerYear)
     const estimatedTotalIncome = getEstimateExcessFromInvestment(inv, budgetPeriodsPerYear)

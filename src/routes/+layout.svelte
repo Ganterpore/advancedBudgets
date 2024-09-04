@@ -1,6 +1,7 @@
 <script lang="ts">
   import {themes} from "$lib/types/userTypes";
 
+  let settings
   export let data
   $: ({ settings } = data)
   $: selectedTheme = (settings.theme && themes[settings.theme]) ?? themes.default

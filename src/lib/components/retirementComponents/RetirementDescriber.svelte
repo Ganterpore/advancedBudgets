@@ -1,7 +1,10 @@
 <script>
   import {compoundedValue} from "$lib/helpers/financeHelpers";
   import {currencyToString} from "$lib/utils";
+  import RetirementPlan from "$lib/components/retirementComponents/RetirementPlan.svelte";
 
+  export let theme
+  export let age
   export let yearsUntil
   export let budgetPeriodsPerYear
   export let inflationRate
@@ -17,12 +20,26 @@
 
   $: regularDepositedAmount = yearsUntil * budgetPeriodsPerYear * budgetedAmountToCapital
   $: simpleInterest = currentCapital * (interestRate/100) * yearsUntil
+
+  function retirementDataInYears (year) {
+    const futureBudget = inflationRate !== 0 ? compoundedValue(currentBudget, 0, inflationRate, 1, year) : currentBudget
+    const capitalRequired = futureBudget / (withdrawalRate * 0.01)
+    const capital = compoundedValue(currentCapital, budgetedAmountToCapital, interestRate, budgetPeriodsPerYear, year)
+    const deposits = year * budgetPeriodsPerYear * budgetedAmountToCapital
+    const simpleInterest = currentCapital * (interestRate/100) * year
+    const compoundedInterest = capital - deposits - simpleInterest - currentCapital
+    return { year, capital, principle: currentCapital, deposits, simpleInterest, compoundedInterest, futureBudget, capitalRequired }
+  }
+  let retirementDataSet
+  $: (age, budgetPeriodsPerYear, inflationRate, withdrawalRate, interestRate, currentBudget, currentCapital, budgetedAmountToCapital), retirementDataSet = Array.from(Array(yearsUntil + 1).keys()).map(y => retirementDataInYears(y))
 </script>
 
 <p>
   You have budgeted {currencyToString(currentBudget)} per year.<br/>
   You currently have {currencyToString(currentCapital)} in capital.<br/>
   <br/>
+
+  <RetirementPlan age={age} theme={theme} data={retirementDataSet}/>
 
   In {yearsUntil} years your budget will be approximately {currencyToString(budgetInTime)} per year with {inflationRate}% inflation. <br/>
   In {yearsUntil} years you will have approximately {currencyToString(futureCapital)} in capital; <br/>

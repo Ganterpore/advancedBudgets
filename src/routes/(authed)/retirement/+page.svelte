@@ -6,6 +6,7 @@
   import Input from "$lib/components/sharedComponents/Input.svelte";
   import Toggle from "$lib/components/sharedComponents/Toggle.svelte";
   import Alert from "$lib/components/sharedComponents/Alert.svelte";
+  import {themes} from "$lib/types/userTypes";
 
   let withdrawalRate = 4
   let inflationRate = 3
@@ -13,10 +14,12 @@
   let yearsUntilRetirement = 10
   let reduceInterestByWithdrawal = 'Retain'
   let deposit = 0
+  let age = 0
 
   export let data
   let wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital
-  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital } = data)
+  let theme
+  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, theme } = data)
 
   $: withdrawalRate = Math.max(withdrawalRate, 1)
   $: roiInterestRate = Math.max(roiInterestRate, 0)
@@ -34,7 +37,7 @@
 
 <div class="container">
   <div class="text">
-    <RetirementDescriber yearsUntil={yearsUntilRetirement} budgetPeriodsPerYear={budgetPeriodsPerYear}
+    <RetirementDescriber age={age} theme={themes[theme] ?? themes.default} yearsUntil={yearsUntilRetirement} budgetPeriodsPerYear={budgetPeriodsPerYear}
                        inflationRate={inflationRate} withdrawalRate={withdrawalRate} interestRate={updatedInterestRate}
                        currentCapital={updatedCapital} budgetedAmountToCapital={regularDeposit * 100}
                        currentBudget={budgetPerYear}/>
@@ -55,6 +58,7 @@
     <Input type="number" label="Current budget per budget period" bind:value={initialBudget} />
     <Input type="number" label="Make one time deposit" bind:value={deposit} />
     <Input type="number" label="Regular deposit" bind:value={regularDeposit} />
+    <Input type="number" label="Age" bind:value={age} />
   </div>
 </div>
 

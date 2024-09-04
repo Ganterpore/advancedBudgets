@@ -40,7 +40,7 @@
     <RetirementDescriber age={age} theme={themes[theme] ?? themes.default} yearsUntil={yearsUntilRetirement} budgetPeriodsPerYear={budgetPeriodsPerYear}
                        inflationRate={inflationRate} withdrawalRate={withdrawalRate} interestRate={updatedInterestRate}
                        currentCapital={updatedCapital} budgetedAmountToCapital={regularDeposit * 100}
-                       currentBudget={budgetPerYear}/>
+                       currentBudget={budgetPerYear} currentNeeds={needsBudget}/>
   </div>
 
   <div class="percentContainer">

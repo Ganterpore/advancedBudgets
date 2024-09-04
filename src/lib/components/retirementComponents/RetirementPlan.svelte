@@ -13,7 +13,8 @@
     deposits: number,
     simpleInterest: number,
     compoundedInterest: number,
-    capitalRequired: number
+    capitalRequired: number,
+    needsCapitalRequired: number
   }[]
 
   let ctx
@@ -27,6 +28,12 @@
       label: 'Required Capital',
       backgroundColor: theme.alert,
       data: data.map(d => d.capitalRequired),
+      type: 'line'
+    },
+    {
+      label: 'Required Capital for Needs',
+      backgroundColor: theme.secondary,
+      data: data.map(d => d.needsCapitalRequired),
       type: 'line'
     },
     {
@@ -48,8 +55,7 @@
       label: 'Compounded Interest',
       backgroundColor: theme.highlight + '55',
       data: data.map(d => d.deposits + d.principle + d.simpleInterest + d.compoundedInterest)
-    },
-
+    }
   ]
   $: if (data && datasets && chart) {
     chart.data.datasets = datasets

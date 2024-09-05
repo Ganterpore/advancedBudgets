@@ -19,7 +19,7 @@
   export let data
   let wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital
   let theme
-  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, theme } = data)
+  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, settings: { theme } } = data)
 
   $: withdrawalRate = Math.max(withdrawalRate, 1)
   $: roiInterestRate = Math.max(roiInterestRate, 0)

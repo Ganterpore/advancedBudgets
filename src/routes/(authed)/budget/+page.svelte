@@ -15,7 +15,9 @@
   import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
 
   export let data
-  $: ({ incomeOnAccounts, investmentIncome, totals, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions } = data)
+  let incomeOnAccounts, investmentIncome, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions
+  $: ({ incomeOnAccounts, investmentIncome, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions } = data)
+  let maxNeeds, currentNeeds, maxWants, currentWants
   $: maxNeeds = amountToNeeds.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
   $: currentNeeds = amountToNeeds.reduce((total, curr) => total + curr.actualAmountAdded, 0)
   $: maxWants = amountToWants.reduce((total, curr) => total + curr.maxAmountToAdd, 0)
@@ -199,97 +201,107 @@
 <div class="outer">
   <div class="main">
     <div class="title"><h3>Income</h3>{currencyToString(data.incomeSinceLast)}</div>
-    {#each incomeOnAccounts as income}
-      <div class="income-list-item">
-        <p>{data.accounts[income.parent]?.children[income.account]?.name} ({((income.total * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
-        <div style="flex-grow: 1"></div>
-        <p>{currencyToString(income.total)}</p>
-      </div>
-      <hr/>
-    {/each}
-    {#each investmentIncome as income}
-      <div class="income-list-item">
-        <p>{income.name} ({((income.income * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
-        <div style="flex-grow: 1"></div>
-        <p>{currencyToString(income.income)}</p>
-        <p style="font-style: italic"> (+~{currencyToString(income.estimatedTotalIncome)})</p>
-      </div>
-      <hr/>
-    {/each}
+    <div class="body">
+      {#each incomeOnAccounts as income}
+        <div class="income-list-item">
+          <p>{data.accounts[income.parent]?.children[income.account]?.name} ({((income.total * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
+          <div style="flex-grow: 1"></div>
+          <p>{currencyToString(income.total)}</p>
+        </div>
+        <hr/>
+      {/each}
+      {#each investmentIncome as income}
+        <div class="income-list-item">
+          <p>{income.name} ({((income.income * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
+          <div style="flex-grow: 1"></div>
+          <p>{currencyToString(income.income)}</p>
+          <p style="font-style: italic"> (+~{currencyToString(income.estimatedTotalIncome)})</p>
+        </div>
+        <hr/>
+      {/each}
+    </div>
 
     <div class="title"><h3>Budget</h3>{currencyToString(currentNeeds + currentWants)}</div>
-    <Expandable name="Needs">
-      <div slot="header" class="progress">
-        <p>{((currentNeeds / maxNeeds) * 100).toFixed(2)}% progress towards {currencyToString(maxNeeds)}</p>
-        <SavingsProgress savingsGoal={maxNeeds} currentValue={currentNeeds} />
-      </div>
-      <div>{#each amountToNeeds as need}
-        <div class="budgetList">
-          <p>{need.parentName}: {need.name}</p>
-          <div style="flex-grow: 1"></div>
-          {#if need.actualAmountAdded < need.maxAmountToAdd}<p>{currencyToString(need.actualAmountAdded)} / </p>{/if}
-          <p>{currencyToString(need.maxAmountToAdd)}</p>
+    <div class="body">
+      <Expandable name="Needs">
+        <div slot="header" class="progress">
+          <p>{((currentNeeds / maxNeeds) * 100).toFixed(2)}% progress towards {currencyToString(maxNeeds)}</p>
+          <SavingsProgress savingsGoal={maxNeeds} currentValue={currentNeeds} />
         </div>
-      {/each}</div>
-    </Expandable>
-    <hr/>
-    <Expandable name="Wants">
-      <div slot="header" class="progress">
-        <p>{((currentWants / maxWants) * 100).toFixed(2)}% progress towards {currencyToString(maxWants)}</p>
-          <SavingsProgress savingsGoal={maxWants} currentValue={currentWants} />
-      </div>
-      <div>{#each amountToWants as want}
-        <div class="budgetList">
-          <p>{want.parentName}: {want.name}</p>
-          <div style="flex-grow: 1"></div>
-          {#if want.actualAmountAdded < want.maxAmountToAdd}<p>{currencyToString(want.actualAmountAdded)} / </p>{/if}
-          <p>{currencyToString(want.maxAmountToAdd)}</p>
+        <div>{#each amountToNeeds as need}
+          <div class="budgetList">
+            <p>{need.parentName}: {need.name}</p>
+            <div style="flex-grow: 1"></div>
+            {#if need.actualAmountAdded < need.maxAmountToAdd}<p>{currencyToString(need.actualAmountAdded)} / </p>{/if}
+            <p>{currencyToString(need.maxAmountToAdd)}</p>
+          </div>
+        {/each}</div>
+      </Expandable>
+      <hr/>
+      <Expandable name="Wants">
+        <div slot="header" class="progress">
+          <p>{((currentWants / maxWants) * 100).toFixed(2)}% progress towards {currencyToString(maxWants)}</p>
+            <SavingsProgress savingsGoal={maxWants} currentValue={currentWants} />
         </div>
-      {/each}</div>
-    </Expandable>
+        <div>{#each amountToWants as want}
+          <div class="budgetList">
+            <p>{want.parentName}: {want.name}</p>
+            <div style="flex-grow: 1"></div>
+            {#if want.actualAmountAdded < want.maxAmountToAdd}<p>{currencyToString(want.actualAmountAdded)} / </p>{/if}
+            <p>{currencyToString(want.maxAmountToAdd)}</p>
+          </div>
+        {/each}</div>
+      </Expandable>
+    </div>
 
     <div class="title"><h3>Savings</h3>{currencyToString(savingsAccounts.reduce((total, acc) => total + acc.actualAmountAdded, 0))}</div>
-    <BucketAssignment bucketsToAdd={allBuckets()}
-                      buckets={savingsAccounts.map(acc => ({
-                        id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.max / 100, actualAmount: acc.actualAmountAdded
-                      }))}
-                      type="max"
-                       addBucketCallback={addSavingsAccount} updateBucketCallback={updateSavingsAccount}
-                       removeBucketCallback={deleteSavingsAccount} />
+    <div class="body">
+      <BucketAssignment bucketsToAdd={allBuckets()}
+                        buckets={savingsAccounts.map(acc => ({
+                          id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.max / 100, actualAmount: acc.actualAmountAdded
+                        }))}
+                        type="max"
+                         addBucketCallback={addSavingsAccount} updateBucketCallback={updateSavingsAccount}
+                         removeBucketCallback={deleteSavingsAccount} />
 
+    </div>
     <div class="title"><h3>Excess</h3>{currencyToString(excess)}</div>
-    <BucketAssignment bucketsToAdd={allBuckets()}
-                      buckets={excessAccounts.map(acc => ({
-                        id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.proportion, actualAmount: acc.actualAmountAdded
-                      }))}
-                      type="percent"
-                      addBucketCallback={addExcessAccount} updateBucketCallback={updateExcessAccount}
-                      removeBucketCallback={deleteExcessAccount} />
+    <div class="body">
+      <BucketAssignment bucketsToAdd={allBuckets()}
+                        buckets={excessAccounts.map(acc => ({
+                          id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.proportion, actualAmount: acc.actualAmountAdded
+                        }))}
+                        type="percent"
+                        addBucketCallback={addExcessAccount} updateBucketCallback={updateExcessAccount}
+                        removeBucketCallback={deleteExcessAccount} />
+    </div>
     {#if isReadyToRelease}
       <div class="title"><h3>Final Steps</h3></div>
-      <div class="release-box">
-        {#if error}
-          <Alert>{error}</Alert>
-        {/if}
-        {#if isReleasingBudget}
-          <p>In Order to release your budget you will need to make the following physical transactions between your accounts:</p>
-          {#each parentTransactions as t}
-            <p>Transfer {currencyToString(t.amount)} from {t.from} to {t.to}</p>
-          {/each}
-        {/if}
-        {#if !isReleasingBudget}
-          <Button warning={true} secondary={true} on:click={releaseBudget}>Prepare Budget Release</Button>
-        {/if}
-        {#if isReleasingBudget}
-          <div class="button-array">
-            <Button disabled={isLoading} style="flex-grow: 1" warning={true} on:click={releaseBudget}>
-              { isLoading ? 'Releasing Budget' : 'Release Budget'}
-              {#if isLoading}<LoadingSpinner/>{/if}
-            </Button>
-            <Button secondary={true} on:click={() => isReleasingBudget=false}>Cancel</Button>
-          </div>
-        {/if}
-      </div>
+      <div class="body">
+        <div class="release-box">
+          {#if error}
+            <Alert>{error}</Alert>
+          {/if}
+          {#if isReleasingBudget}
+            <p>In Order to release your budget you will need to make the following physical transactions between your accounts:</p>
+            {#each parentTransactions as t}
+              <p>Transfer {currencyToString(t.amount)} from {t.from} to {t.to}</p>
+            {/each}
+          {/if}
+          {#if !isReleasingBudget}
+            <Button warning={true} secondary={true} on:click={releaseBudget}>Prepare Budget Release</Button>
+          {/if}
+          {#if isReleasingBudget}
+            <div class="button-array">
+              <Button disabled={isLoading} style="flex-grow: 1" warning={true} on:click={releaseBudget}>
+                { isLoading ? 'Releasing Budget' : 'Release Budget'}
+                {#if isLoading}<LoadingSpinner/>{/if}
+              </Button>
+              <Button secondary={true} on:click={() => isReleasingBudget=false}>Cancel</Button>
+            </div>
+          {/if}
+        </div>
+    </div>
     {/if}
   </div>
 </div>
@@ -303,11 +315,11 @@
     flex-grow: 1;
   }
   .title {
-    background-color: var(--theme-secondary);
+    padding: 10px;
+    font-size: large;
     color: var(--theme-secondary-text);
-    font-size: 32px;
-
     font-weight: bold;
+    background-color: var(--theme-secondary);
     border-radius: 5px;
     display: flex;
     flex-direction: row;
@@ -315,15 +327,20 @@
   }
   .title h3 {
     margin: 0;
-    padding: 0 0 0 20px;
+    padding: 0 20px;
   }
   .outer {
+    margin: 5px;
     padding-bottom: 50px;
     color: var(--theme-text);
   }
+  .body {
+    margin: 0 20px;
+    padding: 5px;
+    background: var(--theme-plain);
+  }
   .main {
     margin: 20px 0;
-    background: var(--theme-plain);
     display: flex;
     flex-direction: column;
   }

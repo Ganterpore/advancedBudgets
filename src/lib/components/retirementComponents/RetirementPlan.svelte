@@ -22,39 +22,46 @@
   let chart
 
   Chart.defaults.color = theme.text
+  const tooltip = { callbacks: { label: (context) => `${context.dataset.label}: ${currencyToString(context.parsed.y)}` } }
   let datasets
   $: datasets = [
     {
       label: 'Required Capital',
       backgroundColor: theme.alert,
       data: data.map(d => d.capitalRequired),
-      type: 'line'
+      type: 'line',
+      tooltip
     },
     {
       label: 'Required Capital for Needs',
       backgroundColor: theme.secondary,
       data: data.map(d => d.needsCapitalRequired),
-      type: 'line'
+      type: 'line',
+      tooltip
     },
     {
       label: 'Principle',
       backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.principle)
+      data: data.map(d => d.principle),
+      tooltip
     },
     {
-      label: 'Deposits',
+      label: 'P+Deposits',
       backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle)
+      data: data.map(d => d.deposits + d.principle),
+      tooltip
     },
     {
-      label: 'Simple Interest',
+      label: 'P+D+Simple Interest',
       backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle + d.simpleInterest)
+      data: data.map(d => d.deposits + d.principle + d.simpleInterest),
+      tooltip
     },
     {
-      label: 'Compounded Interest',
+      label: 'P+D+i+Compounded Interest',
       backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle + d.simpleInterest + d.compoundedInterest)
+      data: data.map(d => d.deposits + d.principle + d.simpleInterest + d.compoundedInterest),
+      tooltip
     }
   ]
   $: if (data && datasets && chart) {
@@ -83,6 +90,9 @@
               }
             }
           }
+        },
+        interaction: {
+          mode: 'x'
         }
       }
     })

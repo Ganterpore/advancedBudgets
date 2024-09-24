@@ -38,26 +38,24 @@
 </script>
 
 <p>
-  You have budgeted {currencyToString(currentBudget)} per year.<br/>
-  You currently have {currencyToString(currentCapital)} in capital.<br/>
-  <br/>
-
   <RetirementPlan age={age} theme={theme} data={retirementDataSet}/>
-
-  In {yearsUntil} years your budget will be approximately {currencyToString(budgetInTime)} per year with {inflationRate}% inflation. <br/>
-  In {yearsUntil} years you will have approximately {currencyToString(futureCapital)} in capital; <br/>
-  <p style="font-style: italic; margin: 0 10px">
-    {currencyToString(currentCapital)}
-    + {currencyToString(regularDepositedAmount)} regular deposits
-    + {currencyToString(simpleInterest)} interest
-    + {currencyToString(futureCapital - (currentCapital + regularDepositedAmount + simpleInterest))} compounded interest.<br/>
-  </p>
+  <br/>
+  {#if Number(age) === 0}
+    In {yearsUntil} years:
+  {:else}
+    At Age {Number(yearsUntil) + Number(age)}:
+  {/if}
+  <br/>
+  With {inflationRate}% inflation your budget will be {currencyToString(budgetInTime)} per year.
+  <br/>
+  You will have approximately {currencyToString(futureCapital)} in capital. <br/>
   <br/>
   {#if capitalRequired > futureCapital}
-    In order to retire in {yearsUntil} years you will need {currencyToString(capitalRequired)} in capital.<br/>
+    In order to retire you will need {currencyToString(capitalRequired)} in capital.<br/>
   {:else }
-    You will be able to retire on {currencyToString(futureCapital)} with a {currencyToString(futureCapital * withdrawalRate * 0.01)} yearly budget ({currencyToString((futureCapital * withdrawalRate * 0.01)/budgetPeriodsPerYear)} per budget period).
+    You will be able to retire with a {currencyToString(futureCapital * withdrawalRate * 0.01)} yearly budget.
   {/if}
+</p>
 
 <style>
   p {

@@ -19,9 +19,6 @@
   $: capitalRequired = budgetInTime / (withdrawalRate * 0.01)
   $: futureCapital = compoundedValue(currentCapital, budgetedAmountToCapital, interestRate, budgetPeriodsPerYear, yearsUntil)
 
-  $: regularDepositedAmount = yearsUntil * budgetPeriodsPerYear * budgetedAmountToCapital
-  $: simpleInterest = currentCapital * (interestRate/100) * yearsUntil
-
   function retirementDataInYears (year) {
     const futureBudget = inflationRate !== 0 ? compoundedValue(currentBudget, 0, inflationRate, 1, year) : currentBudget
     const futureNeeds = inflationRate !== 0 ? compoundedValue(currentNeeds, 0, inflationRate, 1, year) : currentNeeds

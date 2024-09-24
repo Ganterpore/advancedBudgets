@@ -89,7 +89,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     const numberOfOccurrencesThisBudget = numberOfOccurrencesBetween(b, budgetStartDate, budgetEndDate)
     const maxAmountToAdd = numberOfOccurrencesThisBudget * b.regularBudget
     const amountInAccount = totals[b.parent]?.children[b.account] ?? 0
-    const cappedAmountToAdd = Math.min(maxAmountToAdd, b.budgetMax - amountInAccount)
+    const cappedAmountToAdd = Math.min(maxAmountToAdd, Math.max(b.budgetMax - amountInAccount, 0))
     const parentName = accounts[b.parent].name
     return {
       id: b.account,

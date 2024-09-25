@@ -18,7 +18,10 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <div class="expandableHeader" on:click={onclick}>
-  <h3>{name}</h3>
+  <div class="title">
+    <h3>{name}</h3>
+    <slot name="subtext"/>
+  </div>
   <slot name="header" />
   <div style={`rotate: ${$rotation + 'deg'}`}><MaterialSymbolsExpandMore /></div>
 </div>
@@ -29,6 +32,13 @@
 {/if}
 
 <style>
+  .title {
+    display: flex;
+    flex-direction: column;
+  }
+  .title h3 {
+    margin: 0;
+  }
   .expandableHeader {
       background-color: var(--theme-plain);
       color: var(--theme-text);
@@ -39,6 +49,7 @@
       padding: 0 5px;
       border-width: 2px;
       gap: 5px;
+      min-height: 50px;
   }
   .expandableHeader:hover {
       filter: brightness(85%);

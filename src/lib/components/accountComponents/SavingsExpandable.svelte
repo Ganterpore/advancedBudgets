@@ -19,6 +19,13 @@
     0
   )
   $: currentValue = Object.values(totals).reduce((acc: number, t?: number) => acc + (t ?? 0), 0)
+  $: totalMultiplier = accounts.reduce((total, acc) => {
+    const amountSaved = totals[acc.id]
+    const savingsData = acc.additionalAccountData as AccountTypeSaving
+    const goal = savingsData.target
+    if (amountSaved >= goal) return total
+    return total + savingsData.multiplier
+  }, 0)
 
   async function addTransaction (e) {
     e.stopPropagation()
@@ -29,6 +36,9 @@
 </script>
 
 <Expandable {...$$restProps}>
+  <div slot="subtext">
+    <p style="align-self: center; margin: 0; padding: 0; font-style: italic">{totalMultiplier / 100}X</p>
+  </div>
   <div slot="header" class="header">
     <div class="progress">
       <p>{`${currencyToString(currentValue)} of ${currencyToString(savingsGoal)}`}</p>

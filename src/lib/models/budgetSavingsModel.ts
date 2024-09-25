@@ -4,9 +4,9 @@ import { connect } from '$lib/db'
 export async function newBudgetSavingsAccount (savings:  Omit<BudgetSavings, 'id'>) {
   const db = await connect()
   const res = await db.query(`
-    INSERT INTO budget_savings_mapping("user", "account", "max", "type") 
-    VALUES($1, $2, $3, $4) RETURNING id`,
-    [savings.user, savings.account, savings.max, savings.type])
+    INSERT INTO budget_savings_mapping("user", "account", "max", "type", "priority") 
+    VALUES($1, $2, $3, $4, $5) RETURNING id`,
+    [savings.user, savings.account, savings.max, savings.type, savings.priority])
   return res.rows[0].id
 }
 
@@ -22,9 +22,9 @@ export async function getAllBudgetSavingsAccounts (userId: number): Promise<Budg
 export async function updateBudgetSavingsAccount (savings: BudgetSavings) {
   const db = await connect()
   await db.query(`
-    UPDATE budget_savings_mapping SET ("user", "account", "max", "type") = ($1, $2, $3, $4)
-    WHERE id=$5`,
-    [savings.user, savings.account, savings.max, savings.type, savings.id])
+    UPDATE budget_savings_mapping SET ("user", "account", "max", "type", "priority") = ($1, $2, $3, $4, $5)
+    WHERE id=$6`,
+    [savings.user, savings.account, savings.max, savings.type, savings.priority, savings.id])
 }
 
 export async function deleteBudgetSavingsAccount (budgetSavingsId: number, userId: number) {

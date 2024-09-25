@@ -3,7 +3,7 @@
   import Input from '$lib/components/sharedComponents/Input.svelte'
   import Button from '$lib/components/sharedComponents/Button.svelte'
 
-  type Bucket = { id: string, name: string, plannedAmount: number, actualAmount: number }
+  type Bucket = { id: string, name: string, plannedAmount: number, actualAmount: number, priority: number }
 
   export let bucketsToAdd: Pick<Bucket, 'id' | 'name'>[]
   export let buckets: Bucket[]
@@ -50,8 +50,11 @@
         <div style="flex-grow: 1"></div>
         <div class="inner">
           {#if isEditing}
+            <Input label="Priority" style="width: 5ch" type="number" bind:value={bucket.priority} />
+          {/if}
+          {#if isEditing}
             {#if type==='max'}${/if}
-            <Input style="width: {type === 'percent' ? 5 : 10}ch" type="number" bind:value={bucket.plannedAmount} />
+            <Input label="{type === 'max' ? 'Max Amount' : 'Ratio'}" style="width: {type === 'percent' ? 5 : 10}ch" type="number" bind:value={bucket.plannedAmount} />
           {/if}
           {#if isEditing || bucket.actualAmount === 0}
             {#if type === 'percent'}

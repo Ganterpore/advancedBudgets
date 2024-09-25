@@ -100,7 +100,8 @@
     const budgetSavings: Omit<BudgetSavings, 'id'|'user'> = {
       account: Number(accountSplit[1]),
       max: 10000,
-      type: accountSplit[0] as 'account'|'investment'
+      type: accountSplit[0] as 'account'|'investment',
+      priority: 1
     }
     await fetch('budget/savingsAccount', {
       method: 'POST',
@@ -111,13 +112,14 @@
     })
     await invalidate('data:budgetSavings')
   }
-  async function updateSavingsAccount (budgetSavings: { id: string, name: string, plannedAmount: number, actualAmount: number }) {
+  async function updateSavingsAccount (budgetSavings: { id: string, name: string, plannedAmount: number, actualAmount: number, priority: number }) {
     const accountSplit = budgetSavings.id.split('_')
     const budgetSavingsAccount : Omit<BudgetSavings, 'user'> = {
       id: Number(accountSplit[2]),
       account: Number(accountSplit[1]),
       max: budgetSavings.plannedAmount * 100,
-      type: accountSplit[0] as 'account'|'investment'
+      type: accountSplit[0] as 'account'|'investment',
+      priority: budgetSavings.priority
     }
     await fetch('budget/savingsAccount', {
       method: 'POST',
@@ -144,7 +146,8 @@
     const excess: Omit<BudgetExcess, 'id'|'user'> = {
       account: Number(accountSplit[1]),
       proportion: 10,
-      type: accountSplit[0] as 'account'|'investment'
+      type: accountSplit[0] as 'account'|'investment',
+      priority: 1
     }
     await fetch('budget/excessAccount', {
       method: 'POST',
@@ -155,13 +158,14 @@
     })
     await invalidate('data:excess')
   }
-  async function updateExcessAccount (excess: { id: string, name: string, plannedAmount: number, actualAmount }) {
+  async function updateExcessAccount (excess: { id: string, name: string, plannedAmount: number, actualAmount, priority: number }) {
     const accountSplit = excess.id.split('_')
     const excessAccount: Omit<BudgetExcess, 'user'> = {
       id: Number(accountSplit[2]),
       account: Number(accountSplit[1]),
       proportion: excess.plannedAmount,
-      type: accountSplit[0] as 'account'|'investment'
+      type: accountSplit[0] as 'account'|'investment',
+      priority: excess.priority
     }
     await fetch('budget/excessAccount', {
       method: 'POST',
@@ -258,7 +262,7 @@
     <div class="body">
       <BucketAssignment bucketsToAdd={allBuckets()}
                         buckets={savingsAccounts.map(acc => ({
-                          id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.max / 100, actualAmount: acc.actualAmountAdded
+                          id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.max / 100, actualAmount: acc.actualAmountAdded, priority: acc.priority
                         }))}
                         type="max"
                          addBucketCallback={addSavingsAccount} updateBucketCallback={updateSavingsAccount}
@@ -269,7 +273,7 @@
     <div class="body">
       <BucketAssignment bucketsToAdd={allBuckets()}
                         buckets={excessAccounts.map(acc => ({
-                          id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.proportion, actualAmount: acc.actualAmountAdded
+                          id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.proportion, actualAmount: acc.actualAmountAdded, priority: acc.priority
                         }))}
                         type="percent"
                         addBucketCallback={addExcessAccount} updateBucketCallback={updateExcessAccount}

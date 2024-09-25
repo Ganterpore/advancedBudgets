@@ -4,9 +4,9 @@ import { connect } from '$lib/db'
 export async function newExcessAccount (excess:  Omit<BudgetExcess, 'id'>) {
   const db = await connect()
   const res = await db.query(`
-    INSERT INTO budget_excess_mapping("user", "account", "proportion", "type") 
-    VALUES($1, $2, $3, $4) RETURNING id`,
-    [excess.user, excess.account, excess.proportion, excess.type])
+    INSERT INTO budget_excess_mapping("user", "account", "proportion", "type", "priority") 
+    VALUES($1, $2, $3, $4, $5) RETURNING id`,
+    [excess.user, excess.account, excess.proportion, excess.type, excess.priority])
   return res.rows[0].id
 }
 
@@ -22,9 +22,9 @@ export async function getAllExcessAccounts (userId: number): Promise<BudgetExces
 export async function updateExcessAccount (excess: BudgetExcess) {
   const db = await connect()
   await db.query(`
-    UPDATE budget_excess_mapping SET ("user", "account", "proportion", "type") = ($1, $2, $3, $4)
-    WHERE id=$5`,
-    [excess.user, excess.account, excess.proportion, excess.type, excess.id])
+    UPDATE budget_excess_mapping SET ("user", "account", "proportion", "type", "priority") = ($1, $2, $3, $4, $5)
+    WHERE id=$6`,
+    [excess.user, excess.account, excess.proportion, excess.type, excess.priority, excess.id])
 }
 
 export async function deleteExcessAccount (excessId: number, userId: number) {

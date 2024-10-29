@@ -153,6 +153,8 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const budgetSavingsAccounts = await getAllBudgetSavingsAccounts(userId)
   const savingsIncome = incomeLeft
   const totalSavingsRequired = budgetSavingsAccounts.reduce((total, acc) => total + Number(acc.max), 0)
+  // TODO simplify this whole process into a controller function that can be called
+  // TODO then we can call it once for each priority easily
   const budgetSavingsAccountsWithNames = budgetSavingsAccounts.map(acc => {
     const amountAdded = Math.min(
       acc.max,

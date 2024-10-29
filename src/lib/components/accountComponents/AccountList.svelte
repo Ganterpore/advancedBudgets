@@ -1,27 +1,22 @@
 <script lang="ts">
-  import * as svelte from 'svelte'
+  import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
   import AccountHeader from './AccountHeader.svelte'
   import type { Account, AccountTypeSaving } from '$lib/types/accountTypes'
   import { AccountType, BudgetAccountType } from '$lib/types/accountTypes'
   import type { AccountTotals } from '$lib/types/transactionTypes'
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
-  import SavingsExpandable from '$lib/components/accountComponents/SavingsExpandable.svelte'
   import ListItem from '$lib/components/sharedComponents/ListItem.svelte'
+  import { currencyToString } from '$lib/utils'
+  import Button from '$lib/components/sharedComponents/Button.svelte'
+  import SavingsProgress from '$lib/components/accountComponents/SavingsProgress.svelte'
+  import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store'
+  import { TransactionType } from '$lib/types/transactionTypes'
 
   export let parent: number
   export let accounts: Account[]
   export let totals: AccountTotals
   export let onSelect: (isParent: boolean, id: string) => void
 
-  const headerTypeObjects: { [key: AccountType]: svelte.ComponentType } = {
-    [AccountType.INCOME]: Expandable,
-    [AccountType.STORAGE]: Expandable,
-    [AccountType.SAVING]: SavingsExpandable,
-    [AccountType.BUDGET]: Expandable,
-    [`${AccountType.BUDGET} - ${BudgetAccountType.WANT}`]: Expandable,
-    [`${AccountType.BUDGET} - ${BudgetAccountType.NEED}`]: Expandable,
-    [AccountType.OWED]: Expandable
-  }
   function sortAccounts (category: AccountType): (a: Account, b: Account) => number {
     switch (category) {
       case AccountType.SAVING:
@@ -54,34 +49,34 @@
     },
     {}
   )
-  $: propsFor = {
-    [AccountType.SAVING]: {
-      name: AccountType.SAVING,
-      parent,
-      accounts: accountMap ? accountMap[AccountType.SAVING] : [],
-      totals: accountMap && accountMap[AccountType.SAVING] ? accountMap[AccountType.SAVING].reduce((totalsMap, acc) => {
-        totalsMap[acc.id] = totals[acc.id]
-        return totalsMap
-      }, {}) : {}
-    },
-    [AccountType.BUDGET]: {
-      name: AccountType.BUDGET
-    },
-    [`${AccountType.BUDGET} - ${BudgetAccountType.WANT}`]: {
-      name: 'Budget - Wants'
-    },
-    [`${AccountType.BUDGET} - ${BudgetAccountType.NEED}`]: {
-      name: 'Budget - Needs'
-    },
-    [AccountType.OWED]: {
-      name: AccountType.OWED
-    },
-    [AccountType.STORAGE]: {
-      name: AccountType.STORAGE
-    },
-    [AccountType.INCOME]: {
-      name: AccountType.INCOME
+  const propsFor = (category) => {
+    const accounts = accountMap ? accountMap[category] : []
+    const props: {
+      name: string,
+      total: number,
+      goal?: number
+      totalMultiplier?: number
+    } = {
+      name: category,
+      total: accounts.reduce((total, acc) => {
+        total += isNaN(totals[acc.id]) ? 0 : totals[acc.id]
+        return total
+      }, 0)
     }
+    if (category === AccountType.SAVING) {
+      props.goal = accounts.reduce(
+        (acc: number, s: Account) => acc + (s.additionalAccountData as AccountTypeSaving).target,
+        0
+      )
+      props.totalMultiplier = accounts.reduce((total, acc) => {
+        const amountSaved = totals[acc.id]
+        const savingsData = acc.additionalAccountData as AccountTypeSaving
+        const goal = savingsData.target
+        if (amountSaved >= goal) return total
+        return total + savingsData.multiplier
+      }, 0)
+    }
+    return props
   }
   const sortOrder = [
     AccountType.INCOME,
@@ -92,20 +87,65 @@
     AccountType.OWED,
     AccountType.SAVING
   ]
+
+  async function addTransaction (e) {
+    e.stopPropagation()
+    $openPopup = 'transaction'
+    $selectedTransactionType = TransactionType.GROUPED_SAVING
+    $selectedTransactionAccount = parent
+  }
 </script>
 
 {#each Object.keys(accountMap).sort((acc1, acc2) => sortOrder.indexOf(acc1) - sortOrder.indexOf(acc2)) as category (category)}
   <div style="padding: 0 20px; margin: 0;">
-  <svelte:component this={headerTypeObjects[category]} {...propsFor[category]} >
-    <div>
-    {#each accountMap[category] as a}
-        <ListItem selectable secondary onSelected={() => onSelect(false, a.id)} >
-          <AccountHeader name={a.name} id={a.id} type={a.type}
-                         additionalAccountData={a.additionalAccountData}
-                         value={totals[a.id]} />
-        </ListItem>
-    {/each}
-    </div>
-  </svelte:component>
+    <Expandable name={category}>
+      <div>
+        {#each accountMap[category] as a}
+          <ListItem selectable secondary onSelected={() => onSelect(false, a.id)} >
+            <AccountHeader name={a.name} id={a.id} type={a.type}
+                           additionalAccountData={a.additionalAccountData}
+                           value={totals[a.id]} />
+          </ListItem>
+        {/each}
+      </div>
+
+      <div slot="subtext" class="subtext">
+        {#if category === AccountType.SAVING}
+          <p style="align-self: center; margin: 0; padding: 0; font-style: italic">{propsFor(category).totalMultiplier / 100}X</p>
+        {/if}
+      </div>
+      <div slot="header" class="header">
+        {#if category !== AccountType.SAVING}
+          <p class="currency">{currencyToString(propsFor(category).total)}</p>
+        {:else}
+          <Button on:click={addTransaction}>
+            <MaterialSymbolsAddRounded/>
+          </Button>
+          <div class="progress">
+            <p class="currency">{`${currencyToString(propsFor(category).total)} of ${currencyToString(propsFor(category).goal)}`}</p>
+            <SavingsProgress savingsGoal={propsFor(category).goal} currentValue={propsFor(category).total} />
+          </div>
+        {/if}
+      </div>
+    </Expandable>
     </div>
 {/each}
+
+<style>
+  .header {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .progress {
+    flex-grow: 1;
+    justify-content: right;
+  }
+  .currency {
+    text-align: right;
+    width: 100%;
+  }
+  .subtext {
+  }
+</style>

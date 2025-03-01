@@ -45,7 +45,6 @@ export async function handleCompletion (accountId: number, data: TransactionData
   const savingsAccount = await getSavingsAccountOnAccountId(accountId)
   if (!savingsAccount) throw error(400, 'Completions can only be done on savings accounts')
   if (total !== savingsAccount.target) throw error(400, 'Savings account must be at target to complete')
-  if (data.amount <= 0) throw error(400, 'Actual amount spent must be greater than 0')
   const amountToTransfer = savingsAccount.target - data.amount
   if (amountToTransfer !== 0 && !data.transferTo) throw error(400, 'If the amount spent was not the same as the target, an account to transfer the remaining funds from/to must be specified')
   // Remove the amount spent from the account

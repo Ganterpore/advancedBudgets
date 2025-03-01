@@ -6,7 +6,7 @@ export async function newBudgetAccount(props: Omit<AccountTypeBudget, 'id'>) {
   const res = await db.query(
 `INSERT INTO account_type_budget("account", "regularBudget", "budgetMax", "frequency", "frequencyCategory", "startDate", "dayOf", "type")
                 VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-    [props.account, props.regularBudget, props.budgetMax, props.frequency, props.frequencyCategory, props.startDate, props.dayOf, props.type])
+    [props.account, props.regularBudget, Math.round(props.budgetMax), props.frequency, props.frequencyCategory, props.startDate, props.dayOf, props.type])
   return res.rows[0].id
 }
 

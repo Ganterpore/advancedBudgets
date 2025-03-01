@@ -38,8 +38,8 @@
   {#if error}<Alert>{error}</Alert>{/if}
   <!-- Used to send the id to the server without showing it to the user-->
   {#if investment.id}<input style="display: none" name="id" value={investment.id} />{/if}
-  <Input label="Name" name="account" autofocus bind:value={investment.name}/>
-  <Input label="Initial Value" name="amount" autofocus bind:value={amountDollars}/>
+  <Input label="Name" name="account" bind:value={investment.name}/>
+  <Input label="Initial Value" name="amount" bind:value={amountDollars}/>
   <div class="percents">
     <div class="inputWithTooltip">
       <Input type="number" label="Estimated ROI" name="expectedROIPercent" bind:value={percentRoi}>

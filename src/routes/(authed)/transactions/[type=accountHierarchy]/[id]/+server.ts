@@ -17,7 +17,7 @@ async function validateFields ({ request, params }: RequestEvent<Partial<Record<
   const { type, id: accountId } = params
   const data = await request.json()
 
-  if (!data.amount) return error(400,'Transaction value must not be empty')
+  if (!data.amount && data.type !== TransactionType.COMPLETION) return error(400,'Transaction value must not be empty')
   if (!data.type || data.type === TransactionType.UNSELECTED) throw error(400, 'Transaction type must not be empty')
   if (!accountId) return error(400, 'Account ID cannot be empty')
   if (type === AccountHierarchy.PARENT_ACCOUNT) {

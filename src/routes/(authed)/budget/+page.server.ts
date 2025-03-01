@@ -1,9 +1,6 @@
 import type { PageServerLoad } from './$types'
 import * as budgetModel from '$lib/models/budgetModel'
-import { FrequencyCategory } from '$lib/types/sharedTypes'
-import type { Budget } from '$lib/types/budgetTypes'
 import { getTotalOnIncomeAccounts } from '$lib/types/transactionModel'
-import { getNextOccurrence, numberOfOccurrencesBetween } from '$lib/dayOfWeekFunctons'
 import { getAllBudgetAccountsForUser } from '$lib/models/accountTypeBudgetModel'
 import type { AccountNode, ExpandedBudgetAccount } from '$lib/types/accountTypes'
 import { BudgetAccountType } from '$lib/types/accountTypes'
@@ -13,7 +10,11 @@ import { TransactionType } from '$lib/types/transactionTypes'
 import { minimizeTransactions } from '$lib/helpers/transactionHelpers'
 import { getAllBudgetSavingsAccounts } from '$lib/models/budgetSavingsModel'
 import { getEstimateExcessFromInvestment, getIncomeFromInvestment } from '$lib/helpers/budgetHelpers'
-import { getBudgetPeriodsPerYear } from '$lib/controllers/budgetController'
+import {
+  getBudgetedAmountOverPeriod,
+  getBudgetPeriodsPerYear,
+  getCurrentBudgetPeriod
+} from '$lib/controllers/budgetController'
 
 export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const userId = Number(locals.user!.id)
@@ -21,23 +22,10 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const { totals, accounts, investments } = layout
 
   depends('data:budget')
-  let budget: Budget | undefined = await budgetModel.getBudgetForUser(userId)
-  if (!budget) {
-    const oneMonthAgo = new Date()
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
-    const newBudget = {
-      user: Number(locals.user!.id),
-      frequency: 1,
-      frequencyCategory: FrequencyCategory.MONTHLY,
-      dayOf: 15,
-      lastBudget: oneMonthAgo
-    }
-    const id = await budgetModel.newBudget(newBudget)
-    budget = {
-      ...newBudget,
-      id
-    }
-  }
+  const budget = await budgetModel.getOrCreateBudgetForUser(userId)
+  const [budgetStartDate, budgetEndDate] = getCurrentBudgetPeriod(budget)
+  const isReadyToRelease = budgetStartDate < new Date()
+  const budgetPeriodsPerYear = getBudgetPeriodsPerYear(budget)
 
   const transactions: (TransactionData & { account: number, parent: number })[] = []
   const investmentTransactions: (TransactionData & { name: string })[] = []
@@ -55,14 +43,6 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
       })
     }
   }
-  const budgetStartDate = getNextOccurrence(budget, budget.lastBudget)
-  const isReadyToRelease = budgetStartDate < new Date()
-  const budgetEndDate = getNextOccurrence(budget, new Date(Math.max(
-    budgetStartDate.getTime(),
-    Date.now()
-  )))
-  budgetEndDate.setDate(budgetEndDate.getDate() + 1)
-  const budgetPeriodsPerYear = getBudgetPeriodsPerYear(budget)
   const investmentIncome = investments.map(inv => {
     const income = getIncomeFromInvestment(inv, budgetPeriodsPerYear)
     const estimatedTotalIncome = getEstimateExcessFromInvestment(inv, budgetPeriodsPerYear)
@@ -82,12 +62,11 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const incomeSinceLast = incomeOnAccounts.reduce((total, i) => total + i.total, 0)
     + investmentIncome.reduce((total, inv) => total + inv.income, 0)
   const budgetAccounts = await getAllBudgetAccountsForUser(userId)
-  const needsBudgets = budgetAccounts.filter(b => b.type ===BudgetAccountType.NEED)
-  const wantsBudgets = budgetAccounts.filter(b => b.type ===BudgetAccountType.WANT)
+  const needsBudgets = budgetAccounts.filter(b => b.type === BudgetAccountType.NEED)
+  const wantsBudgets = budgetAccounts.filter(b => b.type === BudgetAccountType.WANT)
 
   const createBudgetMap = (b: ExpandedBudgetAccount) => {
-    const numberOfOccurrencesThisBudget = numberOfOccurrencesBetween(b, budgetStartDate, budgetEndDate)
-    const maxAmountToAdd = numberOfOccurrencesThisBudget * b.regularBudget
+    const maxAmountToAdd = getBudgetedAmountOverPeriod(b, budgetStartDate, budgetEndDate)
     const amountInAccount = totals[b.parent]?.children[b.account] ?? 0
     const cappedAmountToAdd = Math.min(maxAmountToAdd, Math.max(b.budgetMax - amountInAccount, 0))
     const parentName = accounts[b.parent].name

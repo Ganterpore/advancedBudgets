@@ -6,7 +6,7 @@ import { error } from '@sveltejs/kit'
 export async function newSavingsAccount(props: Omit<AccountTypeSaving, 'id'>) {
   const db = await connect()
   const res = await db.query('INSERT INTO account_type_saving("account", "multiplier", "target", "completed") VALUES($1, $2, $3, $4) RETURNING id',
-    [props.account, props.multiplier, props.target, props.completed ?? false])
+    [props.account, props.multiplier, Math.round(props.target), props.completed ?? false])
   return res.rows[0].id
 }
 

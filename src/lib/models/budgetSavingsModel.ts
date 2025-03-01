@@ -6,7 +6,7 @@ export async function newBudgetSavingsAccount (savings:  Omit<BudgetSavings, 'id
   const res = await db.query(`
     INSERT INTO budget_savings_mapping("user", "account", "max", "type") 
     VALUES($1, $2, $3, $4) RETURNING id`,
-    [savings.user, savings.account, savings.max, savings.type])
+    [savings.user, savings.account, Math.round(savings.max), savings.type])
   return res.rows[0].id
 }
 
@@ -24,7 +24,7 @@ export async function updateBudgetSavingsAccount (savings: BudgetSavings) {
   await db.query(`
     UPDATE budget_savings_mapping SET ("user", "account", "max", "type") = ($1, $2, $3, $4)
     WHERE id=$5`,
-    [savings.user, savings.account, savings.max, savings.type, savings.id])
+    [savings.user, savings.account, Math.round(savings.max), savings.type, savings.id])
 }
 
 export async function deleteBudgetSavingsAccount (budgetSavingsId: number, userId: number) {

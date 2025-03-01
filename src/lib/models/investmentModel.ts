@@ -11,7 +11,7 @@ export async function createInvestmentAccount (investment: Omit<Investment, 'id'
   await db.query(`
     INSERT INTO investment_value("investment", "amount", "onDate")
     VALUES($1, $2, $3)
-  `, [accountId, investment.amount, new Date()])
+  `, [accountId, Math.round(investment.amount), new Date()])
   return Number(accountId)
 }
 
@@ -75,7 +75,7 @@ export async function updateInvestmentAccount (investment: Investment): Promise<
   await db.query(`
     INSERT INTO investment_value("investment", "amount", "onDate")
     VALUES($1, $2, $3)
-  `, [investment.id, investment.amount, new Date()])
+  `, [investment.id, Math.round(investment.amount), new Date()])
 }
 
 export async function archiveInvestmentAccount (investmentId: number) {

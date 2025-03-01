@@ -1,5 +1,6 @@
 import type { Budget } from '$lib/types/budgetTypes'
 import { connect } from '$lib/db'
+import { FrequencyCategory } from '$lib/types/sharedTypes'
 
 export async function newBudget (budget: Omit<Budget, 'id'>) {
   const db = await connect()
@@ -17,6 +18,27 @@ export async function getBudgetForUser (userId: number): Promise<Budget | undefi
     [userId]
   )
   return res.rows[0]
+}
+
+export async function getOrCreateBudgetForUser (userId: number): Promise<Budget> {
+  let budget: Budget | undefined = await getBudgetForUser(userId)
+  if (!budget) {
+    const oneMonthAgo = new Date()
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
+    const defaultBudget = {
+      user: userId,
+      frequency: 1,
+      frequencyCategory: FrequencyCategory.MONTHLY,
+      dayOf: 15,
+      lastBudget: oneMonthAgo
+    }
+    const id = await newBudget(defaultBudget)
+    budget = {
+      ...defaultBudget,
+      id
+    }
+  }
+  return budget
 }
 
 export async function updateBudget (budget: Budget) {

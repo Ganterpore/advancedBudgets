@@ -32,7 +32,7 @@
 
   <!-- Used to send the id to the server without showing it to the user-->
   {#if account.id}<input style="display: none" name="id" value={account.id} />{/if}
-  <Input label="Name" name="account" autofocus bind:value={account.name}/>
+  <Input label="Name" name="account" bind:value={account.name}/>
   <Button disabled={isLoading}>
     {account.id ? 'Update' : 'Create'}
     {#if isLoading}<LoadingSpinner/>{/if}

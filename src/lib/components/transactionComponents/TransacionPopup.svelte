@@ -130,7 +130,7 @@
   <form class="form">
     <Input name="transactionName" bind:value={transactionName}/>
     <div class="footer">
-      <Input type="number" step="0.01" name="transactionValue" autofocus
+      <Input type="number" step="0.01" name="transactionValue"
              label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"}
              bind:value={transactionValue} on:input={onNegativePressed}/>
       <Button disabled={isLoading} on:click={createTransaction} >Create{#if isLoading}<LoadingSpinner/>{/if}</Button>

@@ -117,7 +117,7 @@
       <Alert>{error}</Alert>
     {/if}
     <div class="main">
-      <Input autofocus={![AccountType.SAVING, AccountType.BUDGET].includes(accountType)} label="Name" name="accountName" bind:value={accountName}/>
+      <Input label="Name" name="accountName" bind:value={accountName}/>
       {#if accountType === AccountType.BUDGET}
         <BudgetAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
       {:else if accountType === AccountType.SAVING}

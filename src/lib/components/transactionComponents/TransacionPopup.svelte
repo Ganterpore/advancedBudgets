@@ -27,16 +27,18 @@
   let transactionName: string
   let transactionValue: number | string | undefined
   let previousTransactionValue: number | string | undefined
-  function onNegativePressed (event: InputEvent) {
-    if (event.data === '-') {
-      if (!previousTransactionValue|| previousTransactionValue === '0') {
-        transactionValue = '-0'
-      } else if (previousTransactionValue === '-0') {
-        transactionValue = '0'
-      } else {
-        transactionValue = -1 * previousTransactionValue
-      }
+  function switchValueSign () {
+    if (!previousTransactionValue || previousTransactionValue === '0') {
+      transactionValue = '-0'
+    } else if (previousTransactionValue === '-0') {
+      transactionValue = '0'
+    } else {
+      transactionValue = -1 * previousTransactionValue
     }
+    previousTransactionValue = transactionValue
+  }
+  function onButtonPressed (event: InputEvent) {
+    if (event.data === '-') switchValueSign()
     previousTransactionValue = transactionValue
   }
   function removeLeadingZeros (n: number | string | undefined) {
@@ -81,6 +83,11 @@
       prevTransactionType = $selectedTransactionType
       selectedTransactionType.set(TransactionType.TRANSFER)
     }
+  }
+
+  function convertCompletionToIndividual () {
+    selectedTransactionType.set(TransactionType.INDIVIDUAL)
+    switchValueSign()
   }
 
   async function createTransaction () {
@@ -132,7 +139,7 @@
     <div class="footer">
       <Input type="number" step="0.01" name="transactionValue"
              label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"}
-             bind:value={transactionValue} on:input={onNegativePressed}/>
+             bind:value={transactionValue} on:input={onButtonPressed}/>
       <Button disabled={isLoading} on:click={createTransaction} >Create{#if isLoading}<LoadingSpinner/>{/if}</Button>
     </div>
 
@@ -142,24 +149,24 @@
       </div>
     {/if}
     {#if isTransferring}
-      {#if $selectedTransactionType === TransactionType.COMPLETION}
         <p style="text-align: center">
-          Transfer the remaining {currencyToString(Math.abs(account?.additionalAccountData?.target - actualValue))}
-          {account?.additionalAccountData?.target - actualValue > 0 ? 'to' : 'from'}
+          {#if $selectedTransactionType === TransactionType.COMPLETION}
+            Transfer the remaining {currencyToString(Math.abs(account?.additionalAccountData?.target - actualValue))}
+            {account?.additionalAccountData?.target - actualValue > 0 ? 'to' : 'from'}
+          {/if}
+          { !transactionValue || transactionValue >= 0 ? 'To' : 'From' }
         </p>
-      {/if}
       <div class="transfer">
-        {account.name}
-        {#if !transactionValue || transactionValue >= 0}
-          <p>--></p>
-        {:else}
-          <p>{'<--'}</p>
-        {/if}
         <AllAccountsDropdown accounts={accounts} bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
         {#if transferAvailable}
           <Button on:click={toggleTransfer}>X</Button>
         {/if}
       </div>
+      {#if $selectedTransactionType === TransactionType.COMPLETION}
+        <div class="transfer">
+          <Button on:click={convertCompletionToIndividual}>Reopen the account instead</Button>
+        </div>
+      {/if}
     {/if}
   </form>
 </Popup>

@@ -8,22 +8,35 @@
   import type { AccountTypeBudget, AccountTypeSaving } from '$lib/types/accountTypes'
   import SavingsProgress from '$lib/components/accountComponents/SavingsProgress.svelte'
   import Button from '$lib/components/sharedComponents/Button.svelte'
+  import { getNextOccurrence, numberOfOccurrencesBetween } from '$lib/dayOfWeekFunctons'
+  import type { Budget } from '$lib/types/budgetTypes'
 
   export let id
   export let name
   export let value: number = 0
   export let type
   export let additionalAccountData: AccountTypeSaving | AccountTypeBudget
+  export let budgetDetails: Budget
 
   function getValueString (value) {
+    let subValueString = ''
+    if (type === AccountType.BUDGET) {
+      const today = new Date()
+      const budgetAccountDetails = additionalAccountData as AccountTypeBudget
+      const nextBudgetRelease = getNextOccurrence(budgetDetails, today)
+      const periodsUntilNextBudget = numberOfOccurrencesBetween(budgetAccountDetails, today, nextBudgetRelease)
+      const amountStillToBeReleased = budgetAccountDetails.regularBudget * periodsUntilNextBudget
+      subValueString = currencyToString(value ?? 0)
+      value = value - amountStillToBeReleased
+    }
     let valueString = currencyToString(value ?? 0)
     if (type === AccountType.SAVING) {
-      valueString += ` / ${(additionalAccountData as AccountTypeSaving).target / 100}`
+      subValueString = currencyToString((additionalAccountData as AccountTypeSaving).target)
     }
-    return valueString
+    return [valueString, subValueString]
   }
 
-  $: valueString = getValueString(value)
+  $: [valueString, subValueString] = getValueString(value)
   $: Icon = type ? accountTypeIcons[type] : undefined
   $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
   $: highlightColour = getHighlightColour(false, (additionalAccountData as AccountTypeSaving)?.multiplier)
@@ -49,12 +62,17 @@
       <div class="text-box">
         <p>{name}</p>
         <div class="separator" ></div>
-        <p>{valueString}</p>
+        <div>
+          <p>{valueString}</p>
+          {#if subValueString !== ''}
+            <p class="subValue">{subValueString}</p>
+          {/if}
+        </div>
       </div>
 
     </div>
     {#if type===AccountType.SAVING}
-      <SavingsProgress backgroundColor="--theme-primaryq" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />
+      <SavingsProgress backgroundColor="--theme-primary" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />
     {/if}
   </div>
   {#if isCompletable}
@@ -107,5 +125,12 @@
     font-weight: bold;
     color: var(--theme-secondary-text);
     text-shadow: -1px -1px 5px var(--multiplier-highlight), 1px -1px 5px var(--multiplier-highlight), -1px 1px 5px var(--multiplier-highlight), 1px 1px 5px var(--multiplier-highlight);
+  }
+  .subValue {
+    text-align: right;
+    font-weight: lighter;
+    font-style: italic;
+    font-size: smaller;
+    color: var(--theme-text);
   }
 </style>

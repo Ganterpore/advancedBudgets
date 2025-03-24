@@ -4,9 +4,11 @@
   import type { AccountNode } from '$lib/types/accountTypes'
   import AccountList from '$lib/components/accountComponents/AccountList.svelte'
   import ListItem from '$lib/components/sharedComponents/ListItem.svelte'
+  import { Budget } from '$lib/types/budgetTypes'
 
   export let totals: ParentAccountTotals
   export let accounts: { [key: number]: AccountNode }
+  export let budgetDetails: Budget
   export let onSelect: (isParent: boolean, id: string) => void
 </script>
 
@@ -16,7 +18,7 @@
     <ParentAccountHeader
       name={a.name} id={a.id} value={totals[a.id]?.value} />
   </ListItem>
-  <AccountList parent={a.id}
+  <AccountList parent={a.id} budgetDetails={budgetDetails}
                accounts={Object.values(a.children)}
                totals={totals[a.id]?.children ?? {}}
                onSelect={onSelect} />

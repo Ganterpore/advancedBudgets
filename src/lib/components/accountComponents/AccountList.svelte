@@ -11,10 +11,12 @@
   import SavingsProgress from '$lib/components/accountComponents/SavingsProgress.svelte'
   import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store'
   import { TransactionType } from '$lib/types/transactionTypes'
+  import type { Budget } from '$lib/types/budgetTypes'
 
   export let parent: number
   export let accounts: Account[]
   export let totals: AccountTotals
+  export let budgetDetails: Budget
   export let onSelect: (isParent: boolean, id: string) => void
 
   function sortAccounts (category: AccountType): (a: Account, b: Account) => number {
@@ -104,7 +106,7 @@
           <ListItem selectable secondary onSelected={() => onSelect(false, a.id)} >
             <AccountHeader name={a.name} id={a.id} type={a.type}
                            additionalAccountData={a.additionalAccountData}
-                           value={totals[a.id]} />
+                           value={totals[a.id]} budgetDetails={budgetDetails} />
           </ListItem>
         {/each}
       </div>

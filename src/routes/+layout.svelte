@@ -22,7 +22,7 @@
     --theme-tertiary: #060c81;
     --theme-highlight: #a0e4f1;
     --theme-text: #a0e4f1;
-    --theme-text-light: #a0e4f155;
+    --theme-text-light: #a0e4f199;
     --theme-secondary-text: #161c91;
     --theme-alert: #ff6700;
     --theme-plain: #3e66b4;

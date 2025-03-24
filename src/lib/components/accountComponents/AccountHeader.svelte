@@ -135,6 +135,6 @@
     font-weight: lighter;
     font-style: italic;
     font-size: smaller;
-    color: var(--theme-text);
+    color: var(--theme-text-light);
   }
 </style>

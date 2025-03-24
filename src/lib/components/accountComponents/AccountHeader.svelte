@@ -39,7 +39,7 @@
   $: [valueString, subValueString] = getValueString(value)
   $: Icon = type ? accountTypeIcons[type] : undefined
   $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
-  $: highlightColour = getHighlightColour(false, (additionalAccountData as AccountTypeSaving)?.multiplier)
+  $: highlightColour = getHighlightColour(isCompletable, (additionalAccountData as AccountTypeSaving)?.multiplier)
 
   async function addTransaction (e, isCompletion) {
     e.stopPropagation()
@@ -54,7 +54,11 @@
     <div class="header" style="--multiplier-highlight:{highlightColour}">
       <div class="icon">
         {#if type===AccountType.SAVING}
-          <p class="multiplier">{additionalAccountData.multiplier/100}X</p>
+          {#if additionalAccountData.target <= value}
+            <p class="multiplier">✓</p>
+          {:else}
+            <p class="multiplier">{additionalAccountData.multiplier/100}X</p>
+          {/if}
         {:else}
           <svelte:component this={Icon}/>
         {/if}

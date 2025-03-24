@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const { totals, accounts, investments } = layout
 
   depends('data:budget')
-  const budget = await budgetModel.getOrCreateBudgetForUser(userId)
+  const budget = layout.budget
   const [budgetStartDate, budgetEndDate] = getCurrentBudgetPeriod(budget)
   const isReadyToRelease = budgetStartDate < new Date()
   const budgetPeriodsPerYear = getBudgetPeriodsPerYear(budget)

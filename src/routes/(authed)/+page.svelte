@@ -27,7 +27,7 @@
         rightButtons={[{ name: 'Add Account', action: openAccountPopup }]}/>
 
 <div class="main">
-  <ParentAccountList totals={data.totals} accounts={data.accounts} onSelect={onSelected} />
+  <ParentAccountList totals={data.totals} accounts={data.accounts} budgetDetails={data.budget} onSelect={onSelected} />
   <InvestmentList investments={data.investments.filter(i => !i.archived)} />
   <ParentAccountPopup/>
   <AccountPopup/>

@@ -2,17 +2,16 @@
   import BottomNavigation from "$lib/components/sharedComponents/BottomNavigation.svelte";
   import FrequencySelector from "$lib/components/timeSelectors/FrequencySelector.svelte";
   import {currencyToString} from "$lib/utils";
-  import SavingsProgress from "$lib/components/accountComponents/SavingsProgress.svelte";
   import BucketAssignment from "$lib/components/sharedComponents/BucketAssignment.svelte";
   import type { BudgetExcess, BudgetSavings } from '$lib/types/budgetTypes'
   import { invalidate } from '$app/navigation'
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import AppBar from '$lib/components/sharedComponents/AppBar.svelte'
-  import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
   import { FrequencyCategory } from '$lib/types/sharedTypes'
   import type { AccountNode } from '$lib/types/accountTypes'
   import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
+  import BudgetProgressExpandable from '$lib/components/budgetComponents/BudgetProgressExpandable.svelte'
 
   export let data
   let incomeOnAccounts, investmentIncome, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions
@@ -204,18 +203,25 @@
     <div class="body">
       {#each incomeOnAccounts as income}
         <div class="income-list-item">
-          <p>{data.accounts[income.parent]?.children[income.account]?.name} ({((income.total * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
+          <p>{data.accounts[income.parent]?.children[income.account]?.name}</p>
           <div style="flex-grow: 1"></div>
           <p>{currencyToString(income.total)}</p>
+        </div>
+        <div class="income-list-item">
+          <p class="additional-info" style="text-align: left;">{((income.total * 100) / data.incomeSinceLast).toFixed(0)}%</p>
         </div>
         <hr/>
       {/each}
       {#each investmentIncome as income}
         <div class="income-list-item">
-          <p>{income.name} ({((income.income * 100) / data.incomeSinceLast).toFixed(0)}%)</p>
+          <p>{income.name}</p>
           <div style="flex-grow: 1"></div>
           <p>{currencyToString(income.income)}</p>
-          <p style="font-style: italic"> (+~{currencyToString(income.estimatedTotalIncome)})</p>
+        </div>
+        <div class="income-list-item">
+          <p class="additional-info" style="text-align: left;">{((income.income * 100) / data.incomeSinceLast).toFixed(0)}%</p>
+            <div style="flex-grow: 1"></div>
+          <p class="additional-info" style="text-align: right;">{currencyToString(income.estimatedTotalIncome)}</p>
         </div>
         <hr/>
       {/each}
@@ -223,35 +229,9 @@
 
     <div class="title"><h3>Budget</h3>{currencyToString(currentNeeds + currentWants)}</div>
     <div class="body">
-      <Expandable name="Needs">
-        <div slot="header" class="progress">
-          <p>{((currentNeeds / maxNeeds) * 100).toFixed(2)}% progress towards {currencyToString(maxNeeds)}</p>
-          <SavingsProgress savingsGoal={maxNeeds} currentValue={currentNeeds} />
-        </div>
-        <div>{#each amountToNeeds as need}
-          <div class="budgetList">
-            <p>{need.parentName}: {need.name}</p>
-            <div style="flex-grow: 1"></div>
-            {#if need.actualAmountAdded < need.maxAmountToAdd}<p>{currencyToString(need.actualAmountAdded)} / </p>{/if}
-            <p>{currencyToString(need.maxAmountToAdd)}</p>
-          </div>
-        {/each}</div>
-      </Expandable>
+      <BudgetProgressExpandable name="Needs" currentAmount={currentNeeds} neededAmount={maxNeeds} budgetItems={amountToNeeds} />
       <hr/>
-      <Expandable name="Wants">
-        <div slot="header" class="progress">
-          <p>{((currentWants / maxWants) * 100).toFixed(2)}% progress towards {currencyToString(maxWants)}</p>
-            <SavingsProgress savingsGoal={maxWants} currentValue={currentWants} />
-        </div>
-        <div>{#each amountToWants as want}
-          <div class="budgetList">
-            <p>{want.parentName}: {want.name}</p>
-            <div style="flex-grow: 1"></div>
-            {#if want.actualAmountAdded < want.maxAmountToAdd}<p>{currencyToString(want.actualAmountAdded)} / </p>{/if}
-            <p>{currencyToString(want.maxAmountToAdd)}</p>
-          </div>
-        {/each}</div>
-      </Expandable>
+      <BudgetProgressExpandable name="Wants" currentAmount={currentWants} neededAmount={maxWants} budgetItems={amountToWants} />
     </div>
 
     <div class="title"><h3>Savings</h3>{currencyToString(savingsAccounts.reduce((total, acc) => total + acc.actualAmountAdded, 0))}</div>
@@ -380,6 +360,11 @@
   .button-array {
     display: flex;
     flex-direction: row;
+  }
+  .additional-info {
+    font-style: italic;
+    font-size: smaller;
+    color: var(--theme-text-light);
   }
   hr {
     border-radius: 5px;

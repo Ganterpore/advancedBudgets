@@ -85,7 +85,7 @@
         <div>
           <p>{valueString}</p>
           {#if subValueString !== ''}
-            <p class="subValue">{subValueString}</p>
+            <p class="subValue" style="text-align: right">{subValueString}</p>
           {/if}
         </div>
       </div>
@@ -147,7 +147,6 @@
     text-shadow: -1px -1px 5px var(--multiplier-highlight), 1px -1px 5px var(--multiplier-highlight), -1px 1px 5px var(--multiplier-highlight), 1px 1px 5px var(--multiplier-highlight);
   }
   .subValue {
-    text-align: right;
     font-weight: lighter;
     font-style: italic;
     font-size: smaller;

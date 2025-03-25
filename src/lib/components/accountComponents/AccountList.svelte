@@ -124,7 +124,10 @@
             <MaterialSymbolsAddRounded/>
           </Button>
           <div class="progress">
-            <p class="currency">{`${currencyToString(propsFor(category).total)} of ${currencyToString(propsFor(category).goal)}`}</p>
+            <div>
+            <p class="currency">{currencyToString(propsFor(category).total)}</p>
+            <p class="additional-info">{currencyToString(propsFor(category).goal)}</p>
+            </div>
             <SavingsProgress savingsGoal={propsFor(category).goal} currentValue={propsFor(category).total} />
           </div>
         {/if}
@@ -147,7 +150,17 @@
   .currency {
     text-align: right;
     width: 100%;
+    margin: 0;
   }
   .subtext {
+  }
+  .additional-info {
+    text-align: right;
+    font-weight: lighter;
+    font-style: italic;
+    font-size: smaller;
+    color: var(--theme-text-light);
+    margin: 5px;
+    padding: 0;
   }
 </style>

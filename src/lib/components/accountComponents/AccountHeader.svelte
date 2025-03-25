@@ -31,15 +31,26 @@
     }
     let valueString = currencyToString(value ?? 0)
     if (type === AccountType.SAVING) {
-      subValueString = currencyToString((additionalAccountData as AccountTypeSaving).target)
+      const target = (additionalAccountData as AccountTypeSaving).target
+      if (value !== target) {
+        subValueString = currencyToString(target)
+      }
     }
     return [valueString, subValueString]
+  }
+  const getSavingsTransactionsLeft = () => {
+    if (type !== AccountType.SAVING) return 0
+    const savingsDetails = additionalAccountData as AccountTypeSaving
+    const amountLeft = savingsDetails.target - value
+    const weightedAmountLeft = amountLeft / savingsDetails.multiplier
+    return Math.ceil(weightedAmountLeft)
   }
 
   $: [valueString, subValueString] = getValueString(value)
   $: Icon = type ? accountTypeIcons[type] : undefined
   $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
   $: highlightColour = getHighlightColour(isCompletable, (additionalAccountData as AccountTypeSaving)?.multiplier)
+  $: savingsTransactionsLeft = getSavingsTransactionsLeft()
 
   async function addTransaction (e, isCompletion) {
     e.stopPropagation()
@@ -64,7 +75,12 @@
         {/if}
       </div>
       <div class="text-box">
-        <p>{name}</p>
+        <div>
+          <p>{name}</p>
+          {#if type===AccountType.SAVING && savingsTransactionsLeft > 0}
+            <p class="subValue">{savingsTransactionsLeft} to go</p>
+          {/if}
+        </div>
         <div class="separator" ></div>
         <div>
           <p>{valueString}</p>
@@ -106,9 +122,9 @@
     flex-grow: 1;
   }
   .icon {
-      padding: 10px 10px;
-      display: flex;
-      align-items: center;
+    padding: 10px 10px;
+    display: flex;
+    align-items: center;
   }
   .close-flex {
     display: flex;

@@ -72,11 +72,12 @@ export const getNextOccurrence = (frequencyObj: FrequencyObject, after: Date) =>
     const daysToAdd = daysUntilNext + (goesOverWeek ? 7 * (frequency - 1) : 0)
     nextDate.setDate(nextDate.getDate() + daysToAdd)
   } else if (frequencyCategory === FrequencyCategory.MONTHLY) {
+    const originalDate = nextDate.getDate()
+    nextDate.setDate(dayOf)
     // If the day has already passed, go to the next budgeted month
-    if (nextDate.getDate() >= dayOf) {
+    if (originalDate >= dayOf) {
       nextDate.setMonth(nextDate.getMonth() + frequency)
     }
-    nextDate.setDate(dayOf)
   }
   nextDate.setHours(0, 0, 0, 0)
   return nextDate

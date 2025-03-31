@@ -10,6 +10,7 @@ import type { Budget } from '$lib/types/budgetTypes'
 import * as budgetModel from '$lib/models/budgetModel'
 import { getAllBudgetSavingsAccounts } from '$lib/models/budgetSavingsModel'
 import { error } from '@sveltejs/kit'
+import { getMonthlyAverageBudgetExpensesSince } from '$lib/models/transactionModel'
 
 export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const layout = await parent()
@@ -18,6 +19,11 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const budget: Budget | undefined = await budgetModel.getBudgetForUser(userId)
   if (!budget) error(400, { message: 'You must create a budget before beginning retirement planning' })
   const [budgetStartDate, budgetEndDate] = getCurrentBudgetPeriod(budget)
+
+  depends('data:values')
+  const oneYearAgo = new Date()
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+  const averageBudget = await getMonthlyAverageBudgetExpensesSince(userId, oneYearAgo)
 
   depends('data:accounts')
   const budgetAccounts = await getAllBudgetAccountsForUser(userId)
@@ -38,6 +44,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   return {
     needsBudget,
     wantsBudget,
+    averageBudget,
     currentCapital,
     budgetedAmountToCapital,
     budgetPeriodsPerYear: budget ? getBudgetPeriodsPerYear(budget) : 12

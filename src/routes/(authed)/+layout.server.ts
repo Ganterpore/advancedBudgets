@@ -1,7 +1,7 @@
 import type { LayoutServerLoad } from './$types'
 import { connect } from '$lib/db'
 import { getAccountsForUser } from '$lib/models/parentAccountModel'
-import { getAccountTotalsForUser } from '$lib/types/transactionModel'
+import { getAccountTotalsForUser } from '$lib/models/transactionModel'
 import { getInvestmentsOnUser } from '$lib/models/investmentModel'
 import * as budgetModel from '$lib/models/budgetModel'
 

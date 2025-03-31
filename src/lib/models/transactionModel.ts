@@ -106,3 +106,22 @@ export async function getTotalOnIncomeAccounts (userId: number): Promise<{ accou
   `, [userId])
   return res.rows.map(i => ({ ...i, total: parseInt(i.total)}))
 }
+
+export async function getMonthlyAverageBudgetExpensesSince (userId: number, start: Date) {
+  const format = 'YYYY-MM-DD'
+  const formattedDate = `${start.getFullYear()}-${start.getMonth() + 1}-${start.getDate()}`
+  const db = await connect()
+  const res = await db.query(`
+    select sum(t.amount) as total, min(t."transactionTime") as since from transactions t 
+    left join accounts a on t.account = a.id 
+    left join parent_accounts pa on a.parent = pa.id 
+    where t.amount < 0 and a."type" = 'Budget' 
+    and t."transactionTime" > to_date($2, '${format}') 
+    and pa."user" = $1
+  `, [userId, formattedDate])
+  const { total, since } = res.rows[0]
+  const sinceDate = new Date(since)
+  const today = new Date()
+  const monthsPast = (today.getFullYear() - sinceDate.getFullYear()) * 12 + (today.getMonth() - sinceDate.getMonth()) + 1
+  return Math.round(Math.abs(total / monthsPast))
+}

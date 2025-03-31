@@ -3,7 +3,7 @@ import { error, json } from "@sveltejs/kit";
 import { AccountHierarchy } from '../../../../../params/accountHierarchy'
 import { TransactionType } from '$lib/types/transactionTypes'
 import { assignTransaction } from '$lib/controllers/savingsController'
-import { newTransaction } from '$lib/types/transactionModel'
+import { newTransaction } from '$lib/models/transactionModel'
 import { handleCompletion, handleIndividualTransaction, handleTransfer } from '$lib/controllers/transactionController'
 
 export type TransactionData = {

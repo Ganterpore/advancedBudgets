@@ -1,6 +1,5 @@
 import type { PageServerLoad } from './$types'
-import * as budgetModel from '$lib/models/budgetModel'
-import { getTotalOnIncomeAccounts } from '$lib/types/transactionModel'
+import { getTotalOnIncomeAccounts } from '$lib/models/transactionModel'
 import { getAllBudgetAccountsForUser } from '$lib/models/accountTypeBudgetModel'
 import type { AccountNode, ExpandedBudgetAccount } from '$lib/types/accountTypes'
 import { BudgetAccountType } from '$lib/types/accountTypes'

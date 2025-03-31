@@ -1,6 +1,6 @@
 import { connect } from '$lib/db'
 import type { AccountTypeSaving, ExpandedSavingsAccount } from '$lib/types/accountTypes'
-import { getTotalOnAccount } from '$lib/types/transactionModel'
+import { getTotalOnAccount } from '$lib/models/transactionModel'
 import { error } from '@sveltejs/kit'
 
 export async function newSavingsAccount(props: Omit<AccountTypeSaving, 'id'>) {

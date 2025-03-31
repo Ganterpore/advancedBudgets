@@ -2,7 +2,7 @@ import { currencyToString } from "$lib/utils";
 import { error } from '@sveltejs/kit';
 import type { SuggestedTransaction } from '$lib/types/accountTypes'
 import { getSavingsAccountsOnParent } from '$lib/models/accountTypeSavingModel'
-import { getAccountTotalsForUser } from '$lib/types/transactionModel'
+import { getAccountTotalsForUser } from '$lib/models/transactionModel'
 import { getParentAccount } from '$lib/models/parentAccountModel'
 
 type AccountDetails = {

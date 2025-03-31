@@ -13,19 +13,19 @@
   let roiInterestRate = 6
   let yearsUntilRetirement = 10
   let reduceInterestByWithdrawal = 'Retain'
+  let calculateBudgetBy = 'Budgeted'
   let deposit = 0
   let age = 0
 
   export let data
-  let wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital
-  let theme
-  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, settings: { theme } } = data)
+  let wantsBudget, needsBudget, averageBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, theme
+  $: ({ wantsBudget, needsBudget, averageBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, settings: { theme } } = data)
 
   $: withdrawalRate = Math.max(withdrawalRate, 1)
   $: roiInterestRate = Math.max(roiInterestRate, 0)
   $: yearsUntilRetirement = Math.max(yearsUntilRetirement, 1)
 
-  $: initialBudget = (wantsBudget + needsBudget) / 100
+  $: initialBudget = calculateBudgetBy === 'Budgeted' ? (wantsBudget + needsBudget) / 100 : averageBudget / 100
   $: regularDeposit = budgetedAmountToCapital / 100
 
   $: budgetPerYear = initialBudget * 100 * budgetPeriodsPerYear
@@ -55,6 +55,10 @@
     {/if}
     <NumberClicker unit="%" name="Inflation Rate" bind:value={inflationRate}/>
     <NumberClicker unit="y" name="Years Until Retirement" bind:value={yearsUntilRetirement} additionalClickerValue={10}/>
+    <div class="toggle">
+      Calculate budget by
+      <Toggle bind:selected={calculateBudgetBy} value1="Budgeted" value2="Average" />
+    </div>
     <Input type="number" label="Current budget per budget period" bind:value={initialBudget} />
     <Input type="number" label="Make one time deposit" bind:value={deposit} />
     <Input type="number" label="Regular deposit" bind:value={regularDeposit} />

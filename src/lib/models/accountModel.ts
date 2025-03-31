@@ -1,6 +1,6 @@
 import { connect } from '$lib/db'
 import type { Account } from '$lib/types/accountTypes'
-import { getTotalOnAccount } from '$lib/types/transactionModel'
+import { getTotalOnAccount } from '$lib/models/transactionModel'
 import { error } from '@sveltejs/kit'
 
 export async function newAccount(account: Omit<Account, 'id'>): Promise<number> {

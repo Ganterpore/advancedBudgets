@@ -6,7 +6,7 @@ import type {
   ParentAccount
 } from '$lib/types/accountTypes'
 import { AccountType } from '$lib/types/accountTypes'
-import { getTotalsOnParentAccount } from '$lib/types/transactionModel'
+import { getTotalsOnParentAccount } from '$lib/models/transactionModel'
 import { error } from '@sveltejs/kit'
 
 

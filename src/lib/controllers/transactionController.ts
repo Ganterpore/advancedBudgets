@@ -1,5 +1,5 @@
 import { completeAccount, getSavingsAccountOnAccountId } from '$lib/models/accountTypeSavingModel'
-import { getTotalOnAccount, newTransaction } from '$lib/types/transactionModel'
+import { getTotalOnAccount, newTransaction } from '$lib/models/transactionModel'
 import { error, json } from '@sveltejs/kit'
 import { currencyToString } from '$lib/utils'
 import type { TransactionData } from '../../routes/(authed)/transactions/[type=accountHierarchy]/[id]/+server'

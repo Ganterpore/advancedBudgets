@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types'
 import { AccountHierarchy } from '../../../../params/accountHierarchy'
-import { getTransactionsOnAccount, getTransactionsOnParentAccount } from '$lib/types/transactionModel'
+import { getTransactionsOnAccount, getTransactionsOnParentAccount } from '$lib/models/transactionModel'
 import type { Account, AccountNode, ParentAccount } from '$lib/types/accountTypes'
 import type { TransactionWithParent } from '$lib/types/transactionTypes'
 

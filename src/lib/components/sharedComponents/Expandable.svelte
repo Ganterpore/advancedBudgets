@@ -8,7 +8,7 @@
   const expanded = writable(false)
   const rotation = tweened(0, { duration: 100, easing: cubicIn })
 
-  export let name
+  export let name = ''
 
   function onclick () {
     expanded.set(!$expanded)
@@ -18,10 +18,12 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <div class="expandableHeader" on:click={onclick}>
-  <div class="title">
-    <h3>{name}</h3>
-    <slot name="subtext"/>
-  </div>
+  {#if name}
+    <div class="title">
+      <h3>{name}</h3>
+      <slot name="subtext"/>
+    </div>
+  {/if}
   <slot name="header" />
   <div style={`rotate: ${$rotation + 'deg'}`}><MaterialSymbolsExpandMore /></div>
 </div>

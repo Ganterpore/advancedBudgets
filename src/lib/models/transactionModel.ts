@@ -9,6 +9,22 @@ export async function newTransaction (transaction: Omit<Transaction, 'id'|'trans
   return res.rows[0].id
 }
 
+export async function updateTransaction (transaction: Omit<Transaction, 'transactionTime'|'account'>) {
+  const db = await connect()
+  await db.query(
+    `UPDATE transactions SET("amount", "description")
+     VALUES($1, $2) 
+     WHERE ID=$3`,
+    [Math.round(transaction.amount), transaction.description, transaction.id])
+}
+
+export async function deleteTransaction (transactionId: number) {
+  const db = await connect()
+  await db.query(
+    'DELETE FROM transactions WHERE id=$1',
+    [transactionId])
+}
+
 function buildTotalsTree (rows: { account: number, parent: number, value: number}[]) {
   const getOrCreateBranch = (tree: ParentAccountTotals, branch: number) => {
     if (!tree[branch]) {

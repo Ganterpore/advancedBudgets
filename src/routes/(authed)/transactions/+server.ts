@@ -3,6 +3,7 @@ import type { TransactionData } from './[type=accountHierarchy]/[id]/+server'
 import { error, json } from '@sveltejs/kit'
 import { TransactionType } from '$lib/types/transactionTypes'
 import { handleIndividualTransaction } from '$lib/controllers/transactionController'
+import { deleteTransaction } from '$lib/models/transactionModel'
 
 export const POST: RequestHandler = async ({ request }) => {
   const data: (TransactionData & { account: number, parent: number })[] = await request.json()
@@ -22,5 +23,16 @@ export const POST: RequestHandler = async ({ request }) => {
   } catch (e) {
     console.error(e)
     throw error(500, 'Transfer failed. Warning: The transfer may have have failed halfway through.')
+  }
+}
+
+export const DELETE: RequestHandler = async ({ request }) => {
+  try {
+    const { transactionId } = await request.json()
+    await deleteTransaction(transactionId)
+    return new Response(null, { status: 204 })
+  } catch (e) {
+    console.error(e)
+    throw error(500, `Failed to delete transaction.`)
   }
 }

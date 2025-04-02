@@ -16,6 +16,7 @@ export type Theme = {
   tertiary: string
   highlight: string
   text: string
+  'text-light': string
   'secondary-text': string
   alert: string
   plain: string
@@ -29,6 +30,7 @@ export const themes: {[name: string]: Theme} = {
     tertiary: '#060c81',
     highlight: '#a0e4f1',
     text: '#a0e4f1',
+    'text-light': '#a0e4f199',
     'secondary-text': '#161c91',
     alert: '#ff6700',
     plain: '#3e66b4',
@@ -40,6 +42,7 @@ export const themes: {[name: string]: Theme} = {
     tertiary: '#B3907A',
     highlight: '#86C57C',
     text: '#96C386',
+    'text-light': '#96C38699',
     'secondary-text': '#68423D',
     plain: '#87624A',
     alert: '#9F091B',
@@ -51,6 +54,7 @@ export const themes: {[name: string]: Theme} = {
     tertiary: '#725483',
     highlight: '#000000',
     text: '#FFFFFF',
+    'text-light': '#FFFFFF99',
     'secondary-text': '#EF091B',
     alert: '#ff6700',
     plain: '#450302',

@@ -4,12 +4,13 @@ import { getTransactionsOnAccount, getTransactionsOnParentAccount } from '$lib/m
 import type { Account, AccountNode, ParentAccount } from '$lib/types/accountTypes'
 import type { TransactionWithParent } from '$lib/types/transactionTypes'
 
-export const load: PageServerLoad = async ({ params, parent }) => {
+export const load: PageServerLoad = async ({ params, parent, depends }) => {
   const { id, type } = params
   let transactionFunc: (accountId: number) => Promise<TransactionWithParent[]>
   let account: ParentAccount | Account
   let isParent: boolean
   const layout = await parent()
+  depends('data:values')
   switch (type) {
     case AccountHierarchy.PARENT_ACCOUNT:
       transactionFunc = getTransactionsOnParentAccount

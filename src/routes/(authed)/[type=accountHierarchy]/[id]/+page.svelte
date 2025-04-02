@@ -6,13 +6,12 @@
   import ParentAccountPopup from '$lib/components/accountComponents/ParentAccountPopup.svelte'
   import AccountPopup from '$lib/components/accountComponents/AccountPopup.svelte'
   import ArchiveAccountPopup from '$lib/components/accountComponents/ArchiveAccountPopup.svelte'
-  import type { TransactionWithParent } from '$lib/types/transactionTypes'
   import TransactionMonthHeader from '$lib/components/transactionComponents/TransactionMonthHeader.svelte'
   import ListItem from '$lib/components/sharedComponents/ListItem.svelte'
 
   export let data
-  const transactions: TransactionWithParent[] = data.transactions
-  const transactionsByMonth = transactions.reduce((monthMapping, transaction) => {
+  $: transactions = data.transactions
+  $: transactionsByMonth = transactions.reduce((monthMapping, transaction) => {
     const year = transaction.transactionTime.getFullYear()
     const month = transaction.transactionTime.toLocaleString('default', { month: 'long' });
     const key = `${year}_${month}`
@@ -60,7 +59,6 @@
       </ListItem>
       <div class="list">
         {#each transactionsByMonth[key].transactionList as t}
-          <p class="date">{t.transactionTime.toLocaleString()}</p>
           <ListItem secondary>
             <TransactionListItem transaction={t} />
           </ListItem>

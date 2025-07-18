@@ -3,15 +3,21 @@
   import type { TransactionWithParent } from '$lib/types/transactionTypes'
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import DeleteOutlineIcon from '~icons/material-symbols/DeleteOutline';
+  import EditOutlineIcon from '~icons/material-symbols/EditOutline';
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
   import Popup from '$lib/components/sharedComponents/Popup.svelte'
+  import TransactionPopup from '$lib/components/transactionComponents/TransactionPopup.svelte'
   import { invalidate } from '$app/navigation'
   import { openPopup } from '$lib/store'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
   import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
+  import { TransactionType } from '$lib/types/transactionTypes'
 
   export let transaction: TransactionWithParent
+  export let account
+
   let deletePopupIsOpen: boolean = false
+  let editPopupIsOpen: boolean = false
   let deleteErrorString: string
   let isLoading: boolean = false
   $: valueString = currencyToString(transaction.amount ?? 0)
@@ -38,21 +44,24 @@
 
 <div class="outer">
   <Expandable >
-  <div slot="header" class="container">
-    <div>
-      <p class="text">{transaction.description}</p>
-      <p class="sub-text">{transaction.accountName}</p>
+    <div slot="header" class="container">
+      <div>
+        <p class="text">{transaction.description}</p>
+        <p class="sub-text">{transaction.accountName}</p>
+      </div>
+      <div>
+        <p class="text">{valueString}</p>
+        <p class="sub-text">{transaction.transactionTime.toLocaleString()}</p>
+      </div>
     </div>
-    <div>
-      <p class="text">{valueString}</p>
-      <p class="sub-text">{transaction.transactionTime.toLocaleString()}</p>
-    </div>
-  </div>
-  <form class="actions">
-    <Button on:click={() => deletePopupIsOpen = true }>
-      <DeleteOutlineIcon/>
-    </Button>
-  </form>
+    <form class="actions">
+      <Button on:click={() => editPopupIsOpen = true }>
+        <EditOutlineIcon/>
+      </Button>
+      <Button on:click={() => deletePopupIsOpen = true }>
+        <DeleteOutlineIcon/>
+      </Button>
+    </form>
   </Expandable>
 </div>
 
@@ -75,6 +84,16 @@
   </div>
 </Popup>
 
+<TransactionPopup
+  isOpen={editPopupIsOpen}
+  onClose={() => editPopupIsOpen = false}
+  {account}
+  transactionId={transaction.id}
+  transactionName={transaction.description}
+  transactionValue={transaction.amount ? transaction.amount / 100 : 0}
+  selectedTransactionType={TransactionType.INDIVIDUAL}
+/>
+
 <style>
   .outer {
     display: flex;
@@ -91,6 +110,7 @@
   .actions {
     display: flex;
     justify-content: right;
+    gap: 5px;
   }
   .text {
     margin: 0;

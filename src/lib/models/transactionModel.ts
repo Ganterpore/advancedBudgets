@@ -12,8 +12,7 @@ export async function newTransaction (transaction: Omit<Transaction, 'id'|'trans
 export async function updateTransaction (transaction: Omit<Transaction, 'transactionTime'|'account'>) {
   const db = await connect()
   await db.query(
-    `UPDATE transactions SET("amount", "description")
-     VALUES($1, $2) 
+    `UPDATE transactions SET("amount", "description") = ($1, $2) 
      WHERE ID=$3`,
     [Math.round(transaction.amount), transaction.description, transaction.id])
 }

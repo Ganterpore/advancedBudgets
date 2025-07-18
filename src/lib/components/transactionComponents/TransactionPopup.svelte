@@ -14,7 +14,7 @@
 
   export let isOpen: boolean
   export let onClose: () => void
-  export let accounts: AccountTree
+  export let accounts: AccountTree | undefined
   export let account: Account | ParentAccount
   export let transactionId: number | undefined = undefined
   export let transactionName: string = ''
@@ -53,7 +53,7 @@
   let transferTo = (accountList ?? [])[0]?.id
   let prevTransactionType = selectedTransactionType
   const transferableTypes = [TransactionType.INDIVIDUAL, TransactionType.TRANSFER]
-  $: transferAvailable = transferableTypes.includes(selectedTransactionType)
+  $: transferAvailable = transferableTypes.includes(selectedTransactionType) && accounts !== undefined
   $: isTransferring = selectedTransactionType === TransactionType.TRANSFER || (selectedTransactionType === TransactionType.COMPLETION && actualValue !== account?.additionalAccountData?.target)
 
   function setDefaultTransferName (transactionType: TransactionType) {
@@ -117,11 +117,12 @@
   }
 
   function onCloseWrapped () {
-    transactionName = 'Transaction'
+    isLoading = false
     error = ''
+    if (transactionId) return onClose()
+    transactionName = 'Transaction'
     transactionValue = 0
     previousTransactionValue = undefined
-    isLoading = false
     onClose()
   }
 </script>

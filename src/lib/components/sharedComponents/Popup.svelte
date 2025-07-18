@@ -1,10 +1,13 @@
 <script>
   import { openPopup } from '$lib/store.ts'
   import { fade, fly } from 'svelte/transition'
+  import { onMount } from 'svelte'
 
   export let id
   export let onClose = undefined
   export let isOpen = undefined
+  let portalTarget
+
   $: isHidden = checkIsHidden(isOpen, $openPopup)
 
   function checkIsHidden (isOpen, openPoupId) {
@@ -24,14 +27,33 @@
       onCloseWrapper()
     }
   }
+
+  onMount(() => {
+    // Find the root div and create portal target
+    const rootElement = document.querySelector('.root')
+    if (rootElement) {
+      portalTarget = document.createElement('div')
+      portalTarget.id = `popup-portal-${id}`
+      rootElement.appendChild(portalTarget)
+    }
+
+    return () => {
+      // Cleanup
+      if (portalTarget && portalTarget.parentNode) {
+        portalTarget.parentNode.removeChild(portalTarget)
+      }
+    }
+  })
 </script>
 
-{#if !isHidden}
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="modal" on:click|self={onCloseWrapper} transition:fade={{duration: 500}} on:keydown={onKeyDown}>
-    <div class="content" transition:fly={{ duration: 500, y: 100 }}>
-      <button class="close-button" on:click={onCloseWrapper}>&times;</button>
-      <slot />
+{#if !isHidden && portalTarget}
+  <div use:portal={portalTarget}>
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="modal" on:click|self={onCloseWrapper} transition:fade={{duration: 500}} on:keydown={onKeyDown}>
+      <div class="content" transition:fly={{ duration: 500, y: 100 }}>
+        <button class="close-button" on:click={onCloseWrapper}>&times;</button>
+        <slot />
+      </div>
     </div>
   </div>
 {/if}
@@ -78,3 +100,17 @@
     cursor: pointer;
   }
 </style>
+
+<script context="module">
+  // Portal action
+  function portal(node, target) {
+    target.appendChild(node)
+    return {
+      destroy() {
+        if (node.parentNode) {
+          node.parentNode.removeChild(node)
+        }
+      }
+    }
+  }
+</script>

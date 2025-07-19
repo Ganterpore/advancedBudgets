@@ -7,6 +7,7 @@ import { newTransaction } from '$lib/models/transactionModel'
 import { handleCompletion, handleIndividualTransaction, handleTransfer } from '$lib/controllers/transactionController'
 
 export type TransactionData = {
+  id?: number,
   amount: number,
   description: string,
   type: TransactionType,
@@ -55,4 +56,9 @@ export const POST: RequestHandler = async (props) => {
       return handleIndividualTransaction(accountId, data)
   }
   throw error(400, `Cannot send transaction type ${data.type} to account`)
+}
+
+export const PUT: RequestHandler = async (props) => {
+  const { accountId, data } = await validateFields(props)
+  return handleIndividualTransaction(accountId, data)
 }

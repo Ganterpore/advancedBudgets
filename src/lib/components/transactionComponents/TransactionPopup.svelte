@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store'
+  import { openPopup } from '$lib/store'
   import { invalidate } from '$app/navigation';
   import { currencyToString } from "$lib/utils";
-  import type { AccountNode, AccountTree } from '$lib/types/accountTypes'
+  import type { Account, AccountTree, ParentAccount } from '$lib/types/accountTypes'
   import type { TransactionData } from '../../../routes/(authed)/transactions/[type=accountHierarchy]/[id]/+server'
   import Popup from '$lib/components/sharedComponents/Popup.svelte'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
@@ -12,21 +12,18 @@
   import AllAccountsDropdown from '$lib/components/accountComponents/AllAccountsDropdown.svelte'
   import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
 
-  export let accounts: AccountTree
+  export let isOpen: boolean
+  export let onClose: () => void
+  export let accounts: AccountTree | undefined
+  export let account: Account | ParentAccount
+  export let transactionId: number | undefined = undefined
+  export let transactionName: string = ''
+  export let transactionValue: number | string | undefined = ''
+  export let selectedTransactionType: TransactionType
   let isLoading = false
   let accountList: { name: string, id: number }[]
-  $: accountList = Object.values(accounts ?? {}).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
-    const children = parentAccount.children
-    const childAccountList = Object.values(children).map(account => ({ ...account, concatName: `${parentAccount.name}: ${account.name}` }))
-    return [...accs, ...childAccountList]
-  }, [])
-  $: account = $selectedTransactionType === TransactionType.GROUPED_SAVING
-    ? Object.values(accounts).find(parentAccount => parentAccount.id === $selectedTransactionAccount)
-    : accountList.find(account => account.id === $selectedTransactionAccount)
 
-  let transactionName: string
-  let transactionValue: number | string | undefined
-  let previousTransactionValue: number | string | undefined
+  let previousTransactionValue: number | string | undefined = ''
   function switchValueSign () {
     if (!previousTransactionValue || previousTransactionValue === '0') {
       transactionValue = '-0'
@@ -54,10 +51,10 @@
   let error: string
 
   let transferTo = (accountList ?? [])[0]?.id
-  let prevTransactionType = $selectedTransactionType
+  let prevTransactionType = selectedTransactionType
   const transferableTypes = [TransactionType.INDIVIDUAL, TransactionType.TRANSFER]
-  $: transferAvailable = transferableTypes.includes($selectedTransactionType)
-  $: isTransferring = $selectedTransactionType === TransactionType.TRANSFER || ($selectedTransactionType === TransactionType.COMPLETION && actualValue !== account?.additionalAccountData?.target)
+  $: transferAvailable = transferableTypes.includes(selectedTransactionType) && accounts !== undefined
+  $: isTransferring = selectedTransactionType === TransactionType.TRANSFER || (selectedTransactionType === TransactionType.COMPLETION && actualValue !== account?.additionalAccountData?.target)
 
   function setDefaultTransferName (transactionType: TransactionType) {
     switch (transactionType) {
@@ -74,34 +71,35 @@
         return 'Transaction'
     }
   }
-  $: transactionName = setDefaultTransferName($selectedTransactionType)
+  $: transactionName = setDefaultTransferName(selectedTransactionType)
 
   function toggleTransfer () {
-    if ($selectedTransactionType === TransactionType.TRANSFER) {
-      selectedTransactionType.set(prevTransactionType)
+    if (selectedTransactionType === TransactionType.TRANSFER) {
+      selectedTransactionType = prevTransactionType
     } else {
-      prevTransactionType = $selectedTransactionType
-      selectedTransactionType.set(TransactionType.TRANSFER)
+      prevTransactionType = selectedTransactionType
+      selectedTransactionType = TransactionType.TRANSFER
     }
   }
 
   function convertCompletionToIndividual () {
-    selectedTransactionType.set(TransactionType.INDIVIDUAL)
+    selectedTransactionType = TransactionType.INDIVIDUAL
     switchValueSign()
   }
 
-  async function createTransaction () {
+  async function createOrUpdateTransaction () {
     if (isLoading) return
     isLoading = true
     const body: TransactionData = {
       amount: actualValue,
       description: transactionName,
-      type: $selectedTransactionType
+      type: selectedTransactionType
     }
-    if ([TransactionType.TRANSFER, TransactionType.COMPLETION].includes($selectedTransactionType)) body.transferTo = transferTo
-    const url = `/transactions/${ $selectedTransactionType === TransactionType.GROUPED_SAVING ? 'parentAccount' : 'account' }/${$selectedTransactionAccount}`
+    if (transactionId) body.id = transactionId
+    if (([TransactionType.TRANSFER, TransactionType.COMPLETION] as TransactionType[]).includes(selectedTransactionType)) body.transferTo = transferTo
+    const url = `/transactions/${ selectedTransactionType === TransactionType.GROUPED_SAVING ? 'parentAccount' : 'account' }/${account.id}`
     const res = await fetch(url, {
-      method: 'POST',
+      method: transactionId ? 'PUT' : 'POST',
       body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json'
@@ -111,25 +109,25 @@
     const responseBody = await res.json()
     isLoading = false
     if (res.status === 201) {
-      onClose()
+      onCloseWrapped()
       $openPopup = false
     } else {
       error = responseBody.message
     }
   }
 
-  function onClose () {
-    transactionName = 'Transaction'
+  function onCloseWrapped () {
+    isLoading = false
     error = ''
+    if (transactionId) return onClose()
+    transactionName = 'Transaction'
     transactionValue = 0
     previousTransactionValue = undefined
-    isLoading = false
-    $selectedTransactionAccount = 0
-    $selectedTransactionType = TransactionType.UNSELECTED
+    onClose()
   }
 </script>
 
-<Popup id="transaction" onClose={onClose}>
+<Popup isOpen={isOpen} id="transaction" onClose={onCloseWrapped}>
   <h1 style="margin: 0">Transaction on {account.name}</h1>
   {#if error}
     <Alert>{error}</Alert>
@@ -138,34 +136,37 @@
     <Input name="transactionName" bind:value={transactionName}/>
     <div class="footer">
       <Input type="number" step="0.01" name="transactionValue" autofocus
-             label={$selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"}
+             label={selectedTransactionType === TransactionType.COMPLETION ? "Actual Cost" : "Value"}
              bind:value={transactionValue} on:input={onButtonPressed}/>
-      <Button disabled={isLoading} on:click={createTransaction} >Create{#if isLoading}<LoadingSpinner/>{/if}</Button>
+      <Button disabled={isLoading} on:click={createOrUpdateTransaction} >
+        {#if transactionId}Update{:else}Create{/if}{#if isLoading}<LoadingSpinner/>{/if}
+      </Button>
     </div>
-
-    {#if transferAvailable && !isTransferring}
-      <div class="transfer">
-          <Button on:click={toggleTransfer}>Make it a transfer</Button>
-      </div>
-    {/if}
-    {#if isTransferring}
-        <p style="text-align: center">
-          {#if $selectedTransactionType === TransactionType.COMPLETION}
-            Transfer the remaining {currencyToString(Math.abs(account?.additionalAccountData?.target - actualValue))}
-            {account?.additionalAccountData?.target - actualValue > 0 ? 'to' : 'from'}
-          {/if}
-          { !transactionValue || transactionValue >= 0 ? 'To' : 'From' }
-        </p>
-      <div class="transfer">
-        <AllAccountsDropdown accounts={accounts} bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
-        {#if transferAvailable}
-          <Button on:click={toggleTransfer}>X</Button>
-        {/if}
-      </div>
-      {#if $selectedTransactionType === TransactionType.COMPLETION}
+    {#if !transactionId}
+      {#if transferAvailable && !isTransferring}
         <div class="transfer">
-          <Button on:click={convertCompletionToIndividual}>Reopen the account instead</Button>
+            <Button on:click={toggleTransfer}>Make it a transfer</Button>
         </div>
+      {/if}
+      {#if isTransferring}
+          <p style="text-align: center">
+            {#if selectedTransactionType === TransactionType.COMPLETION}
+              Transfer the remaining {currencyToString(Math.abs(account?.additionalAccountData?.target - actualValue))}
+              {account?.additionalAccountData?.target - actualValue > 0 ? 'to' : 'from'}
+            {/if}
+            { !transactionValue || transactionValue >= 0 ? 'To' : 'From' }
+          </p>
+        <div class="transfer">
+          <AllAccountsDropdown accounts={accounts} bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
+          {#if transferAvailable}
+            <Button on:click={toggleTransfer}>X</Button>
+          {/if}
+        </div>
+        {#if selectedTransactionType === TransactionType.COMPLETION}
+          <div class="transfer">
+            <Button on:click={convertCompletionToIndividual}>Reopen the account instead</Button>
+          </div>
+        {/if}
       {/if}
     {/if}
   </form>

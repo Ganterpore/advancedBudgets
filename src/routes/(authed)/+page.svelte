@@ -2,7 +2,6 @@
   import { goto } from "$app/navigation";
   import ParentAccountList from '$lib/components/accountComponents/ParentAccountList.svelte'
   import AccountPopup from '$lib/components/accountComponents/AccountPopup.svelte'
-  import TransactionPopup from '$lib/components/transactionComponents/TransacionPopup.svelte'
   import AppBar from '$lib/components/sharedComponents/AppBar.svelte'
   import { openPopup } from '$lib/store'
   import ParentAccountPopup from '$lib/components/accountComponents/ParentAccountPopup.svelte'
@@ -31,7 +30,6 @@
   <InvestmentList investments={data.investments.filter(i => !i.archived)} />
   <ParentAccountPopup/>
   <AccountPopup/>
-  <TransactionPopup accounts={data.accounts} />
 </div>
 <BottomNavigation selected="spending"/>
 

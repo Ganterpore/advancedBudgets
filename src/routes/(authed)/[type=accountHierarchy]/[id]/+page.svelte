@@ -60,7 +60,7 @@
       <div class="list">
         {#each transactionsByMonth[key].transactionList as t}
           <ListItem secondary>
-            <TransactionListItem transaction={t} />
+            <TransactionListItem transaction={t} account={data.account} />
           </ListItem>
         {/each}
       </div>

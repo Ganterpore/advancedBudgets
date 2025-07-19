@@ -104,7 +104,8 @@
       <div>
         {#each accountMap[category] as a}
           <ListItem selectable secondary onSelected={() => onSelect(false, a.id)} >
-            <AccountHeader name={a.name} id={a.id} type={a.type}
+            <AccountHeader account={a}
+                           accounts={accounts}
                            additionalAccountData={a.additionalAccountData}
                            value={totals[a.id]} budgetDetails={budgetDetails} />
           </ListItem>

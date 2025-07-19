@@ -1,7 +1,6 @@
 <script lang="ts">
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
   import MaterialSymbolsCheck from '~icons/material-symbols/check';
-  import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store.ts'
   import { currencyToString, getHighlightColour } from '$lib/utils'
   import { TransactionType } from '$lib/types/transactionTypes'
   import { AccountType, accountTypeIcons } from '$lib/types/accountTypes'
@@ -9,18 +8,20 @@
   import SavingsProgress from '$lib/components/accountComponents/SavingsProgress.svelte'
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import { getNextOccurrence, numberOfOccurrencesBetween } from '$lib/dayOfWeekFunctons'
+  import TransactionPopup from '$lib/components/transactionComponents/TransactionPopup.svelte'
   import type { Budget } from '$lib/types/budgetTypes'
 
-  export let id
-  export let name
+  export let accounts
+  export let account
   export let value: number = 0
-  export let type
   export let additionalAccountData: AccountTypeSaving | AccountTypeBudget
   export let budgetDetails: Budget
 
+  let isTransactionPopupOpen = false
+
   function getValueString (value) {
     let subValueString = ''
-    if (type === AccountType.BUDGET) {
+    if (account.type === AccountType.BUDGET) {
       const today = new Date()
       const budgetAccountDetails = additionalAccountData as AccountTypeBudget
       const nextBudgetRelease = getNextOccurrence(budgetDetails, today)
@@ -30,7 +31,7 @@
       value = value - amountStillToBeReleased
     }
     let valueString = currencyToString(value ?? 0)
-    if (type === AccountType.SAVING) {
+    if (account.type === AccountType.SAVING) {
       const target = (additionalAccountData as AccountTypeSaving).target
       if (value !== target) {
         subValueString = currencyToString(target)
@@ -39,7 +40,7 @@
     return [valueString, subValueString]
   }
   const getSavingsTransactionsLeft = () => {
-    if (type !== AccountType.SAVING) return 0
+    if (account.type !== AccountType.SAVING) return 0
     const savingsDetails = additionalAccountData as AccountTypeSaving
     const amountLeft = savingsDetails.target - value
     const weightedAmountLeft = amountLeft / savingsDetails.multiplier
@@ -47,24 +48,29 @@
   }
 
   $: [valueString, subValueString] = getValueString(value)
-  $: Icon = type ? accountTypeIcons[type] : undefined
+  $: Icon = account.type ? accountTypeIcons[account.type] : undefined
   $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
   $: highlightColour = getHighlightColour(isCompletable, (additionalAccountData as AccountTypeSaving)?.multiplier)
   $: savingsTransactionsLeft = getSavingsTransactionsLeft()
 
-  async function addTransaction (e, isCompletion) {
+  async function addTransaction (e) {
     e.stopPropagation()
-    $openPopup = 'transaction'
-    $selectedTransactionType = isCompletion ? TransactionType.COMPLETION : TransactionType.INDIVIDUAL
-    $selectedTransactionAccount = id
+    isTransactionPopupOpen = true
   }
 </script>
+
+<TransactionPopup
+  accounts={accounts}
+  account={account}
+  selectedTransactionType={isCompletable ? TransactionType.COMPLETION : TransactionType.INDIVIDUAL}
+  isOpen={isTransactionPopupOpen}
+  onClose={() => isTransactionPopupOpen = false}/>
 
 <div class="close-flex">
   <div style="flex-grow: 1">
     <div class="header" style="--multiplier-highlight:{highlightColour}">
       <div class="icon">
-        {#if type===AccountType.SAVING}
+        {#if account.type===AccountType.SAVING}
           {#if additionalAccountData.target <= value}
             <p class="multiplier">✓</p>
           {:else}
@@ -76,8 +82,8 @@
       </div>
       <div class="text-box">
         <div>
-          <p>{name}</p>
-          {#if type===AccountType.SAVING && savingsTransactionsLeft > 0}
+          <p>{account.name}</p>
+          {#if account.type===AccountType.SAVING && savingsTransactionsLeft > 0}
             <p class="subValue">{savingsTransactionsLeft} to go</p>
           {/if}
         </div>
@@ -91,7 +97,7 @@
       </div>
 
     </div>
-    {#if type===AccountType.SAVING}
+    {#if account.type===AccountType.SAVING}
       <SavingsProgress backgroundColor="--theme-primary" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />
     {/if}
   </div>

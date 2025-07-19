@@ -1,5 +1,5 @@
 import { completeAccount, getSavingsAccountOnAccountId } from '$lib/models/accountTypeSavingModel'
-import { getTotalOnAccount, newTransaction } from '$lib/models/transactionModel'
+import { getTotalOnAccount, newTransaction, updateTransaction } from '$lib/models/transactionModel'
 import { error, json } from '@sveltejs/kit'
 import { currencyToString } from '$lib/utils'
 import type { TransactionData } from '../../routes/(authed)/transactions/[type=accountHierarchy]/[id]/+server'
@@ -13,9 +13,11 @@ export async function handleIndividualTransaction (accountId: number, data: Tran
     if (data.amount > maxTransaction) throw error(400, `Cannot send more than ${currencyToString(maxTransaction)} to this account`)
   }
   if (props?.validateWithoutSending) return json({ status: 204 })
-  let id
+  let id = data.id
   try {
-    id = await newTransaction({...data, account: accountId})
+    // @ts-expect-error I literally just confirmed id is not null
+    if (id) await updateTransaction(data)
+    else id = await newTransaction({...data, account: accountId})
   } catch (e) {
     console.error(e)
     return error(500, 'Failed to upload transaction. Try again.')

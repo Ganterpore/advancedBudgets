@@ -1,7 +1,14 @@
 <script>
   import {currencyToString} from "$lib/utils";
+  import { slide } from 'svelte/transition';
 
   export let transactionList = []
+
+  let expanded = false
+
+  function toggleExpanded() {
+    expanded = !expanded
+  }
 
   // Core account metrics
   $: currentBalance = transactionList.reduce((sum, t) => sum + t.amount, 0)
@@ -64,8 +71,15 @@
 
 <div class="account-overview">
   <!-- Header with current balance -->
-  <div class="balance-header">
-    <h2>Account Overview</h2>
+  <div class="balance-header" on:click={toggleExpanded} on:keydown={(e) => e.key === 'Enter' && toggleExpanded()} tabindex="0" role="button" aria-expanded={expanded}>
+    <div class="header-content">
+      <h2>Account Overview</h2>
+      <div class="expand-indicator" class:expanded>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M5.5 7.5L10 12L14.5 7.5" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+      </div>
+    </div>
     <div class="current-balance">
       <span class="balance-label">Current Balance</span>
       <span class="balance-amount" class:positive={currentBalance >= 0} class:negative={currentBalance < 0}>
@@ -110,76 +124,78 @@
   </div>
 
   <!-- Monthly averages -->
-  <div class="section">
-    <h3>Monthly Averages</h3>
-    <div class="averages-grid">
-      <div class="average-item">
-        <span class="label">Income:</span>
-        <span class="value positive">{currencyToString(avgMonthlyIncome)}</span>
-      </div>
-      <div class="average-item">
-        <span class="label">Expenses:</span>
-        <span class="value negative">{currencyToString(avgMonthlyExpenses)}</span>
-      </div>
-      <div class="average-item">
-        <span class="label">Net:</span>
-        <span class="value" class:positive={avgMonthlyNet >= 0} class:negative={avgMonthlyNet < 0}>
-          {currencyToString(avgMonthlyNet)}
-        </span>
-      </div>
-      <div class="average-item">
-        <span class="label">Transactions:</span>
-        <span class="value">{avgTransactionsPerMonth.toFixed(1)}</span>
+  {#if expanded}
+    <div class="section" transition:slide={{duration: 300}}>
+      <h3>Monthly Averages</h3>
+      <div class="averages-grid">
+        <div class="average-item">
+          <span class="label">Income:</span>
+          <span class="value positive">{currencyToString(avgMonthlyIncome)}</span>
+        </div>
+        <div class="average-item">
+          <span class="label">Expenses:</span>
+          <span class="value negative">{currencyToString(avgMonthlyExpenses)}</span>
+        </div>
+        <div class="average-item">
+          <span class="label">Net:</span>
+          <span class="value" class:positive={avgMonthlyNet >= 0} class:negative={avgMonthlyNet < 0}>
+            {currencyToString(avgMonthlyNet)}
+          </span>
+        </div>
+        <div class="average-item">
+          <span class="label">Transactions:</span>
+          <span class="value">{avgTransactionsPerMonth.toFixed(1)}</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Transaction insights -->
-  <div class="section">
-    <h3>Transaction Insights</h3>
-    <div class="insights-grid">
-      <div class="insight-item">
-        <span class="label">Largest Income:</span>
-        <span class="value positive">{currencyToString(largestIncome)}</span>
-      </div>
-      <div class="insight-item">
-        <span class="label">Largest Expense:</span>
-        <span class="value negative">{currencyToString(largestExpense)}</span>
-      </div>
-      <div class="insight-item">
-        <span class="label">Avg Transaction Size:</span>
-        <span class="value">{currencyToString(averageTransactionSize)}</span>
-      </div>
-      <div class="insight-item">
-        <span class="label">Daily Activity:</span>
-        <span class="value">{avgTransactionsPerDay.toFixed(1)} transactions</span>
+    <!-- Transaction insights -->
+    <div class="section" transition:slide={{duration: 300, delay: 100}}>
+      <h3>Transaction Insights</h3>
+      <div class="insights-grid">
+        <div class="insight-item">
+          <span class="label">Largest Income:</span>
+          <span class="value positive">{currencyToString(largestIncome)}</span>
+        </div>
+        <div class="insight-item">
+          <span class="label">Largest Expense:</span>
+          <span class="value negative">{currencyToString(largestExpense)}</span>
+        </div>
+        <div class="insight-item">
+          <span class="label">Avg Transaction Size:</span>
+          <span class="value">{currencyToString(averageTransactionSize)}</span>
+        </div>
+        <div class="insight-item">
+          <span class="label">Daily Activity:</span>
+          <span class="value">{avgTransactionsPerDay.toFixed(1)} transactions</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Top categories -->
-  {#if topCategories.length > 0}
-    <div class="section">
-      <h3>Top Categories</h3>
-      <div class="categories-list">
-        {#each topCategories as [category, stats]}
-          <div class="category-item">
-            <div class="category-info">
-              <span class="category-name">{category}</span>
-              <span class="category-count">{stats.count} transactions</span>
+    <!-- Top categories -->
+    {#if topCategories.length > 0}
+      <div class="section" transition:slide={{duration: 300, delay: 200}}>
+        <h3>Top Categories</h3>
+        <div class="categories-list">
+          {#each topCategories as [category, stats]}
+            <div class="category-item">
+              <div class="category-info">
+                <span class="category-name">{category}</span>
+                <span class="category-count">{stats.count} transactions</span>
+              </div>
+              <div class="category-amounts">
+                {#if stats.income > 0}
+                  <span class="income">+{currencyToString(stats.income)}</span>
+                {/if}
+                {#if stats.expenses > 0}
+                  <span class="expense">-{currencyToString(stats.expenses)}</span>
+                {/if}
+              </div>
             </div>
-            <div class="category-amounts">
-              {#if stats.income > 0}
-                <span class="income">+{currencyToString(stats.income)}</span>
-              {/if}
-              {#if stats.expenses > 0}
-                <span class="expense">-{currencyToString(stats.expenses)}</span>
-              {/if}
-            </div>
-          </div>
-        {/each}
+          {/each}
+        </div>
       </div>
-    </div>
+    {/if}
   {/if}
 </div>
 
@@ -200,12 +216,41 @@
     margin-bottom: 25px;
     flex-wrap: wrap;
     gap: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 8px;
+    padding: 8px;
+    margin: -8px -8px 17px -8px;
+  }
+
+  .balance-header:hover {
+    background: var(--theme-primary, rgba(255, 255, 255, 0.03));
+  }
+
+  .balance-header:focus {
+    outline: 2px solid var(--theme-highlight, rgba(255, 255, 255, 0.3));
+    outline-offset: 2px;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   .balance-header h2 {
     margin: 0;
     color: var(--theme-text, white);
     font-size: 1.8em;
+  }
+
+  .expand-indicator {
+    transition: transform 0.3s ease;
+    color: var(--theme-secondary-text, rgba(255, 255, 255, 0.7));
+  }
+
+  .expand-indicator.expanded {
+    transform: rotate(180deg);
   }
 
   .current-balance {

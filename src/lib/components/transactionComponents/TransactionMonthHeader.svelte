@@ -34,6 +34,25 @@
 
   // Transaction frequency insights
   $: transactionFrequency = totalTransactions / 30 // per day
+
+  // Top categories for this month
+  $: categoryStats = transactionList.reduce((acc, t) => {
+    if (!acc[t.description]) {
+      acc[t.description] = { count: 0, total: 0, income: 0, expenses: 0 }
+    }
+    acc[t.description].count++
+    acc[t.description].total += t.amount
+    if (t.amount > 0) {
+      acc[t.description].income += t.amount
+    } else {
+      acc[t.description].expenses += Math.abs(t.amount)
+    }
+    return acc
+  }, {})
+
+  $: topCategories = Object.entries(categoryStats)
+    .sort(([,a], [,b]) => (b.income + b.expenses) - (a.income + a.expenses))
+    .slice(0, 3)
 </script>
 
 <div class="summary-container">
@@ -96,6 +115,31 @@
       <span class="value">{mostFrequentDescription}</span>
     </div>
   </div>
+
+  <!-- Top categories for this month -->
+  {#if topCategories.length > 0}
+    <div class="top-categories">
+      <h4>Top Categories This Month</h4>
+      <div class="categories-list">
+        {#each topCategories as [category, stats]}
+          <div class="category-item">
+            <div class="category-info">
+              <span class="category-name">{category}</span>
+              <span class="category-count">{stats.count} transactions</span>
+            </div>
+            <div class="category-amounts">
+              {#if stats.income > 0}
+                <span class="income">+{currencyToString(stats.income)}</span>
+              {/if}
+              {#if stats.expenses > 0}
+                <span class="expense">-{currencyToString(stats.expenses)}</span>
+              {/if}
+            </div>
+          </div>
+        {/each}
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -196,6 +240,66 @@
 
   .top-insight .value.negative {
     color: crimson;
+  }
+
+  .top-categories {
+    margin-top: 15px;
+  }
+
+  .top-categories h4 {
+    margin: 0 0 12px 0;
+    color: var(--theme-text, white);
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+
+  .categories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--theme-primary, rgba(255, 255, 255, 0.03));
+    border-radius: 6px;
+  }
+
+  .category-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .category-name {
+    font-weight: bold;
+    color: var(--theme-text, white);
+    margin-bottom: 2px;
+    font-size: 0.9em;
+  }
+
+  .category-count {
+    font-size: 0.75em;
+    color: var(--theme-secondary-text, rgba(255, 255, 255, 0.7));
+  }
+
+  .category-amounts {
+    display: flex;
+    gap: 8px;
+  }
+
+  .income {
+    color: greenyellow;
+    font-weight: bold;
+    font-size: 0.85em;
+  }
+
+  .expense {
+    color: crimson;
+    font-weight: bold;
+    font-size: 0.85em;
   }
 
   @media (max-width: 600px) {

@@ -204,7 +204,7 @@
 
   .insight-card .label {
     font-size: 0.8em;
-    color: var(--theme-secondary-text, rgba(255, 255, 255, 0.7));
+    color: var(--theme-text, rgba(255, 255, 255, 0.7));
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -226,7 +226,7 @@
 
   .top-insight .label {
     font-size: 0.9em;
-    color: var(--theme-secondary-text, rgba(255, 255, 255, 0.7));
+    color: var(--theme-text, rgba(255, 255, 255, 0.7));
   }
 
   .top-insight .value {
@@ -282,7 +282,7 @@
 
   .category-count {
     font-size: 0.75em;
-    color: var(--theme-secondary-text, rgba(255, 255, 255, 0.7));
+    color: var(--theme-text, rgba(255, 255, 255, 0.7));
   }
 
   .category-amounts {

@@ -302,9 +302,12 @@
 
   .metric-label {
     font-size: 0.85em;
-    color: var(--theme-secondary-text, rgba(255, 255, 255, 0.7));
+    color: var(--theme-text, rgba(255, 255, 255, 0.7));
     text-transform: uppercase;
     letter-spacing: 0.5px;
+  }
+  .metric-card.highlight .metric-label {
+    color: var(--theme-secondary-text, rgba(255, 255, 255, 0.7));
   }
 
   .section {

@@ -8,6 +8,7 @@
   import ArchiveAccountPopup from '$lib/components/accountComponents/ArchiveAccountPopup.svelte'
   import TransactionMonthHeader from '$lib/components/transactionComponents/TransactionMonthHeader.svelte'
   import ListItem from '$lib/components/sharedComponents/ListItem.svelte'
+  import AccountOverview from '$lib/components/transactionComponents/AccountOverview.svelte'
 
   export let data
   $: transactions = data.transactions
@@ -49,11 +50,13 @@
           ]}/>
 
 <div class="container">
+  <AccountOverview transactionList={data.transactions} />
   <div class="listContainer">
     {#each Object.keys(transactionsByMonth) as key}
       <ListItem id={key}>
         <TransactionMonthHeader
           dateString={key}
+          transactions={transactionsByMonth[key]}
           positiveSum={transactionsByMonth[key].positiveSum}
           negativeSum={transactionsByMonth[key].negativeSum} />
       </ListItem>
@@ -81,10 +84,12 @@
   }
   .container {
       display: flex;
-      justify-content: center;
+      align-items: center;
+      flex-direction: column;
   }
   .listContainer {
-      max-width: 600px;
+      width: 80%;
+
       flex-grow: 1;
   }
   .list {

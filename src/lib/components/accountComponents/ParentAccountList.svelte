@@ -2,9 +2,9 @@
   import ParentAccountHeader from './ParentAccountHeader.svelte'
   import type { ParentAccountTotals } from '$lib/types/transactionTypes'
   import type { AccountNode } from '$lib/types/accountTypes'
+  import type { Budget } from '$lib/types/budgetTypes'
   import AccountList from '$lib/components/accountComponents/AccountList.svelte'
   import ListItem from '$lib/components/sharedComponents/ListItem.svelte'
-  import { Budget } from '$lib/types/budgetTypes'
 
   export let totals: ParentAccountTotals
   export let accounts: { [key: number]: AccountNode }

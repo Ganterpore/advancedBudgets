@@ -1,7 +1,7 @@
 <script lang="ts">
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
   import AccountHeader from './AccountHeader.svelte'
-  import type { Account, AccountTypeSaving } from '$lib/types/accountTypes'
+  import type { Account, AccountTypeSaving, ParentAccount } from '$lib/types/accountTypes'
   import { AccountType, BudgetAccountType } from '$lib/types/accountTypes'
   import type { AccountTotals } from '$lib/types/transactionTypes'
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
@@ -9,11 +9,11 @@
   import { currencyToString } from '$lib/utils'
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import SavingsProgress from '$lib/components/accountComponents/SavingsProgress.svelte'
-  import { openPopup, selectedTransactionAccount, selectedTransactionType } from '$lib/store'
   import { TransactionType } from '$lib/types/transactionTypes'
   import type { Budget } from '$lib/types/budgetTypes'
+  import TransactionPopup from '$lib/components/transactionComponents/TransactionPopup.svelte'
 
-  export let parent: number
+  export let parent: ParentAccount
   export let accounts: Account[]
   export let totals: AccountTotals
   export let budgetDetails: Budget
@@ -90,13 +90,19 @@
     AccountType.SAVING
   ]
 
+  let isTransactionPopupOpen = false
   async function addTransaction (e) {
     e.stopPropagation()
-    $openPopup = 'transaction'
-    $selectedTransactionType = TransactionType.GROUPED_SAVING
-    $selectedTransactionAccount = parent
+    isTransactionPopupOpen = true
   }
 </script>
+
+<TransactionPopup
+  accounts={accounts}
+  account={parent}
+  selectedTransactionType={TransactionType.GROUPED_SAVING}
+  isOpen={isTransactionPopupOpen}
+  onClose={() => isTransactionPopupOpen = false}/>
 
 {#each Object.keys(accountMap).sort((acc1, acc2) => sortOrder.indexOf(acc1) - sortOrder.indexOf(acc2)) as category (category)}
   <div style="padding: 0 20px; margin: 0;">

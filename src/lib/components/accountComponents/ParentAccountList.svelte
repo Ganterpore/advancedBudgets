@@ -18,7 +18,7 @@
     <ParentAccountHeader
       name={a.name} id={a.id} value={totals[a.id]?.value} />
   </ListItem>
-  <AccountList parent={a.id} budgetDetails={budgetDetails}
+  <AccountList parent={a} budgetDetails={budgetDetails}
                accounts={Object.values(a.children)}
                totals={totals[a.id]?.children ?? {}}
                onSelect={onSelect} />

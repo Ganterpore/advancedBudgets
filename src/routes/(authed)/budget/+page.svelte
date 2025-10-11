@@ -30,7 +30,9 @@
   function allBuckets (): { id: string, name: string, plannedAmount: number, actualAmount: number }[] {
     const accountList = Object.values(data.accounts ?? {}).reduce((accs: { name: string, id: number }[], parentAccount: AccountNode) => {
       const children = parentAccount.children
-      const childAccountList = Object.values(children).map(account => ({ id: `account_${account.id}`, name: `${parentAccount.name}: ${account.name}` }))
+      const childAccountList = Object.values(children)
+        .filter(account => !account.archived)
+        .map(account => ({ id: `account_${account.id}`, name: `${parentAccount.name}: ${account.name}` }))
       return [...accs, ...childAccountList]
     }, [])
     const investmentList = data.investments.map(inv => ({ id: `investment_${inv.id}`, name: inv.name }))

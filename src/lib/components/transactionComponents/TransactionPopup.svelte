@@ -2,7 +2,7 @@
   import { openPopup } from '$lib/store'
   import { invalidate } from '$app/navigation';
   import { currencyToString } from "$lib/utils";
-  import type { Account, AccountTree, ParentAccount } from '$lib/types/accountTypes'
+  import type { Account, ParentAccount } from '$lib/types/accountTypes'
   import type { TransactionData } from '../../../routes/(authed)/transactions/[type=accountHierarchy]/[id]/+server'
   import Popup from '$lib/components/sharedComponents/Popup.svelte'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
@@ -14,7 +14,7 @@
 
   export let isOpen: boolean
   export let onClose: () => void
-  export let accounts: AccountTree | undefined
+  export let accounts: Account[] | undefined
   export let account: Account | ParentAccount
   export let transactionId: number | undefined = undefined
   export let transactionName: string = ''
@@ -157,7 +157,7 @@
             { !transactionValue || transactionValue >= 0 ? 'To' : 'From' }
           </p>
         <div class="transfer">
-          <AllAccountsDropdown accounts={accounts} bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
+          <AllAccountsDropdown accounts={accounts.filter(a => !a.archived)} bind:selectedAccount={transferTo} accountsToIgnore={[account.id]} />
           {#if transferAvailable}
             <Button on:click={toggleTransfer}>X</Button>
           {/if}

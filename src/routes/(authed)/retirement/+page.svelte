@@ -7,6 +7,7 @@
   import Toggle from "$lib/components/sharedComponents/Toggle.svelte";
   import Alert from "$lib/components/sharedComponents/Alert.svelte";
   import {themes} from "$lib/types/userTypes";
+  import Expandable from "$lib/components/sharedComponents/Expandable.svelte";
 
   let withdrawalRate = 4
   let inflationRate = 3
@@ -43,22 +44,27 @@
   </div>
 
   <div class="percentContainer">
-    <NumberClicker unit="%" name="Withdrawal Rate" bind:value={withdrawalRate}/>
-    <NumberClicker unit="%" name="Investment Interest Rate" bind:value={roiInterestRate}/>
-    <div class="toggle">
-      Reduce Investment income by withdrawal rate?
-      <Toggle bind:selected={reduceInterestByWithdrawal} value1="Reduce" value2="Retain" />
-    </div>
-    {#if reduceInterestByWithdrawal === 'Reduce' && withdrawalRate > roiInterestRate}
-      <Alert>Withdrawal rate should not be greater than investment return if the reduction method is chosen</Alert>
-    {/if}
-    <NumberClicker unit="%" name="Inflation Rate" bind:value={inflationRate}/>
-    <NumberClicker unit="y" name="Years Until Retirement" bind:value={yearsUntilRetirement} additionalClickerValue={10}/>
-    <Input type="number" label="Current budget per budget period" bind:value={initialBudget} />
-    <Input type="number" label="Make one time deposit" bind:value={deposit} />
-    <Input type="number" label="Regular deposit" bind:value={regularDeposit} />
-    <Input type="number" label="Age" bind:value={age} />
+    <div class="large-input"><NumberClicker unit="y" name="Years Until Retirement" bind:value={yearsUntilRetirement} additionalClickerValue={10}/></div>
+    <div class="input"><Input type="number" label="Make one time deposit" bind:value={deposit} /></div>
+    <div class="input"><Input type="number" label="Current budget per budget period" bind:value={initialBudget} /></div>
+    <div class="input"><Input type="number" label="Regular deposit" bind:value={regularDeposit} /></div>
+    <div class="input"><Input type="number" label="Age" bind:value={age} /></div>
   </div>
+
+  <Expandable name="Advanced Settings">
+    <div class="percentContainer">
+      <NumberClicker unit="%" name="Withdrawal Rate" bind:value={withdrawalRate}/>
+      <NumberClicker unit="%" name="Investment Interest Rate" bind:value={roiInterestRate}/>
+      <div class="toggle">
+        Reduce Investment income by withdrawal rate?
+        <Toggle bind:selected={reduceInterestByWithdrawal} value1="Reduce" value2="Retain" />
+      </div>
+      {#if reduceInterestByWithdrawal === 'Reduce' && withdrawalRate > roiInterestRate}
+        <Alert>Withdrawal rate should not be greater than investment return if the reduction method is chosen</Alert>
+      {/if}
+      <NumberClicker unit="%" name="Inflation Rate" bind:value={inflationRate}/>
+    </div>
+  </Expandable>
 </div>
 
 <BottomNavigation selected="retirement"/>
@@ -75,10 +81,12 @@
     color: var(--theme-text);
   }
   .percentContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr;
+    column-count: 1;
+  }
+  .large-input {
+    grid-column: 1;
   }
   .toggle {
     display: flex;
@@ -87,5 +95,13 @@
     align-items: center;
     justify-content: center;
     margin: 10px;
+  }
+  @media (width >= 500px) {
+    .percentContainer {
+      grid-template-columns: 1fr 1fr;
+    }
+    .large-input {
+      grid-column: 1 / 3;
+    }
   }
 </style>

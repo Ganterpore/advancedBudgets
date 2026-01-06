@@ -5,11 +5,13 @@
   export let value2: string
   export let selected: string
   export let disabled = false
+  export let onChange: (() => void) | undefined = undefined
 
   const toggle = () => {
     if (disabled) return
     if (selected === value1) selected = value2
     else selected = value1
+    if (onChange !== undefined) onChange()
   }
 
   const leftTween = tweened(0, { duration: 100 })

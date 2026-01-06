@@ -12,6 +12,7 @@
   import { TransactionType } from '$lib/types/transactionTypes'
   import type { Budget } from '$lib/types/budgetTypes'
   import TransactionPopup from '$lib/components/transactionComponents/TransactionPopup.svelte'
+  import { savingsAccountMultiplierToString } from '$lib/helpers/accountHelpers'
 
   export let parent: ParentAccount
   export let accounts: Account[]
@@ -23,6 +24,9 @@
     switch (category) {
       case AccountType.SAVING:
         return (a: Account, b: Account) => {
+          const isPaused = (account: Account) => (account.additionalAccountData as AccountTypeSaving).multiplier === 0
+          if (isPaused(a) && !isPaused(b)) return 1
+          if (!isPaused(a) && isPaused(b)) return -1
           const aPercent = (totals[a.id] ?? 0) / ((a.additionalAccountData as AccountTypeSaving).target ?? 1)
           const bPercent = (totals[b.id] ?? 0) / ((b.additionalAccountData as AccountTypeSaving).target ?? 1)
           return bPercent - aPercent
@@ -120,7 +124,7 @@
 
       <div slot="subtext" class="subtext">
         {#if category === AccountType.SAVING}
-          <p style="align-self: center; margin: 0; padding: 0; font-style: italic">{propsFor(category).totalMultiplier / 100}X</p>
+          <p style="align-self: center; margin: 0; padding: 0; font-style: italic">{savingsAccountMultiplierToString(propsFor(category).totalMultiplier)}</p>
         {/if}
       </div>
       <div slot="header" class="header">

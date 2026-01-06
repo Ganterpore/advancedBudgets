@@ -24,6 +24,9 @@
     switch (category) {
       case AccountType.SAVING:
         return (a: Account, b: Account) => {
+          const isPaused = (account: Account) => (account.additionalAccountData as AccountTypeSaving).multiplier === 0
+          if (isPaused(a) && !isPaused(b)) return 1
+          if (!isPaused(a) && isPaused(b)) return -1
           const aPercent = (totals[a.id] ?? 0) / ((a.additionalAccountData as AccountTypeSaving).target ?? 1)
           const bPercent = (totals[b.id] ?? 0) / ((b.additionalAccountData as AccountTypeSaving).target ?? 1)
           return bPercent - aPercent

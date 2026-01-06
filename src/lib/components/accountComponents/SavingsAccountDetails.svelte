@@ -11,7 +11,7 @@
   export let dataObject: Omit<AccountTypeSaving, 'id'>
   let sliderMode = multipliers.includes(dataObject.multiplier) ? 'slider' : 'input'
   let savingsTarget = dataObject?.target ? dataObject.target / 100 : ''
-  let sliderValue = dataObject?.multiplier ? multiplierToSliderValue(dataObject.multiplier) : 100
+  let sliderValue = dataObject?.multiplier !== undefined ? multiplierToSliderValue(dataObject.multiplier) : 1
   $: dataObject.multiplier = Math.round(Math.max(0, dataObject.multiplier))
   $: dataObject.target = savingsTarget * 100
   $: highlightColour = getHighlightColour(false, dataObject.multiplier)

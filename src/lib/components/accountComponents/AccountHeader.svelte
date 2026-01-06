@@ -10,6 +10,7 @@
   import { getNextOccurrence, numberOfOccurrencesBetween } from '$lib/dayOfWeekFunctons'
   import TransactionPopup from '$lib/components/transactionComponents/TransactionPopup.svelte'
   import type { Budget } from '$lib/types/budgetTypes'
+  import { savingsAccountMultiplierToString } from '$lib/helpers/accountHelpers'
 
   export let accounts
   export let account
@@ -39,9 +40,8 @@
     }
     return [valueString, subValueString]
   }
-  const getSavingsTransactionsLeft = () => {
+  const getSavingsTransactionsLeft = (savingsDetails: AccountTypeSaving) => {
     if (account.type !== AccountType.SAVING) return 0
-    const savingsDetails = additionalAccountData as AccountTypeSaving
     const amountLeft = savingsDetails.target - value
     const weightedAmountLeft = amountLeft / savingsDetails.multiplier
     return Math.ceil(weightedAmountLeft)
@@ -51,7 +51,7 @@
   $: Icon = account.type ? accountTypeIcons[account.type] : undefined
   $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
   $: highlightColour = getHighlightColour(isCompletable, (additionalAccountData as AccountTypeSaving)?.multiplier)
-  $: savingsTransactionsLeft = getSavingsTransactionsLeft()
+  $: savingsTransactionsLeft = getSavingsTransactionsLeft(additionalAccountData as AccountTypeSaving)
 
   async function addTransaction (e) {
     e.stopPropagation()
@@ -74,7 +74,7 @@
           {#if additionalAccountData.target <= value}
             <p class="multiplier">✓</p>
           {:else}
-            <p class="multiplier">{additionalAccountData.multiplier/100}X</p>
+            <p class="multiplier">{savingsAccountMultiplierToString(additionalAccountData.multiplier)}</p>
           {/if}
         {:else}
           <svelte:component this={Icon}/>

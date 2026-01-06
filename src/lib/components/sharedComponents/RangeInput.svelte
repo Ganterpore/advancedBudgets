@@ -3,7 +3,7 @@
     export let value
 </script>
 
-<input type="range" {...$$restProps} bind:value={value}/>
+<input type="range" {...$$restProps} bind:value={value} on:input/>
 <div class="ticks">
     {#each ticks as tick}
         <p>{tick}</p>

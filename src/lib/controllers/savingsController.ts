@@ -13,9 +13,10 @@ type AccountDetails = {
 }
 
 function distributeAmount (amount: number, accounts: AccountDetails[]): SuggestedTransaction[] {
-  const maxTotal = accounts.reduce((total, account) => total + account.max, 0)
+  const unpausedAccounts = accounts.filter(account => account.weight > 0)
+  const maxTotal = unpausedAccounts.reduce((total, account) => total + account.max, 0)
   if (maxTotal < amount) throw error(400, `Cannot send more than ${currencyToString(maxTotal)} to savings accounts`)
-  let unfilledAccounts = accounts.filter(acc => acc.amount < acc.max)
+  let unfilledAccounts = unpausedAccounts.filter(acc => acc.amount < acc.max)
   let totalWeight = unfilledAccounts.reduce((total, account) => total + account.weight, 0)
   let amountLeft = amount
   let lastAmountLeft = 0

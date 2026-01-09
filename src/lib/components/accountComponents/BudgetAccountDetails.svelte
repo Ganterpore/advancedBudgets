@@ -11,8 +11,9 @@
   export let dataObject: Omit<AccountTypeBudget, 'id'>
   let budget = dataObject?.regularBudget / 100 ?? 0
   let max = dataObject?.budgetMax / 100 ?? 0
+  let noMax = false
   $: dataObject.regularBudget = budget * 100
-  $: dataObject.budgetMax = max * 100
+  $: dataObject.budgetMax = noMax ? null : max * 100
 
   function adjustBudgetMax () {
     max = Math.max(max, budget)
@@ -26,7 +27,7 @@
   }
 
   $: message = buildMessageString(dataObject, name)
-  $: maxText = `You will never accumulate more than ${currencyToString(dataObject.budgetMax ?? 0)} in the account.`
+  $: maxText = dataObject.budgetMax === null ? 'No maximum value for this account' : `You will never accumulate more than ${currencyToString(dataObject.budgetMax ?? 0)} in the account.`
 </script>
 
 <div class="container">
@@ -34,8 +35,16 @@
   <p>Is it a want (you can live without it) or a need.</p>
   <Input type="number" step="0.01" name="regularBudget" bind:value={budget} on:input={adjustBudgetMax} label="Budget Amount" />
   <FrequencySelector bind:value={dataObject.frequency} bind:type={dataObject.frequencyCategory} bind:daysOf={dataObject.dayOf} />
-  <Input type="number" step="0.01" name="budgetMax" bind:value={max}
-               on:focusout={adjustBudgetMax} label="Max" />
+  <Toggle bind:selected={noMax} value1='max' value2='No Max' />
+  <div class="horizontal">
+    {#if !noMax}
+      <Input type="number" step="0.01" name="budgetMax" bind:value={max}
+                   on:focusout={adjustBudgetMax} label="Max" >
+      </Input>
+    {/if}
+    <p>No Maximum value</p>
+    <input type="checkbox" label="No Maximum Value" bind:checked={noMax}/>
+  </div>
   <p>{message}</p>
   <p>{maxText}</p>
 </div>
@@ -44,5 +53,8 @@
   .container {
     color: var(--theme-text);
     margin: 5px;
+  }
+  .horizontal {
+    display: flex;
   }
 </style>

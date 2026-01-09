@@ -67,7 +67,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const createBudgetMap = (b: ExpandedBudgetAccount) => {
     const maxAmountToAdd = getBudgetedAmountOverPeriod(b, budgetStartDate, budgetEndDate)
     const amountInAccount = totals[b.parent]?.children[b.account] ?? 0
-    const cappedAmountToAdd = Math.min(maxAmountToAdd, Math.max(b.budgetMax - amountInAccount, 0))
+    const cappedAmountToAdd = b.budgetMax === null ? maxAmountToAdd : Math.min(maxAmountToAdd, Math.max(b.budgetMax - amountInAccount, 0))
     const parentName = accounts[b.parent].name
     return {
       id: b.account,

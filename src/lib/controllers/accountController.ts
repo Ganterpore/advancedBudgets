@@ -10,6 +10,7 @@ export async function createNewAccount (account: Omit<Account, 'id'>){
   const additionalDetails = account.additionalAccountData
   switch (account.type) {
     case AccountType.BUDGET:
+    case AccountType.PLANNED:
       await newBudgetAccount({ ...(additionalDetails as AccountTypeBudget), account: id })
       break
     case AccountType.SAVING:
@@ -24,6 +25,7 @@ export async function updateAccount (account: Account): Promise<void> {
   const additionalDetails = account.additionalAccountData
   switch (account.type) {
     case AccountType.BUDGET:
+    case AccountType.PLANNED:
       await updateBudgetAccount({ ...(additionalDetails as AccountTypeBudget), account: account.id })
       break
     case AccountType.SAVING:

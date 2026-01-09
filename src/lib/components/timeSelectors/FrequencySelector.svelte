@@ -6,12 +6,14 @@
     export let type: FrequencyCategory
     export let value: number
     export let daysOf: number
+    let frequency = Math.max(1, value)
+    $: value = Math.max(1, frequency)
 </script>
 
 <div class="container">
     <label>
         Every
-        <input type="number" min="1" max="100" bind:value={value} />
+        <input type="number" min="1" max="100" bind:value={frequency} />
         <select bind:value={type} on:input={() => daysOf = 1}>
             <option value={FrequencyCategory.DAILY}>{ `Day${value > 1 ? 's' : ''}`}</option>
             <option value={FrequencyCategory.WEEKLY}>{ `Week${ value > 1 ? 's' : ''}`}</option>

@@ -14,6 +14,7 @@
   import SavingsAccountDetails from '$lib/components/accountComponents/SavingsAccountDetails.svelte'
   import Input from '$lib/components/sharedComponents/Input.svelte'
   import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
+  import PlannedAccountDetails from '$lib/components/accountComponents/PlannedAccountDetails.svelte'
 
   let accountName: string
   let error: string
@@ -45,21 +46,22 @@
     account: additionalSavingsDetails?.account ?? undefined,
     id: additionalSavingsDetails?.id ?? undefined
   }
-  $: if (accountType === AccountType.BUDGET) additionalBudgetDetails = {
+  $: if (accountType === AccountType.BUDGET || accountType === AccountType.PLANNED) additionalBudgetDetails = {
     regularBudget: additionalBudgetDetails?.regularBudget ?? 0,
-    budgetMax: additionalBudgetDetails?.budgetMax ?? 0,
+    budgetMax: accountType === AccountType.PLANNED ? null : additionalBudgetDetails?.budgetMax ?? null,
     frequency: additionalBudgetDetails?.frequency ?? 1,
     frequencyCategory: additionalBudgetDetails?.frequencyCategory ?? FrequencyCategory.MONTHLY,
     startDate: additionalBudgetDetails?.startDate ?? new Date(),
+    endDate: additionalBudgetDetails?.endDate ?? null,
     dayOf: additionalBudgetDetails?.dayOf ?? 1,
     account: additionalBudgetDetails?.account ?? undefined,
     id: additionalBudgetDetails?.id ?? undefined,
-    type: additionalBudgetDetails?.type ?? BudgetAccountType.WANT
+    type: (accountType === AccountType.PLANNED ? BudgetAccountType.PLANNED : additionalBudgetDetails?.type ?? BudgetAccountType.WANT)
   }
 
   async function createAccount () {
     loading = true
-    const accountBody: Omit<Account, 'id'|'additionalAccountData'> & Partial<Account> = {
+    const accountBody: Omit<Account, 'id'|'additionalAccountData'> & { id?: number } & { additionalAccountData?: Partial<AccountTypeBudget>|Partial<AccountTypeSaving>} = {
       name: accountName,
       type: accountType!,
       parent: account?.parent ?? $selectedParentAccount,
@@ -69,6 +71,8 @@
       accountBody.additionalAccountData = additionalBudgetDetails
     } else if (accountType === AccountType.SAVING) {
       accountBody.additionalAccountData = additionalSavingsDetails
+    } else if (accountType === AccountType.PLANNED) {
+      accountBody.additionalAccountData = additionalBudgetDetails
     }
     const res = await fetch('/account', {
       method: 'POST',
@@ -122,6 +126,8 @@
         <BudgetAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
       {:else if accountType === AccountType.SAVING}
         <SavingsAccountDetails bind:dataObject={additionalSavingsDetails} />
+      {:else if accountType === AccountType.PLANNED}
+        <PlannedAccountDetails name={accountName} bind:dataObject={additionalBudgetDetails} />
       {/if}
       <div><Button disabled={loading} on:click={() => !loading && createAccount()}>
         {account?.id ? 'Update' : 'Create'}

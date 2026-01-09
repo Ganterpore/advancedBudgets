@@ -1,7 +1,7 @@
 <script lang="ts">
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded';
   import AccountHeader from './AccountHeader.svelte'
-  import type { Account, AccountTypeSaving, ParentAccount } from '$lib/types/accountTypes'
+  import type { Account, AccountTypeBudget, AccountTypeSaving, ParentAccount } from '$lib/types/accountTypes'
   import { AccountType, BudgetAccountType } from '$lib/types/accountTypes'
   import type { AccountTotals } from '$lib/types/transactionTypes'
   import Expandable from '$lib/components/sharedComponents/Expandable.svelte'
@@ -21,7 +21,31 @@
   export let onSelect: (isParent: boolean, id: string) => void
 
   function sortAccounts (category: AccountType): (a: Account, b: Account) => number {
+    const isCurrent = (acc: AccountTypeBudget) => {
+      const now = new Date()
+      if (!acc.endDate) return false
+      return acc.startDate < now && acc.endDate > now
+    }
+    const isPast = (acc: AccountTypeBudget) => {
+      const now = new Date()
+      if (!acc.endDate) return false
+      return acc.endDate < now
+    }
     switch (category) {
+      case AccountType.PLANNED:
+        return (a: Account, b: Account) => {
+          const ab = a.additionalAccountData as AccountTypeBudget
+          const bb = b.additionalAccountData as AccountTypeBudget
+          // Put Current tasks at the top
+          if (isCurrent(ab) && !isCurrent(bb)) return -1
+          if (!isCurrent(ab) && isCurrent(bb)) return 1
+          // Put past tasks at the bottom
+          if (isPast(ab) && !isPast(bb)) return 1
+          if (!isPast(ab) && isPast(bb)) return -1
+          // Sort those in the same category by name
+          return a.name.localeCompare(b.name)
+
+        }
       case AccountType.SAVING:
         return (a: Account, b: Account) => {
           const isPaused = (account: Account) => (account.additionalAccountData as AccountTypeSaving).multiplier === 0
@@ -90,6 +114,7 @@
     `${AccountType.BUDGET} - ${BudgetAccountType.NEED}`,
     `${AccountType.BUDGET} - ${BudgetAccountType.WANT}`,
     AccountType.STORAGE,
+    AccountType.PLANNED,
     AccountType.OWED,
     AccountType.SAVING
   ]

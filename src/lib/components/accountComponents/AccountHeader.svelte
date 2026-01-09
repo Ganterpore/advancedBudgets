@@ -20,8 +20,18 @@
 
   let isTransactionPopupOpen = false
 
+  const getSavingsTransactionsLeft = (savingsDetails: AccountTypeSaving) => {
+    if (account.type !== AccountType.SAVING) return 0
+    const amountLeft = savingsDetails.target - value
+    const weightedAmountLeft = amountLeft / savingsDetails.multiplier
+    return Math.ceil(weightedAmountLeft)
+  }
   function getValueString (value) {
     let subValueString = ''
+    let subheading = ''
+    let iconReplacementText = ''
+    let progressGoal
+    let progressMultiplier
     if (account.type === AccountType.BUDGET) {
       const today = new Date()
       const budgetAccountDetails = additionalAccountData as AccountTypeBudget
@@ -31,27 +41,61 @@
       subValueString = currencyToString(value ?? 0)
       value = value - amountStillToBeReleased
     }
+    if (account.type === AccountType.PLANNED
+      && (additionalAccountData as AccountTypeBudget).startDate <= new Date()
+      && (additionalAccountData as AccountTypeBudget).endDate > new Date()
+    ) {
+      // Presently running planned budget
+      const today = new Date()
+      const budgetAccountDetails = additionalAccountData as AccountTypeBudget
+      const periodsUntilBudgetEnds = numberOfOccurrencesBetween(budgetAccountDetails, today, budgetAccountDetails.endDate!)
+      const amountStillToBeReleased = budgetAccountDetails.regularBudget * periodsUntilBudgetEnds
+      subValueString = currencyToString(value ?? 0)
+      value = value - amountStillToBeReleased
+      const daysUntilEnd = Math.round((budgetAccountDetails.endDate!.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      subheading = `${daysUntilEnd} day${daysUntilEnd > 1 ? 's' : ''} left`
+    }
     let valueString = currencyToString(value ?? 0)
     if (account.type === AccountType.SAVING) {
-      const target = (additionalAccountData as AccountTypeSaving).target
+      const data = (additionalAccountData as AccountTypeSaving)
+      const target = data.target
       if (value !== target) {
         subValueString = currencyToString(target)
+        iconReplacementText = savingsAccountMultiplierToString(data.multiplier)
+      } else if (value >= target) {
+        iconReplacementText = '✓'
       }
+      const savingsTransactionsLeft = getSavingsTransactionsLeft(data)
+      if (savingsTransactionsLeft > 0) subheading = `${savingsTransactionsLeft} to go`
+      progressGoal = data.target
+      progressMultiplier = data.multiplier
     }
-    return [valueString, subValueString]
-  }
-  const getSavingsTransactionsLeft = (savingsDetails: AccountTypeSaving) => {
-    if (account.type !== AccountType.SAVING) return 0
-    const amountLeft = savingsDetails.target - value
-    const weightedAmountLeft = amountLeft / savingsDetails.multiplier
-    return Math.ceil(weightedAmountLeft)
+    if (account.type === AccountType.PLANNED && (additionalAccountData as AccountTypeBudget).startDate > new Date()) {
+      // Future planned budget
+      const budgetAccountDetails = additionalAccountData as AccountTypeBudget
+      const numberOfReleases = numberOfOccurrencesBetween(budgetAccountDetails, budgetAccountDetails.startDate, budgetAccountDetails.endDate!)
+      const target = numberOfReleases * budgetAccountDetails.regularBudget
+      if (value !== target) {
+        subValueString = currencyToString(target)
+      } if (value >= target) {
+        iconReplacementText = '✓'
+      }
+      progressGoal = target
+      const daysUntil = Math.round((budgetAccountDetails.startDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      subheading = `In ${daysUntil} day${daysUntil > 1 ? 's' : ''}`
+    }
+    if (account.type === AccountType.PLANNED && (additionalAccountData as AccountTypeBudget).endDate <= new Date()) {
+      // Past planned budget
+      const daysAgo = Math.round(((Date.now() - (additionalAccountData as AccountTypeBudget).endDate!.getTime()) / (1000 * 60 * 60 * 24)))
+      subheading = `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`
+    }
+    return [valueString, subValueString, subheading, iconReplacementText, progressGoal, progressMultiplier]
   }
 
-  $: [valueString, subValueString] = getValueString(value)
+  $: [valueString, subValueString, subheading, iconReplacementText, progressGoal, progressMultiplier] = getValueString(value)
   $: Icon = account.type ? accountTypeIcons[account.type] : undefined
   $: isCompletable = value && value === (additionalAccountData as AccountTypeSaving)?.target
-  $: highlightColour = getHighlightColour(isCompletable, (additionalAccountData as AccountTypeSaving)?.multiplier)
-  $: savingsTransactionsLeft = getSavingsTransactionsLeft(additionalAccountData as AccountTypeSaving)
+  $: highlightColour = getHighlightColour(isCompletable, progressMultiplier)
 
   async function addTransaction (e) {
     e.stopPropagation()
@@ -70,12 +114,8 @@
   <div style="flex-grow: 1">
     <div class="header" style="--multiplier-highlight:{highlightColour}">
       <div class="icon">
-        {#if account.type===AccountType.SAVING}
-          {#if additionalAccountData.target <= value}
-            <p class="multiplier">✓</p>
-          {:else}
-            <p class="multiplier">{savingsAccountMultiplierToString(additionalAccountData.multiplier)}</p>
-          {/if}
+        {#if iconReplacementText}
+          <p class="multiplier">{iconReplacementText}</p>
         {:else}
           <svelte:component this={Icon}/>
         {/if}
@@ -83,8 +123,8 @@
       <div class="text-box">
         <div>
           <p>{account.name}</p>
-          {#if account.type===AccountType.SAVING && savingsTransactionsLeft > 0}
-            <p class="subValue">{savingsTransactionsLeft} to go</p>
+          {#if subheading}
+            <p class="subValue">{subheading}</p>
           {/if}
         </div>
         <div class="separator" ></div>
@@ -97,8 +137,8 @@
       </div>
 
     </div>
-    {#if account.type===AccountType.SAVING}
-      <SavingsProgress backgroundColor="--theme-primary" multiplier={additionalAccountData.multiplier} savingsGoal={additionalAccountData.target} currentValue={value} />
+    {#if progressGoal !== undefined}
+      <SavingsProgress backgroundColor="--theme-primary" multiplier={progressMultiplier} savingsGoal={progressGoal} currentValue={value} />
     {/if}
   </div>
   {#if isCompletable}

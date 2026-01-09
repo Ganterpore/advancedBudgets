@@ -62,6 +62,7 @@ export function getDaysUntilNextWeekday (day: number, days: number[]) {
 
 export const getNextOccurrence = (frequencyObj: FrequencyObject, after: Date) => {
   const { frequency, frequencyCategory, dayOf } = frequencyObj
+  if (frequency <= 0) throw new Error('Frequency must be greater than 0')
   const nextDate = new Date(after)
   if (frequencyCategory === FrequencyCategory.DAILY) {
     nextDate.setDate(nextDate.getDate() + frequency)

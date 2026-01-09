@@ -90,6 +90,7 @@
     `${AccountType.BUDGET} - ${BudgetAccountType.NEED}`,
     `${AccountType.BUDGET} - ${BudgetAccountType.WANT}`,
     AccountType.STORAGE,
+    AccountType.PLANNED,
     AccountType.OWED,
     AccountType.SAVING
   ]

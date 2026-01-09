@@ -74,13 +74,14 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
           id: account.savings_id!
         } as AccountTypeSaving
       }
-      if (account.accountType === AccountType.BUDGET) {
+      if (account.accountType === AccountType.BUDGET || account.accountType === AccountType.PLANNED) {
         parentAccount.children[account.accountId!].additionalAccountData = {
           regularBudget: account.regularBudget,
           budgetMax: account.budgetMax,
           frequency: account.frequency,
           frequencyCategory: account.frequencyCategory,
           startDate: account.startDate,
+          endDate: account.endDate,
           dayOf: account.dayOf,
           id: account.budget_id!,
           type: account.budget_type!
@@ -98,7 +99,7 @@ export async function getAccountsForUser (userId: number): Promise<AccountTree> 
     SELECT A.id, A.name, A.user, A.archived,
     S.id as "accountId", S.name as "accountName", S.type as "accountType", S.archived as "accountArchived",
     ats.multiplier, ats.target, ats.completed, ats.id as savings_id,
-    atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate", atb."id" as budget_id, atb."type" as budget_type
+    atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate", atb."endDate", atb."id" as budget_id, atb."type" as budget_type
     FROM PARENT_ACCOUNTS A
     LEFT JOIN ACCOUNTS S 
     ON A.ID = S.PARENT

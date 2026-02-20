@@ -1,12 +1,13 @@
 <script lang="ts">
   import { openPopup } from '$lib/store.js'
   import Popup from '$lib/components/sharedComponents/Popup.svelte'
-  import type { Investment, ParentAccount } from '$lib/types/accountTypes'
+  import type { Debt, Investment, ParentAccount } from '$lib/types/accountTypes'
   import Toggle from '$lib/components/sharedComponents/Toggle.svelte'
   import ParentAccountForm from '$lib/components/accountComponents/ParentAccountForm.svelte'
   import InvestmentAccountForm from '$lib/components/accountComponents/InvestmentAccountForm.svelte'
+  import DebtAccountForm from '$lib/components/accountComponents/DebtAccountForm.svelte'
 
-  let accountType: 'Cash' | 'Investment' = 'Cash'
+  let accountType: 'Cash' | 'Investment' | 'Debt' = 'Cash'
   export let account: Pick<ParentAccount, 'name'> & Partial<ParentAccount> = {
     name: ''
   }
@@ -15,6 +16,12 @@
     amount: 0,
     expectedROI: 600,
     withdrawalRate: 0
+  }
+  export let debt: Omit<Debt, 'id'|'user'|'parent'> & Partial<Debt> = {
+    name: '',
+    principal: 0,
+    percent: 0,
+    regularRepayment: 0
   }
   export let isOpen = undefined
 
@@ -50,12 +57,14 @@
 <div class="container">
   <Popup id="newAccount" onClose={onClose} bind:isOpen={isOpen}>
     <h1 style="margin: 0">{isUpdating ? 'Update' : 'Add'} Account</h1>
-    <Toggle disabled={isUpdating} value1="Cash" value2="Investment" bind:selected={accountType} />
+    <Toggle disabled={isUpdating} values={["Cash", "Investment", "Debt"]} bind:selected={accountType} />
 
     {#if accountType === 'Cash'}
       <ParentAccountForm account={account} onSubmit={onSubmit} />
     {:else if accountType === 'Investment'}
       <InvestmentAccountForm investment={investment} onSubmit={onSubmit} />
+    {:else if accountType === 'Debt'}
+      <DebtAccountForm debt={debt} onSubmit={onSubmit} />
     {/if}
   </Popup>
 </div>

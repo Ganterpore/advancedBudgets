@@ -1,20 +1,17 @@
 <script lang="ts">
   import Input from "$lib/components/sharedComponents/Input.svelte";
+  import type { Debt } from '$lib/types/accountTypes'
 
-  export let debt: {
-    currentBalance: number,
-    total: number,
-    percent: number,
-    payPerPeriod: number
-  }
+  export let debt: Omit<Debt, 'id'|'user'>
+  export let currentBalance: number | undefined = undefined
 
-  let paid = debt.currentBalance / 100
-  let total = debt.total / 100
-  let payPerPeriod = debt.payPerPeriod / 100
+  let paid = (currentBalance || currentBalance === 0) ? currentBalance / 100 : undefined
+  let principal = debt.principal / 100
+  let payPerPeriod = debt.regularRepayment / 100
 
-  $: debt.currentBalance = paid * 100
-  $: debt.total = total * 100
-  $: debt.payPerPeriod = payPerPeriod * 100
+  $: currentBalance = paid !== undefined ? paid * 100 : undefined
+  $: debt.principal = principal * 100
+  $: debt.regularRepayment = payPerPeriod * 100
 
   const calculateN = (P, rate, M) => {
     const r = (rate / 100) / 12; // Convert annual % to monthly decimal
@@ -39,15 +36,16 @@
     return [yearPart, monthPart].filter(Boolean).join(" and ") || "0 Months";
   };
 
-  $: monthsUntilPaid = calculateN((debt.total - debt.currentBalance), debt.percent, debt.payPerPeriod)
+  $: monthsUntilPaid = calculateN((debt.principal - (currentBalance ?? 0)), debt.percent, debt.regularRepayment)
   $: paymentTimeString = formatDuration(monthsUntilPaid)
 </script>
 
 <div class="container">
-  <div class="input"><Input type="number" label="Principal" bind:value={total} /></div>
-  <div class="input"><Input type="number" label="Paid" bind:value={paid} /></div>
-  <div class="input"><Input type="number" label="Regular Deposit" bind:value={payPerPeriod} /></div>
-  <div class="input"><Input type="number" label="Interest Rate p/a" bind:value={debt.percent} /></div>
+  <div class="input"><Input name="name" type="text" label="Name" bind:value={debt.name} /></div>
+  <div class="input"><Input name="principal" type="number" label="Principal" bind:value={principal} /></div>
+  {#if paid !== undefined}<div class="input"><Input type="number" label="Paid" bind:value={paid} /></div> {/if}
+  <div class="input"><Input name="regularRepayment" type="number" label="Regular Deposit" bind:value={payPerPeriod} /></div>
+  <div class="input"><Input name="percent" type="number" label="Interest Rate p/a" bind:value={debt.percent} /></div>
   <div class="input"><Input type="text" disabled label="Time until paid" value={paymentTimeString} /></div>
 </div>
 

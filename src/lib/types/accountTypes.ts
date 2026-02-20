@@ -51,6 +51,13 @@ export type Account = {
   archived?: boolean
 }
 
+export type ParentAccount = {
+  id: number
+  user: number
+  name: string
+  archived?: boolean
+}
+
 export type Investment = {
   id: number,
   user: number,
@@ -58,6 +65,16 @@ export type Investment = {
   expectedROI: number,
   withdrawalRate: number,
   amount: number
+}
+
+export type Debt = {
+  parent: number,
+  id: number,
+  user: number,
+  name: string,
+  principal: number,
+  percent: number,
+  regularRepayment: number
 }
 
 export type InvestmentValue = {
@@ -97,13 +114,6 @@ export interface ExpandedBudgetAccount extends AccountTypeBudget {
 export type SuggestedTransaction = {
   account: number,
   amount: number
-}
-
-export type ParentAccount = {
-  id: number
-  user: number
-  name: string
-  archived?: boolean
 }
 
 export interface AccountNode extends ParentAccount {

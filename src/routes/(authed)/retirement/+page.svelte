@@ -22,8 +22,9 @@
   let debts = []
   const addDebt = () => {
     debts = [...debts, {
+      name: '',
       currentBalance: 0,
-      total: 10_000_00,
+      principal: 100_000_00,
       percent: 5,
       payPerPeriod: 1000_00
     }]
@@ -73,7 +74,7 @@
     {#each debts as debt}
       <div>
         <Button secondary on:click={() => removeDebt(debt)}>X</Button>
-        <DebtForm bind:debt={debt} />
+        <DebtForm bind:debt={debt} currentBalance={debt.currentBalance} />
       </div>
     {/each}
   </div>
@@ -84,7 +85,7 @@
       <NumberClicker unit="%" name="Investment Interest Rate" bind:value={roiInterestRate}/>
       <div class="toggle">
         Reduce Investment income by withdrawal rate?
-        <Toggle bind:selected={reduceInterestByWithdrawal} value1="Reduce" value2="Retain" />
+        <Toggle bind:selected={reduceInterestByWithdrawal} values={["Reduce", "Retain"]} />
       </div>
       {#if reduceInterestByWithdrawal === 'Reduce' && withdrawalRate > roiInterestRate}
         <Alert>Withdrawal rate should not be greater than investment return if the reduction method is chosen</Alert>

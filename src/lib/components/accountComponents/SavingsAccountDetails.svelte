@@ -37,7 +37,7 @@
   <Input type="number" step="0.01" name="target" bind:value={savingsTarget} label="Savings Target" />
   <div class="multiplier_container"><p class="centered">Multiplier:&nbsp;&nbsp;&nbsp;</p><p class="multiplier">     {savingsAccountMultiplierToString(dataObject.multiplier)}</p></div>
   <p style="font-style: italic">Determines how quickly this savings goal will reach it's target relative to other savings goals.</p>
-  <Toggle bind:selected={sliderMode} value1="slider" value2="input" onChange={normaliseValues} />
+  <Toggle bind:selected={sliderMode} values={["slider", "input"]} onChange={normaliseValues} />
   {#if sliderMode === 'slider'}
     <RangeInput min="0" max="8" step="1" bind:value={sliderValue} ticks={['⏸', '1', '2', '3', '10']}
                 on:input={() => dataObject.multiplier = sliderValueToMultiplierValue(sliderValue)}  />

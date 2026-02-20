@@ -31,11 +31,11 @@
 </script>
 
 <div class="container">
-  <Toggle bind:selected={dataObject.type} value1={BudgetAccountType.WANT} value2={BudgetAccountType.NEED} />
+  <Toggle bind:selected={dataObject.type} values={[BudgetAccountType.WANT, BudgetAccountType.NEED]} />
   <p>Is it a want (you can live without it) or a need.</p>
   <Input type="number" step="0.01" name="regularBudget" bind:value={budget} on:input={adjustBudgetMax} label="Budget Amount" />
   <FrequencySelector bind:value={dataObject.frequency} bind:type={dataObject.frequencyCategory} bind:daysOf={dataObject.dayOf} />
-  <Toggle bind:selected={noMax} value1='max' value2='No Max' />
+  <Toggle bind:selected={noMax} values={['max', 'No Max']} />
   <div class="horizontal">
     {#if !noMax}
       <Input type="number" step="0.01" name="budgetMax" bind:value={max}

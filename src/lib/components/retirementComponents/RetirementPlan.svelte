@@ -14,7 +14,8 @@
     simpleInterest: number,
     compoundedInterest: number,
     capitalRequired: number,
-    needsCapitalRequired: number
+    needsCapitalRequired: number,
+    debtCapitalRequired: number
   }[]
 
   let ctx
@@ -26,16 +27,23 @@
   let datasets
   $: datasets = [
     {
+      label: 'Required Capital for Needs',
+      backgroundColor: theme.alert + '25',
+      data: data.map(d => d.needsCapitalRequired),
+      type: 'line',
+      tooltip
+    },
+    {
       label: 'Required Capital',
-      backgroundColor: theme.alert,
+      backgroundColor: theme.alert + '50',
       data: data.map(d => d.capitalRequired),
       type: 'line',
       tooltip
     },
     {
-      label: 'Required Capital for Needs',
-      backgroundColor: theme.secondary,
-      data: data.map(d => d.needsCapitalRequired),
+      label: 'Required Capital including debt',
+      backgroundColor: theme.alert,
+      data: data.map(d => d.debtCapitalRequired),
       type: 'line',
       tooltip
     },

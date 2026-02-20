@@ -8,6 +8,8 @@
   import Alert from "$lib/components/sharedComponents/Alert.svelte";
   import {themes} from "$lib/types/userTypes";
   import Expandable from "$lib/components/sharedComponents/Expandable.svelte";
+  import Button from "$lib/components/sharedComponents/Button.svelte";
+  import DebtForm from "$lib/components/mortgageComponents/DebtForm.svelte";
 
   let withdrawalRate = 4
   let inflationRate = 3
@@ -16,6 +18,19 @@
   let reduceInterestByWithdrawal = 'Retain'
   let deposit = 0
   let age = 0
+
+  let debts = []
+  const addDebt = () => {
+    debts = [...debts, {
+      currentBalance: 0,
+      total: 10_000_00,
+      percent: 5,
+      payPerPeriod: 1000_00
+    }]
+  }
+  const removeDebt = (mortgage) => {
+    debts = debts.filter(m => m !== mortgage)
+  }
 
   export let data
   let wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, theme
@@ -40,7 +55,8 @@
     <RetirementDescriber age={age} theme={themes[theme] ?? themes.default} yearsUntil={yearsUntilRetirement} budgetPeriodsPerYear={budgetPeriodsPerYear}
                        inflationRate={inflationRate} withdrawalRate={withdrawalRate} interestRate={updatedInterestRate}
                        currentCapital={updatedCapital} budgetedAmountToCapital={regularDeposit * 100}
-                       currentBudget={budgetPerYear} currentNeeds={needsBudget * budgetPeriodsPerYear}/>
+                       currentBudget={budgetPerYear} currentNeeds={needsBudget * budgetPeriodsPerYear}
+                       debts={debts}/>
   </div>
 
   <div class="percentContainer">
@@ -49,6 +65,17 @@
     <div class="input"><Input type="number" label="Current budget per budget period" bind:value={initialBudget} /></div>
     <div class="input"><Input type="number" label="Regular deposit" bind:value={regularDeposit} /></div>
     <div class="input"><Input type="number" label="Age" bind:value={age} /></div>
+  </div>
+
+  <h4>Debts</h4>
+  <Button on:click={addDebt}>+</Button>
+  <div class="debt-container">
+    {#each debts as debt}
+      <div>
+        <Button secondary on:click={() => removeDebt(debt)}>X</Button>
+        <DebtForm bind:debt={debt} />
+      </div>
+    {/each}
   </div>
 
   <Expandable name="Advanced Settings">
@@ -95,6 +122,9 @@
     align-items: center;
     justify-content: center;
     margin: 10px;
+  }
+  .debt-container {
+    background-color: var(--theme-plain);
   }
   @media (width >= 500px) {
     .percentContainer {

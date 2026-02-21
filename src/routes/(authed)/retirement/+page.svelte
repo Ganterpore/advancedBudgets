@@ -18,24 +18,22 @@
   let reduceInterestByWithdrawal = 'Retain'
   let deposit = 0
   let age = 0
+  export let data
+  let wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, theme, debts
+  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, settings: { theme }, debts } = data)
 
-  let debts = []
   const addDebt = () => {
     debts = [...debts, {
       name: '',
       currentBalance: 0,
       principal: 100_000_00,
       percent: 5,
-      payPerPeriod: 1000_00
+      regularRepayment: 1000_00
     }]
   }
   const removeDebt = (mortgage) => {
     debts = debts.filter(m => m !== mortgage)
   }
-
-  export let data
-  let wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, theme
-  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, settings: { theme } } = data)
 
   $: withdrawalRate = Math.max(withdrawalRate, 1)
   $: roiInterestRate = Math.max(roiInterestRate, 0)

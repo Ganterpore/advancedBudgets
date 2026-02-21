@@ -25,11 +25,11 @@
     return debts
       .map(d => {
         for (let y = 0; y <= yearsUntil; y++) {
-          if (compoundedValue(d.currentBalance - d.principal, d.payPerPeriod, d.percent, 12, y) >= 0) {
+          if (compoundedValue(d.currentBalance - d.principal, d.regularRepayment, d.percent, 12, y) >= 0) {
             return {
               year: y,
               // Convert monthly repayment to per-period deposit equivalent
-              extraPerPeriod: (d.payPerPeriod * 12) / budgetPeriodsPerYear
+              extraPerPeriod: (d.regularRepayment * 12) / budgetPeriodsPerYear
             }
           }
         }
@@ -83,7 +83,7 @@
     const compoundedInterest = capital - deposits - simpleInterest - currentCapital
 
     const debtRemaining = debts
-      .map(d => Math.min(0, compoundedValue(d.currentBalance - d.principal, d.payPerPeriod, d.percent, 12, year)))
+      .map(d => Math.min(0, compoundedValue(d.currentBalance - d.principal, d.regularRepayment, d.percent, 12, year)))
       .reduce((totalDebtRemaining, debtRemaining) => totalDebtRemaining + Math.abs(debtRemaining), 0)
     const debtCapitalRequired = capitalRequired + debtRemaining
     return { year, capital, principle: currentCapital, deposits, simpleInterest, compoundedInterest, futureBudget, capitalRequired, needsCapitalRequired, debtCapitalRequired }

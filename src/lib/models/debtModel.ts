@@ -41,6 +41,19 @@ export async function getDebt(debtId: number): Promise<Debt> {
   return res.rows[0]
 }
 
+export async function getDebtsForUser(userId: number): Promise<Debt[]> {
+  const db = await connect()
+  const res = await db.query(
+    `SELECT d.id, d.parent, d.principal, d.percent, d."regularRepayment",
+            p.user, p.name, p.archived
+     FROM DEBT_ACCOUNT d
+     JOIN PARENT_ACCOUNTS p ON p.id = d.parent
+     WHERE p.user = $1`,
+    [userId]
+  )
+  return res.rows.map(r => ({ ...r, percent: Number(r.percent) }))
+}
+
 export async function updateDebt(debtInfo: Debt): Promise<void> {
   await updateParentAccount({
     id: debtInfo.parent,

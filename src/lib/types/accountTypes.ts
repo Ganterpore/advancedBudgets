@@ -51,6 +51,13 @@ export type Account = {
   archived?: boolean
 }
 
+export type ParentAccount = {
+  id: number
+  user: number
+  name: string
+  archived?: boolean
+}
+
 export type Investment = {
   id: number,
   user: number,
@@ -58,6 +65,17 @@ export type Investment = {
   expectedROI: number,
   withdrawalRate: number,
   amount: number
+}
+
+export type Debt = {
+  parent: number,
+  nominatedAccount: number,
+  id: number,
+  user: number,
+  name: string,
+  principal: number,
+  percent: number,
+  regularRepayment: number
 }
 
 export type InvestmentValue = {
@@ -99,16 +117,16 @@ export type SuggestedTransaction = {
   amount: number
 }
 
-export type ParentAccount = {
-  id: number
-  user: number
-  name: string
-  archived?: boolean
-}
-
 export interface AccountNode extends ParentAccount {
   children: {
     [id: number]: Account
+  }
+  debtInfo?: {
+    id: number
+    nominatedAccount: number
+    principal: number
+    percent: number
+    regularRepayment: number
   }
 }
 
@@ -135,4 +153,10 @@ export interface DBResultAccountsWithChildren extends ParentAccount {
   savings_id?: number
   budget_id?: number
   budget_type?: string
+  // debt fields
+  debt_id?: number
+  nominatedAccount?: number
+  principal?: number
+  percent?: number
+  regularRepayment?: number
 }

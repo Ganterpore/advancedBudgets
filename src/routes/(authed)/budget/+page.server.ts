@@ -56,10 +56,32 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     }
     return { name: inv.name, income, estimatedTotalIncome }
   })
-
-  // Get all the budget accounts for the user
   const incomeSinceLast = incomeOnAccounts.reduce((total, i) => total + i.total, 0)
     + investmentIncome.reduce((total, inv) => total + inv.income, 0)
+  let incomeLeft = incomeSinceLast
+
+  // Debts
+  const debts: AccountNode[] = Object.values(accounts).filter((a: AccountNode) => a.debtInfo)
+  const debtRepayments = debts.map(debtAccount => {
+    const debt = debtAccount.debtInfo!
+    const principalRepaid = totals[debtAccount.id]?.value ?? 0
+    const principalUnpaid = Math.max(debt.principal - principalRepaid, 0)
+    const maxRepayment = principalUnpaid * (1 + ((debt.percent / 12) / 100))
+    const repayment = Math.min(maxRepayment, debt.regularRepayment, incomeLeft)
+    if (repayment > 0) {
+      incomeLeft -= repayment
+      transactions.push({
+        parent: debtAccount.id,
+        account: debt.nominatedAccount,
+        description: 'Budget - Dept Repayment',
+        type: TransactionType.INDIVIDUAL,
+        amount: repayment
+      })
+    }
+    return { ...debtAccount, repayment, principalRepaid }
+  })
+
+  // Get all the budget accounts for the user
   const budgetAccounts = await getAllBudgetAccountsForUser(userId)
   const needsBudgets = budgetAccounts.filter(b => b.type === BudgetAccountType.NEED)
   const wantsBudgets = budgetAccounts.filter(b => b.type === BudgetAccountType.WANT)
@@ -83,8 +105,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   // Tracking how much budget to give to all needs
   const amountToNeeds = needsBudgets.map(createBudgetMap)
   const needsTotalAmount = amountToNeeds.reduce((total, budget) => total + budget.maxAmountToAdd, 0)
-  const percentageNeedsPayable = Math.min(1, (incomeSinceLast / needsTotalAmount))
-  let incomeLeft = incomeSinceLast
+  const percentageNeedsPayable = Math.min(1, (incomeLeft / needsTotalAmount))
   amountToNeeds.forEach(a => {
     const adding = Math.floor(a.maxAmountToAdd * percentageNeedsPayable)
     a.actualAmountAdded = adding
@@ -244,6 +265,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
     amountToWants,
     excess: excessIncome,
     transactions,
-    parentTransactions
+    parentTransactions,
+    debtRepayments
   }
 }

@@ -4,6 +4,7 @@ import type { Budget } from '$lib/types/budgetTypes'
 import * as budgetModel from '$lib/models/budgetModel'
 import { error } from '@sveltejs/kit'
 import { getAverageBudget, getBudgetedAmountToCapital, getCurrentCapital } from '$lib/controllers/retirementController'
+import { getDebtsForUser } from '$lib/models/debtModel'
 
 export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const layout = await parent()
@@ -19,11 +20,15 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   const currentCapital = getCurrentCapital(layout.investments)
   const budgetedAmountToCapital = await getBudgetedAmountToCapital(userId)
 
+  const debts = (await getDebtsForUser(userId))
+    .map(d => ({ ...d, currentBalance: layout.totals[d.parent]?.value ?? 0 }))
+
   return {
     needsBudget,
     wantsBudget,
     currentCapital,
     budgetedAmountToCapital,
+    debts,
     budgetPeriodsPerYear: budget ? getBudgetPeriodsPerYear(budget) : 12
   }
 }

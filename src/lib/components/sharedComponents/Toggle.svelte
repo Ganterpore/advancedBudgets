@@ -1,30 +1,47 @@
 <script lang="ts">
   import { tweened } from "svelte/motion";
 
-  export let value1: string
-  export let value2: string
-  export let selected: string
+  export let values: string[]
+  export let selected: string = values[0]
   export let disabled = false
   export let onChange: (() => void) | undefined = undefined
 
-  const toggle = () => {
+  const select = (value: string) => {
     if (disabled) return
-    if (selected === value1) selected = value2
-    else selected = value1
-    if (onChange !== undefined) onChange()
+    if (values.length === 2) {
+      selected = selected === values[0] ? values[1] : values[0]
+    } else {
+      selected = value
+    }
+    onChange?.()
   }
 
   const leftTween = tweened(0, { duration: 100 })
   const widthTween = tweened(0, { duration: 100 })
 
-  $: leftTween.set((selected === value1) ? 1 : value1.length + 8)
-  $: widthTween.set((selected === value1) ? value1.length + 10 : value2.length + 10)
+  $: {
+    const idx = values.indexOf(selected)
+    const preceding = values.slice(0, idx)
+    const leftOffset = preceding.reduce((acc, v) => acc + v.length + 8, 0) + (idx > 0 ? 1 : 0)
+    console.log('abc')
+    leftTween.set(leftOffset)
+    widthTween.set(values[idx].length + 10)
+  }
 </script>
 
-<button class="toggle" on:click={toggle} style="--left-distance:{$leftTween}ch; --width:{$widthTween}ch;">
+<button class="toggle" on:click|self={() => {}} style="--left-distance:{$leftTween}ch; --width:{$widthTween}ch;">
   <span class="highlight"></span>
-  <span class="item {selected===value1 ? 'active' : ''}">{value1}</span>
-  <span class="item {selected===value2 ? 'active' : ''}">{value2}</span>
+  {#each values as value}
+    <span
+      class="item {selected === value ? 'active' : ''}"
+      on:click={() => select(value)}
+      on:keydown={(e) => e.key === 'Enter' && select(value)}
+      role="button"
+      tabindex="0"
+    >
+      {value}
+    </span>
+  {/each}
 </button>
 
 <style>
@@ -40,6 +57,7 @@
     width: fit-content;
     position: relative;
     border: none;
+    cursor: pointer;
   }
   .highlight {
     background-color: var(--theme-highlight);
@@ -48,6 +66,7 @@
     border-radius: 2ch;
     position: absolute;
     left: var(--left-distance);
+    transition: none;
   }
   .item {
     color: var(--theme-secondary-text);
@@ -55,5 +74,7 @@
     padding: 5px 5ch;
     margin: 0;
     z-index: 1;
+    cursor: pointer;
+    user-select: none;
   }
 </style>

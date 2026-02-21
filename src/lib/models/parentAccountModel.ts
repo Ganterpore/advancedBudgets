@@ -58,16 +58,26 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
       children: {}
     }
     const parentAccount = accountTree[account.id]
+    if (account.debt_id && !parentAccount.debtInfo) {
+      parentAccount.debtInfo = {
+        id: account.debt_id,
+        nominatedAccount: account.nominatedAccount!,
+        principal: account.principal!,
+        percent: account.percent!,
+        regularRepayment: account.regularRepayment!
+      }
+    }
+
     if (account.accountId) {
-      parentAccount.children[account.accountId!] = {
-        id: account.accountId!,
+      parentAccount.children[account.accountId] = {
+        id: account.accountId,
         name: account.accountName!,
         type: account.accountType!,
         archived: account.accountArchived,
         parent: account.id
       }
       if (account.accountType === AccountType.SAVING) {
-        parentAccount.children[account.accountId!].additionalAccountData = {
+        parentAccount.children[account.accountId].additionalAccountData = {
           multiplier: account.multiplier,
           target: account.target,
           completed: account.completed,
@@ -75,7 +85,7 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
         } as AccountTypeSaving
       }
       if (account.accountType === AccountType.BUDGET || account.accountType === AccountType.PLANNED) {
-        parentAccount.children[account.accountId!].additionalAccountData = {
+        parentAccount.children[account.accountId].additionalAccountData = {
           regularBudget: account.regularBudget,
           budgetMax: account.budgetMax,
           frequency: account.frequency,
@@ -99,14 +109,17 @@ export async function getAccountsForUser (userId: number): Promise<AccountTree> 
     SELECT A.id, A.name, A.user, A.archived,
     S.id as "accountId", S.name as "accountName", S.type as "accountType", S.archived as "accountArchived",
     ats.multiplier, ats.target, ats.completed, ats.id as savings_id,
-    atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate", atb."endDate", atb."id" as budget_id, atb."type" as budget_type
+    atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate", atb."endDate", atb."id" as budget_id, atb."type" as budget_type,
+    d.id as debt_id, d.principal, d.percent, d."regularRepayment", d."nominatedAccount"
     FROM PARENT_ACCOUNTS A
     LEFT JOIN ACCOUNTS S 
     ON A.ID = S.PARENT
     left join account_type_saving ats
     on ats.account=S.id
     left join account_type_budget atb
-    on atb.account=s.id
+    on atb.account=S.id
+    LEFT JOIN DEBT_ACCOUNT d
+    ON d.parent = A.id
     WHERE A.USER=$1`,
     [userId]
   )

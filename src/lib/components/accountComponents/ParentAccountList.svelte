@@ -16,7 +16,7 @@
   <ListItem selectable style="margin: 5px 5px 0 5px"
     onSelected={() => onSelect(true, a.id)}>
     <ParentAccountHeader
-      name={a.name} id={a.id} value={totals[a.id]?.value} />
+      account={a} value={totals[a.id]?.value} />
   </ListItem>
   <AccountList parent={a} budgetDetails={budgetDetails}
                accounts={Object.values(a.children)}

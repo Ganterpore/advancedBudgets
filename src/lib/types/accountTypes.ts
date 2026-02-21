@@ -120,6 +120,12 @@ export interface AccountNode extends ParentAccount {
   children: {
     [id: number]: Account
   }
+  debtInfo?: {
+    id: number
+    principal: number
+    percent: number
+    regularRepayment: number
+  }
 }
 
 export interface AccountTree {
@@ -145,4 +151,9 @@ export interface DBResultAccountsWithChildren extends ParentAccount {
   savings_id?: number
   budget_id?: number
   budget_type?: string
+  // debt fields
+  debt_id?: number
+  principal?: number
+  percent?: number
+  regularRepayment?: number
 }

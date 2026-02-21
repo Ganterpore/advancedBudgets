@@ -3,9 +3,10 @@
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded'
   import { currencyToString } from '$lib/utils'
   import Button from '$lib/components/sharedComponents/Button.svelte'
+  import type { AccountNode } from '$lib/types/accountTypes'
+  import { calculateN, formatDuration } from '$lib/helpers/financeHelpers'
 
-  export let name: string
-  export let id: number
+  export let account: AccountNode
   export let value: number = 0
   $: valueString = currencyToString(value ?? 0)
 
@@ -17,10 +18,24 @@
 </script>
 
 <div class="header">
-  <p>{name}</p>
+  <div>
+    <p>{account.name}</p>
+    {#if account.debtInfo}
+      <p class="subValue">{formatDuration(calculateN(
+        account.debtInfo.principal - value,
+        account.debtInfo.percent,
+        account.debtInfo.regularRepayment
+      ))} left</p>
+    {/if}
+  </div>
   <div class="separator" ></div>
-  <p>{valueString}</p>
-  <Button on:click={(e) => openChildAccount(id, e)}>
+  <div>
+    <p>{valueString}</p>
+    {#if account.debtInfo}
+      <p class="subValue">{currencyToString(account.debtInfo.principal)}</p>
+    {/if}
+  </div>
+  <Button on:click={(e) => openChildAccount(account.id, e)}>
     <MaterialSymbolsAddRounded/>
   </Button>
 </div>
@@ -31,6 +46,12 @@
     font-size: large;
     color: var(--theme-secondary-text);
     font-weight: bold;
+  }
+  .subValue {
+    font-weight: lighter;
+    font-style: italic;
+    font-size: smaller;
+    color: var(--theme-secondary-text);
   }
   .header {
       display: flex;

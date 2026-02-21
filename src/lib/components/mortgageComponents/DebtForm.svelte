@@ -1,6 +1,7 @@
 <script lang="ts">
   import Input from "$lib/components/sharedComponents/Input.svelte";
   import type { Debt } from '$lib/types/accountTypes'
+  import { calculateN, formatDuration } from '$lib/helpers/financeHelpers'
 
   export let debt: Omit<Debt, 'id'|'user'>
   export let currentBalance: number | undefined = undefined
@@ -12,29 +13,6 @@
   $: currentBalance = paid !== undefined ? paid * 100 : undefined
   $: debt.principal = principal * 100
   $: debt.regularRepayment = payPerPeriod * 100
-
-  const calculateN = (P, rate, M) => {
-    const r = (rate / 100) / 12; // Convert annual % to monthly decimal
-    const result = Math.log(M / (M - P * r)) / Math.log(1 + r)
-    if (isNaN(result)) return '∞'
-    return Math.round(result)
-  }
-  const formatDuration = (totalMonths) => {
-    if (!isFinite(totalMonths)) return "Never (interest exceeds repayment)";
-
-    // Use Math.ceil because even a partial month requires a full payment
-    const total = Math.ceil(totalMonths);
-    const years = Math.floor(total / 12);
-    const months = total % 12;
-
-    const yLabel = years === 1 ? "Year" : "Years";
-    const mLabel = months === 1 ? "Month" : "Months";
-
-    const yearPart = years > 0 ? `${years} ${yLabel}` : "";
-    const monthPart = months > 0 ? `${months} ${mLabel}` : "";
-
-    return [yearPart, monthPart].filter(Boolean).join(" and ") || "0 Months";
-  };
 
   $: monthsUntilPaid = calculateN((debt.principal - (currentBalance ?? 0)), debt.percent, debt.regularRepayment)
   $: paymentTimeString = formatDuration(monthsUntilPaid)

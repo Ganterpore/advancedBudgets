@@ -13,20 +13,21 @@ export const actions: Actions = {
     const principal = Number(data.get('principal'))
     const percent = Number(data.get('percent'))
     const regularRepayment = Number(data.get('regularRepayment'))
+    const nominatedAccount = Number(data.get('nominatedAccount'))
     // Validate
     if (!name) return error(400, 'Debt Name must not be empty')
     if ([principal, percent, regularRepayment].includes(NaN)) {
       return error(400, 'principal, percent and regularRepayment must be numbers')
     }
-    const debt: Omit<Debt, 'id'|'parent'> = {
+    const debt: Omit<Debt, 'id'|'parent'|'nominatedAccount'> = {
       name,
       user: Number(locals.user!.id),
       principal: principal * 100,
       percent,
       regularRepayment: regularRepayment * 100
     }
-    if (id && parent) {
-      await updateDebt({...debt, id, parent })
+    if (id && parent && nominatedAccount) {
+      await updateDebt({...debt, id, parent, nominatedAccount })
     } else {
       await newDebt(debt)
     }

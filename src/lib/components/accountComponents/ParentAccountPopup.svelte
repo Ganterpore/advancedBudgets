@@ -17,7 +17,7 @@
     expectedROI: 600,
     withdrawalRate: 0
   }
-  export let debt: Omit<Debt, 'id'|'user'|'parent'> & Partial<Debt> = {
+  export let debt: Omit<Debt, 'id'|'user'|'parent'|'nominatedAccount'> & Partial<Debt> = {
     name: '',
     principal: 0,
     percent: 0,

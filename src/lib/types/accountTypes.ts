@@ -69,6 +69,7 @@ export type Investment = {
 
 export type Debt = {
   parent: number,
+  nominatedAccount: number,
   id: number,
   user: number,
   name: string,
@@ -122,6 +123,7 @@ export interface AccountNode extends ParentAccount {
   }
   debtInfo?: {
     id: number
+    nominatedAccount: number
     principal: number
     percent: number
     regularRepayment: number
@@ -153,6 +155,7 @@ export interface DBResultAccountsWithChildren extends ParentAccount {
   budget_type?: string
   // debt fields
   debt_id?: number
+  nominatedAccount?: number
   principal?: number
   percent?: number
   regularRepayment?: number

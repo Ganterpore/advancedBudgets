@@ -11,8 +11,13 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       references: 'parent_accounts(id)',
       onDelete: 'CASCADE'
     },
+    nominatedAccount: {
+      type: 'integer',
+      references: 'accounts(id)',
+      onDelete: 'RESTRICT'
+    },
     principal: 'integer',
-    percent: 'numeric(3, 2)',
+    percent: 'numeric(4, 2)',
     regularRepayment: 'integer'
   })
 }

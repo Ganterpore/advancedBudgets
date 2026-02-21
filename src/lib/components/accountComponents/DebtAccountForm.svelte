@@ -7,7 +7,7 @@
   import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
   import DebtForm from '$lib/components/mortgageComponents/DebtForm.svelte'
 
-  export let debt: Omit<Debt, 'id'|'user'|'parent'> & Partial<Debt>
+  export let debt: Omit<Debt, 'id'|'user'|'parent'|'nominatedAccount'> & Partial<Debt>
   export let onSubmit: () => void
   let error
   let isLoading = false

@@ -3,7 +3,7 @@
   import type { Debt } from '$lib/types/accountTypes'
   import { calculateN, formatDuration } from '$lib/helpers/financeHelpers'
 
-  export let debt: Omit<Debt, 'id'|'user'>
+  export let debt: Omit<Debt, 'id'|'user'|'nominatedAccount'>
   export let currentBalance: number | undefined = undefined
 
   let paid = (currentBalance || currentBalance === 0) ? currentBalance / 100 : undefined

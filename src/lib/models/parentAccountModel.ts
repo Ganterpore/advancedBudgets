@@ -61,6 +61,7 @@ function buildAccountTree (accounts: DBResultAccountsWithChildren[]): AccountTre
     if (account.debt_id && !parentAccount.debtInfo) {
       parentAccount.debtInfo = {
         id: account.debt_id,
+        nominatedAccount: account.nominatedAccount!,
         principal: account.principal!,
         percent: account.percent!,
         regularRepayment: account.regularRepayment!
@@ -109,7 +110,7 @@ export async function getAccountsForUser (userId: number): Promise<AccountTree> 
     S.id as "accountId", S.name as "accountName", S.type as "accountType", S.archived as "accountArchived",
     ats.multiplier, ats.target, ats.completed, ats.id as savings_id,
     atb."regularBudget", atb."budgetMax", atb.frequency, atb."frequencyCategory", atb."dayOf", atb."startDate", atb."endDate", atb."id" as budget_id, atb."type" as budget_type,
-    d.id as debt_id, d.principal, d.percent, d."regularRepayment"
+    d.id as debt_id, d.principal, d.percent, d."regularRepayment", d."nominatedAccount"
     FROM PARENT_ACCOUNTS A
     LEFT JOIN ACCOUNTS S 
     ON A.ID = S.PARENT

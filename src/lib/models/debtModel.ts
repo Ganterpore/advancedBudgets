@@ -48,7 +48,8 @@ export async function getDebtsForUser(userId: number): Promise<Debt[]> {
             p.user, p.name, p.archived
      FROM DEBT_ACCOUNT d
      JOIN PARENT_ACCOUNTS p ON p.id = d.parent
-     WHERE p.user = $1`,
+     WHERE p.user = $1
+     AND (p.archived <> true OR p.archived is null)`,
     [userId]
   )
   return res.rows.map(r => ({ ...r, percent: Number(r.percent) }))

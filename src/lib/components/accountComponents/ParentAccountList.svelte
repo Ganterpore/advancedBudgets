@@ -12,7 +12,7 @@
   export let onSelect: (isParent: boolean, id: string) => void
 </script>
 
-{#each Object.values(accounts ?? {}) as a}
+{#each Object.values(accounts ?? {}).filter(acc => acc.archived !== true) as a}
   <ListItem selectable style="margin: 5px 5px 0 5px"
     onSelected={() => onSelect(true, a.id)}>
     <ParentAccountHeader

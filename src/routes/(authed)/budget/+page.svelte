@@ -13,6 +13,7 @@
   import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
   import BudgetProgressExpandable from '$lib/components/budgetComponents/BudgetProgressExpandable.svelte'
   import DebtRepayments from '$lib/components/budgetComponents/DebtRepayments.svelte'
+  import BudgetHeader from '$lib/components/budgetComponents/BudgetHeader.svelte'
 
   export let data
   let incomeOnAccounts, investmentIncome, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions, debtRepayments
@@ -202,7 +203,11 @@
 
 <div class="outer">
   <div class="main">
-    <div class="title"><h3>Income</h3>{currencyToString(data.incomeSinceLast)}</div>
+    <BudgetHeader title="Income"
+                  current={data.incomeSinceLast}
+                  goal={debtRepayments.reduce((sum, d) => sum + d.debtInfo.regularRepayment, 0) +
+                  maxWants + maxNeeds +
+                  savingsAccounts.reduce((total, acc) => total + acc.max, 0)} />
     <div class="body">
       {#each incomeOnAccounts as income}
         <div class="income-list-item">
@@ -230,19 +235,25 @@
       {/each}
     </div>
 
-    <div class="title"><h3>Debt Repayments</h3>{currencyToString(debtRepayments.map(d => d.repayment))}</div>
+    <BudgetHeader title="Debt Repayments"
+                  current={debtRepayments.reduce((sum, d) => sum + d.repayment, 0)}
+                  goal={debtRepayments.reduce((sum, d) => sum + d.debtInfo.regularRepayment, 0)} />
     <div class="body">
       <DebtRepayments debts={debtRepayments} />
     </div>
 
-    <div class="title"><h3>Budget</h3>{currencyToString(currentNeeds + currentWants)}</div>
+    <BudgetHeader title="Budget"
+                  current={currentNeeds + currentWants}
+                  goal={maxNeeds + maxWants} />
     <div class="body">
       <BudgetProgressExpandable name="Needs" currentAmount={currentNeeds} neededAmount={maxNeeds} budgetItems={amountToNeeds} />
       <hr/>
       <BudgetProgressExpandable name="Wants" currentAmount={currentWants} neededAmount={maxWants} budgetItems={amountToWants} />
     </div>
 
-    <div class="title"><h3>Savings</h3>{currencyToString(savingsAccounts.reduce((total, acc) => total + acc.actualAmountAdded, 0))}</div>
+    <BudgetHeader title="Savings"
+                  current={savingsAccounts.reduce((total, acc) => total + acc.actualAmountAdded, 0)}
+                  goal={savingsAccounts.reduce((total, acc) => total + acc.max, 0)} />
     <div class="body">
       <BucketAssignment bucketsToAdd={allBuckets()}
                         buckets={savingsAccounts.map(acc => ({

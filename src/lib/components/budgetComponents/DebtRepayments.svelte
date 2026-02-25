@@ -7,17 +7,26 @@
 
 <div>{#each debts as debt}
   <div class="budgetList">
-    <p>{debt.name}</p>
+    <h3>{debt.name}</h3>
     <div style="flex-grow: 1"></div>
     <div>
-      <p>{currencyToString(debt.repayment)} / {currencyToString(debt.debtInfo.regularRepayment)}</p>
+      <div class="container">
+        <p class="additional-info">{currencyToString(debt.repayment)}</p>
+        <p>{((debt.repayment / debt.debtInfo.regularRepayment) * 100).toFixed(2)}%</p>
+      </div>
       <p class="additional-info">{currencyToString(debt.principalRepaid + debt.repayment)} / {currencyToString(debt.debtInfo.principal)}</p>
     </div>
+    <div style="flex-grow: 1"></div>
+    <p>{currencyToString(debt.debtInfo.regularRepayment)}</p>
   </div>
 {/each}</div>
 
 
 <style>
+  .container {
+    display: flex;
+    flex-direction: row;
+  }
   .additional-info {
     font-style: italic;
     font-size: smaller;

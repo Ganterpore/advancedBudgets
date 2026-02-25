@@ -12,7 +12,7 @@
   import type { AccountNode } from '$lib/types/accountTypes'
   import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
   import BudgetProgressExpandable from '$lib/components/budgetComponents/BudgetProgressExpandable.svelte'
-  import BudgetRepayments from '$lib/components/budgetComponents/BudgetRepayments.svelte'
+  import DebtRepayments from '$lib/components/budgetComponents/DebtRepayments.svelte'
 
   export let data
   let incomeOnAccounts, investmentIncome, isReadyToRelease, budget, budgetStartDate, budgetEndDate, amountToNeeds, amountToWants, excess, savingsAccounts, excessAccounts, parentTransactions, transactions, debtRepayments
@@ -232,7 +232,7 @@
 
     <div class="title"><h3>Debt Repayments</h3>{currencyToString(debtRepayments.map(d => d.repayment))}</div>
     <div class="body">
-      <BudgetRepayments debts={debtRepayments} />
+      <DebtRepayments debts={debtRepayments} />
     </div>
 
     <div class="title"><h3>Budget</h3>{currencyToString(currentNeeds + currentWants)}</div>

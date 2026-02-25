@@ -72,7 +72,7 @@
     {#each debts as debt}
       <div>
         <Button secondary on:click={() => removeDebt(debt)}>X</Button>
-        <DebtForm bind:debt={debt} currentBalance={debt.currentBalance} />
+        <DebtForm bind:debt={debt} bind:currentBalance={debt.currentBalance} />
       </div>
     {/each}
   </div>

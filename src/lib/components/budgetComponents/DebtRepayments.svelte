@@ -10,7 +10,7 @@
     <p>{debt.name}</p>
     <div style="flex-grow: 1"></div>
     <div>
-      <p>{currencyToString(debt.repayment)}</p>
+      <p>{currencyToString(debt.repayment)} / {currencyToString(debt.debtInfo.regularRepayment)}</p>
       <p class="additional-info">{currencyToString(debt.principalRepaid + debt.repayment)} / {currencyToString(debt.debtInfo.principal)}</p>
     </div>
   </div>

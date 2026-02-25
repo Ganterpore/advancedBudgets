@@ -61,7 +61,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
   let incomeLeft = incomeSinceLast
 
   // Debts
-  const debts: AccountNode[] = Object.values(accounts).filter((a: AccountNode) => a.debtInfo)
+  const debts: AccountNode[] = Object.values(accounts).filter((a: AccountNode) => a.debtInfo && a.archived !== true)
   const debtRepayments = debts.map(debtAccount => {
     const debt = debtAccount.debtInfo!
     const principalRepaid = totals[debtAccount.id]?.value ?? 0

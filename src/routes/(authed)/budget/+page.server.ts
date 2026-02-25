@@ -98,6 +98,7 @@ export const load: PageServerLoad = async ({ depends, locals, parent }) => {
       parentName,
       type: b.type,
       maxAmountToAdd: isReadyToRelease ? cappedAmountToAdd : maxAmountToAdd,
+      budgetAmount: maxAmountToAdd,
       actualAmountAdded: 0
     }
   }

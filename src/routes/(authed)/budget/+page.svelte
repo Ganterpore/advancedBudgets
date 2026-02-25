@@ -260,8 +260,8 @@
                           id: `${acc.type}_${acc.account}_${acc.id}`, name: acc.name, plannedAmount: acc.max / 100, actualAmount: acc.actualAmountAdded
                         }))}
                         type="max"
-                         addBucketCallback={addSavingsAccount} updateBucketCallback={updateSavingsAccount}
-                         removeBucketCallback={deleteSavingsAccount} />
+                        addBucketCallback={addSavingsAccount} updateBucketCallback={updateSavingsAccount}
+                        removeBucketCallback={deleteSavingsAccount} />
 
     </div>
     <div class="title"><h3>Excess</h3>{currencyToString(excess)}</div>

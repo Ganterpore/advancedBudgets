@@ -1,7 +1,6 @@
 <script>
   import {currencyToString} from "$lib/utils";
   import Expandable from "$lib/components/sharedComponents/Expandable.svelte";
-  import SavingsProgress from "$lib/components/accountComponents/SavingsProgress.svelte";
 
   export let name
   export let currentAmount
@@ -12,23 +11,23 @@
 <Expandable name={name}>
   <div slot="header" class="progress">
     <div class="header-text">
+      <div style="flex-grow: 1"></div>
+      <p class="additional-info">{currencyToString(currentAmount)}</p>
       <p>{((currentAmount / neededAmount) * 100).toFixed(2)}%</p>
-      <p class="additional-info">{currencyToString(neededAmount)}</p>
+      <div style="flex-grow: 1"></div>
+      {currencyToString(neededAmount)}
     </div>
-    <SavingsProgress savingsGoal={neededAmount} currentValue={currentAmount} />
   </div>
   <div>{#each budgetItems as need}
     <div class="budgetList">
       <p>{need.parentName}: {need.name}</p>
       <div style="flex-grow: 1"></div>
-      <div>
-      {#if need.actualAmountAdded < need.maxAmountToAdd}
-        <p>{currencyToString(need.actualAmountAdded)}</p>
-        <p class="additional-info">{currencyToString(need.maxAmountToAdd)}</p>
-      {:else}
-        <p>{currencyToString(need.maxAmountToAdd)}</p>
+      <p class="additional-info">{currencyToString(need.actualAmountAdded)}</p>
+      {#if need.budgetAmount > need.maxAmountToAdd}
+        <p class="special-info">{currencyToString(need.budgetAmount - need.maxAmountToAdd)} saved!</p>
       {/if}
-      </div>
+      <div style="flex-grow: 1"></div>
+      <p>{currencyToString(need.maxAmountToAdd)}</p>
     </div>
   {/each}</div>
 </Expandable>
@@ -49,6 +48,9 @@
     font-size: smaller;
     align-self: center;
     color: var(--theme-text-light);
+  }
+  .special-info {
+    color: var(--theme-highlight);
   }
   .budgetList {
     padding-left: 25px;

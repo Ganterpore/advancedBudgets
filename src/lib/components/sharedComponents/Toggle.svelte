@@ -23,9 +23,8 @@
     const idx = values.indexOf(selected)
     const preceding = values.slice(0, idx)
     const leftOffset = preceding.reduce((acc, v) => acc + v.length + 8, 0) + (idx > 0 ? 1 : 0)
-    console.log('abc')
     leftTween.set(leftOffset)
-    widthTween.set(values[idx].length + 10)
+    widthTween.set((values[idx]?.length ?? 0) + 10)
   }
 </script>
 

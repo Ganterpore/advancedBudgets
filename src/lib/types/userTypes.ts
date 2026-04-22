@@ -58,5 +58,17 @@ export const themes: {[name: string]: Theme} = {
     'secondary-text': '#EF091B',
     alert: '#ff6700',
     plain: '#450302',
+  },
+  classic: {
+    background: '#F2EBDD',
+    primary: '#CCB394',
+    secondary: '#838562',
+    tertiary: '#838562',
+    highlight: '#525032',
+    text: '#311E0F',
+    'text-light': '#000000',
+    'secondary-text': '#FFFFEE',
+    alert: '#FF6700',
+    plain: '#DDCBB6',
   }
 }

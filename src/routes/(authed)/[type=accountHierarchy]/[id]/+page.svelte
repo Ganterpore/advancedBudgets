@@ -53,7 +53,7 @@
   <AccountOverview transactionList={data.transactions} />
   <div class="listContainer">
     {#each Object.keys(transactionsByMonth) as key}
-      <ListItem id={key}>
+      <ListItem secondary id={key}>
         <TransactionMonthHeader
           dateString={key}
           transactions={transactionsByMonth[key]}
@@ -93,7 +93,7 @@
   }
   .listContainer {
       width: 80%;
-
+      background-color: var(--theme-secondary);
       flex-grow: 1;
   }
   .list {

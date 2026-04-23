@@ -24,7 +24,7 @@
 
   const addDebt = () => {
     debts = [...debts, {
-      name: '',
+      name: 'New Debt',
       currentBalance: 0,
       principal: 100_000_00,
       percent: 5,
@@ -57,7 +57,10 @@
                        currentBudget={budgetPerYear} currentNeeds={needsBudget * budgetPeriodsPerYear}
                        debts={debts}/>
   </div>
+</div>
 
+<div class="header"><h2>Settings</h2></div>
+<div class="container">
   <div class="percentContainer">
     <div class="large-input"><NumberClicker unit="y" name="Years Until Retirement" bind:value={yearsUntilRetirement} additionalClickerValue={10}/></div>
     <div class="input"><Input type="number" label="Make one time deposit" bind:value={deposit} /></div>
@@ -65,18 +68,6 @@
     <div class="input"><Input type="number" label="Regular deposit" bind:value={regularDeposit} /></div>
     <div class="input"><Input type="number" label="Age" bind:value={age} /></div>
   </div>
-
-  <h4>Debts</h4>
-  <Button on:click={addDebt}>+</Button>
-  <div class="debt-container">
-    {#each debts as debt}
-      <div>
-        <Button secondary on:click={() => removeDebt(debt)}>X</Button>
-        <DebtForm bind:debt={debt} bind:currentBalance={debt.currentBalance} />
-      </div>
-    {/each}
-  </div>
-
   <Expandable name="Advanced Settings">
     <div class="percentContainer">
       <NumberClicker unit="%" name="Withdrawal Rate" bind:value={withdrawalRate}/>
@@ -93,13 +84,44 @@
   </Expandable>
 </div>
 
+<div class="header">
+  <h2>Debts</h2>
+  <div class="separator"/>
+  <Button on:click={addDebt}>+</Button>
+</div>
+<div class="container base">
+  <div class="debt-container">
+    {#each debts as debt}
+      <Expandable name={debt.name}>
+        <div>
+          <Button secondary on:click={() => removeDebt(debt)}>X</Button>
+          <DebtForm bind:debt={debt} bind:currentBalance={debt.currentBalance} />
+        </div>
+      </Expandable>
+    {/each}
+  </div>
+</div>
+
+
 <BottomNavigation selected="retirement"/>
 
 <style>
+  .header {
+    background-color: var(--theme-secondary);
+    color: var(--theme-text);
+    padding: 5px;
+    margin: 5px;
+    display: flex;
+  }
+  .separator {
+    flex-grow: 1;
+  }
   .container {
     margin: 10px;
-    background-color: var(--theme-secondary);
+    background-color: var(--theme-plain);
     color: var(--theme-secondary-text);
+  }
+  .base {
     padding-bottom: 75px;
   }
   .text {
@@ -110,8 +132,11 @@
     display: grid;
     grid-template-columns: 1fr;
     column-count: 1;
+    background-color: var(--theme-primary);
   }
   .large-input {
+    background-color: var(--theme-primary);
+    color: var(--theme-text);
     grid-column: 1;
   }
   .toggle {

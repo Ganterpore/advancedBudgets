@@ -2,6 +2,7 @@
   import {compoundedValue} from "$lib/helpers/financeHelpers";
   import {currencyToString} from "$lib/utils";
   import RetirementPlan from "$lib/components/retirementComponents/RetirementPlan.svelte";
+  import MetricsGrid from '$lib/components/sharedComponents/MetricsGrid.svelte'
 
   export let theme
   export let age
@@ -77,23 +78,33 @@
     const futureNeeds = inflationRate !== 0 ? compoundedValue(currentNeeds, 0, inflationRate, 1, year) : currentNeeds
     const capitalRequired = futureBudget / (withdrawalRate * 0.01)
     const needsCapitalRequired = futureNeeds / (withdrawalRate * 0.01)
-    const { capital, totalDeposits } = capitalWithDebtBoost(year)
+    let { capital, totalDeposits } = capitalWithDebtBoost(year)
+
+    let debtRemaining = debts
+      .map(d => Math.min(0, compoundedValue(d.currentBalance - d.principal, d.regularRepayment, d.percent, 12, year)))
+      .reduce((totalDebtRemaining, debtRemaining) => totalDebtRemaining + Math.abs(debtRemaining), 0)
+
+    if (capital > capitalRequired && debtRemaining > 0) {
+      const capitalDiff = Math.min(capital - capitalRequired, debtRemaining)
+      capital = capital - capitalDiff
+      debtRemaining = debtRemaining - capitalDiff
+      totalDeposits = totalDeposits - capitalDiff
+    }
     const deposits = totalDeposits
     const simpleInterest = currentCapital * (interestRate/100) * year
     const compoundedInterest = capital - deposits - simpleInterest - currentCapital
 
-    const debtRemaining = debts
-      .map(d => Math.min(0, compoundedValue(d.currentBalance - d.principal, d.regularRepayment, d.percent, 12, year)))
-      .reduce((totalDebtRemaining, debtRemaining) => totalDebtRemaining + Math.abs(debtRemaining), 0)
     const debtCapitalRequired = capitalRequired + debtRemaining
-    return { year, capital, principle: currentCapital, deposits, simpleInterest, compoundedInterest, futureBudget, capitalRequired, needsCapitalRequired, debtCapitalRequired }
+    return { year, capital, principle: currentCapital, deposits, simpleInterest, compoundedInterest, futureBudget, capitalRequired, needsCapitalRequired, debtCapitalRequired, debtRemaining }
   }
   let retirementDataSet
   $: (age, budgetPeriodsPerYear, inflationRate, withdrawalRate, interestRate, currentBudget, currentCapital, budgetedAmountToCapital, debts), retirementDataSet = Array.from(Array(yearsUntil + 1).keys()).map(y => retirementDataInYears(y))
+  $: finalYearData = retirementDataSet[retirementDataSet.length - 1]
 </script>
 
 <p>
   <RetirementPlan age={age} theme={theme} data={retirementDataSet}/>
+  <i>Assumes you will increase retirement saving when a debt is payed off, and increase debt pay off if you have reached your desired passive income</i>
   <br/>
   {#if Number(age) === 0}
     In {yearsUntil} years:
@@ -101,18 +112,30 @@
     At Age {Number(yearsUntil) + Number(age)}:
   {/if}
   <br/>
-  With {inflationRate}% inflation your budget will be {currencyToString(budgetInTime)} per year.
-  <br/>
-  You will have approximately {currencyToString(futureCapital)} in capital. <br/>
-  <br/>
-  {#if capitalRequired > futureCapital}
-    In order to retire you will need {currencyToString(capitalRequired)} in capital.<br/>
-  {:else }
-    You will be able to retire with a {currencyToString(futureCapital * withdrawalRate * 0.01)} yearly budget.
+  <MetricsGrid metrics={[
+    { label: 'Expected Monthly Budget', value: currencyToString(finalYearData.futureBudget / 12), subValue: currencyToString(finalYearData.futureBudget) + ' pa' },
+    { label: 'Monthly Passive Income', value: currencyToString((finalYearData.capital * withdrawalRate * 0.01) / 12), subValue: currencyToString(finalYearData.capital * withdrawalRate * 0.01) + ' pa' },
+    { label: 'Capital', value: currencyToString(finalYearData.capital) },
+    { label: 'Debt', value: currencyToString(finalYearData.debtRemaining) },
+    { label: 'Capital Required to Retire with 0 debt', value: currencyToString(finalYearData.debtCapitalRequired) },
+    ]} />
+  {#if finalYearData.capital >= finalYearData.debtCapitalRequired}
+    <div class="toast" >Ready to retire with 0 debt.</div>
+  {:else if finalYearData.capital >= finalYearData.capitalRequired}
+    <div class="toast" >Passive income outweighs budget, but still in debt.</div>
+  {:else}
+    <div style="margin: 3px;"/>
   {/if}
 </p>
 
 <style>
+  .toast {
+    width: fit-content;
+    background-color: var(--theme-alert);
+    margin: 3px;
+    padding: 3px;
+    border-radius: 2px;
+  }
   p {
     margin: 5px;
   }

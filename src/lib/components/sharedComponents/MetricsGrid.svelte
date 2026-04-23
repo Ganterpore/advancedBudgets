@@ -1,14 +1,17 @@
 <script lang="ts">
-    export let metrics: { label: string, value: string }[]
+    export let metrics: { label: string, value: string, subValue?: string }[]
 </script>
 
 <div class="metrics-grid">
-    {#each metrics as metric}
-        <div class="metric-card highlight">
-            <span class="metric-value">{metric.value}</span>
-            <span class="metric-label">{metric.label}</span>
-        </div>
-    {/each}
+  {#each metrics as metric}
+    <div class="metric-card highlight">
+      <span class="metric-value">{metric.value}</span>
+      <span class="metric-label">{metric.label}</span>
+        {#if metric.subValue}
+          <span class="metric-sub-value">{metric.subValue}</span>
+        {/if}
+    </div>
+  {/each}
 </div>
 
 <style>
@@ -38,13 +41,21 @@
     .metric-value {
         font-size: 1.4em;
         font-weight: bold;
-        color: var(--theme-text, white);
+        color: var(--theme-text);
         margin-bottom: 6px;
+    }
+
+    .metric-sub-value {
+        font-size: 0.65em;
+        font-style: italic;
+        color: var(--theme-text);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .metric-label {
         font-size: 0.85em;
-        color: var(--theme-text, rgba(255, 255, 255, 0.7));
+        color: var(--theme-text);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }

@@ -33,6 +33,11 @@
       investment.amount = 0
       investment.expectedROI = 600
       investment.withdrawalRate = 0
+    } if (!debt.id) {
+      debt.name = ''
+      debt.principal = 0
+      debt.percent = 0
+      debt.regularRepayment = 0
     }
     $openPopup = false
     if (isOpen !== undefined) isOpen = false
@@ -46,12 +51,13 @@
   }
 
   $: isUpdating = account.id || investment.id
-  const refreshAccountType = (accountId?: number, investmentId?: number) => {
-    if (accountId) return 'Cash'
+  const refreshAccountType = (accountId?: number, investmentId?: number, debtId?: number) => {
     if (investmentId) return 'Investment'
+    if (debtId) return 'Debt'
+    if (accountId) return 'Cash'
     return accountType
   }
-  $: accountType = refreshAccountType(account.id, investment.id)
+  $: accountType = refreshAccountType(account.id, investment.id, debt.id)
 </script>
 
 <div class="container">

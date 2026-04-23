@@ -71,7 +71,11 @@
   </div>
 </div>
 
-<ParentAccountPopup account={data.account}/>
+<ParentAccountPopup account={data.account} debt={{
+  ...data.account.debtInfo,
+  name: data.account.name,
+  parent: data.account.id
+}}/>
 <AccountPopup account={data.account}/>
 <ArchiveAccountPopup accountId={data.account.id} isParent={data.isParent} />
 

@@ -88,7 +88,6 @@
       const capitalDiff = Math.min(capital - capitalRequired, debtRemaining)
       capital = capital - capitalDiff
       debtRemaining = debtRemaining - capitalDiff
-      totalDeposits = totalDeposits - capitalDiff
     }
     const deposits = totalDeposits
     const simpleInterest = currentCapital * (interestRate/100) * year

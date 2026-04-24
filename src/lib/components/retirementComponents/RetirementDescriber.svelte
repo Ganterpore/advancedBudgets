@@ -64,7 +64,7 @@
     { label: 'Capital Required to Retire with 0 debt', value: currencyToString(finalYearData.debtCapitalRequired) },
     ]} />
   <div class="container">
-    {#if finalYearData.capital >= finalYearData.debtCapitalRequired}
+    {#if finalYearData.capital >= finalYearData.capitalRequired && finalYearData.debtRemaining === 0}
       <div class="toast" >Ready to retire with 0 debt.</div>
     {:else if finalYearData.capital >= finalYearData.capitalRequired}
       <div class="toast" >Passive income outweighs budget, but still in debt.</div>

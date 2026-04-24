@@ -101,7 +101,7 @@
   $: finalYearData = retirementDataSet[retirementDataSet.length - 1]
 </script>
 
-<p>
+<div>
   <RetirementPlan age={age} theme={theme} data={retirementDataSet}/>
   <i>Assumes you will increase retirement saving when a debt is payed off, and increase debt pay off if you have reached your desired passive income</i>
   <br/>
@@ -118,16 +118,22 @@
     { label: 'Debt', value: currencyToString(finalYearData.debtRemaining) },
     { label: 'Capital Required to Retire with 0 debt', value: currencyToString(finalYearData.debtCapitalRequired) },
     ]} />
-  {#if finalYearData.capital >= finalYearData.debtCapitalRequired}
-    <div class="toast" >Ready to retire with 0 debt.</div>
-  {:else if finalYearData.capital >= finalYearData.capitalRequired}
-    <div class="toast" >Passive income outweighs budget, but still in debt.</div>
-  {:else}
-    <div style="margin: 3px;"/>
-  {/if}
-</p>
+  <div class="container">
+    {#if finalYearData.capital >= finalYearData.debtCapitalRequired}
+      <div class="toast" >Ready to retire with 0 debt.</div>
+    {:else if finalYearData.capital >= finalYearData.capitalRequired}
+      <div class="toast" >Passive income outweighs budget, but still in debt.</div>
+    {:else}
+      <div class="toast quiet">Not ready to Retire</div>
+    {/if}
+  </div>
+</div>
 
 <style>
+  .container {
+    display: flex;
+    justify-content: center;
+  }
   .toast {
     width: fit-content;
     background-color: var(--theme-alert);
@@ -135,7 +141,7 @@
     padding: 3px;
     border-radius: 2px;
   }
-  p {
-    margin: 5px;
+  .toast.quiet {
+    background-color: var(--theme-primary);
   }
 </style>

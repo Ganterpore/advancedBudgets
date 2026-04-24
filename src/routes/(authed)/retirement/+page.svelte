@@ -19,8 +19,7 @@
   let deposit = 0
   let age = 0
   export let data
-  let wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, theme, debts
-  $: ({ wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, settings: { theme }, debts } = data)
+  let { wantsBudget, needsBudget, budgetPeriodsPerYear, currentCapital, budgetedAmountToCapital, settings: { theme }, debts } = data
 
   const addDebt = () => {
     debts = [...debts, {

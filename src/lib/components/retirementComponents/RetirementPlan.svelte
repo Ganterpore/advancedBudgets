@@ -3,21 +3,11 @@
   import { onMount } from 'svelte';
   import type { Theme } from '$lib/types/userTypes'
   import { currencyToString } from '$lib/utils'
+  import type { RetirementChartData } from '$lib/helpers/financeHelpers'
 
   export let age
   export let theme: Theme
-  export let data: {
-    year: number,
-    capital: number,
-    principle: number,
-    deposits: number,
-    simpleInterest: number,
-    compoundedInterest: number,
-    capitalRequired: number,
-    needsCapitalRequired: number,
-    debtCapitalRequired: number,
-    debtRemaining: number
-  }[]
+  export let data: RetirementChartData[]
 
   let ctx
   let chartCanvas
@@ -49,27 +39,9 @@
       tooltip
     },
     {
-      label: 'Principle',
-      backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.principle),
-      tooltip
-    },
-    {
-      label: 'P+Deposits',
-      backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle),
-      tooltip
-    },
-    {
-      label: 'P+D+Simple Interest',
-      backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle + d.simpleInterest),
-      tooltip
-    },
-    {
-      label: 'P+D+i+Compounded Interest',
-      backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle + d.simpleInterest + d.compoundedInterest),
+      label: 'Savings',
+      backgroundColor: theme.highlight,
+      data: data.map(d => d.capital),
       tooltip
     }
   ]

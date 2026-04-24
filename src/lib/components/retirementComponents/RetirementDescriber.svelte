@@ -1,5 +1,5 @@
 <script>
-  import {compoundedValue} from "$lib/helpers/financeHelpers";
+  import { retirementDataInYears } from '$lib/helpers/financeHelpers'
   import {currencyToString} from "$lib/utils";
   import RetirementPlan from "$lib/components/retirementComponents/RetirementPlan.svelte";
   import MetricsGrid from '$lib/components/sharedComponents/MetricsGrid.svelte'
@@ -17,87 +17,32 @@
   export let budgetedAmountToCapital
   export let debts
 
-  $: budgetInTime = inflationRate !== 0 ? compoundedValue(currentBudget, 0, inflationRate, 1, yearsUntil) : currentBudget
-  $: capitalRequired = budgetInTime / (withdrawalRate * 0.01)
-  $: futureCapital = compoundedValue(currentCapital, budgetedAmountToCapital, interestRate, budgetPeriodsPerYear, yearsUntil)
-
-  // For each mortgage, find the year it gets paid off (returns null if not paid off within yearsUntil)
-  function getDebtPayoffEvents() {
-    return debts
-      .map(d => {
-        for (let y = 0; y <= yearsUntil; y++) {
-          if (compoundedValue(d.currentBalance - d.principal, d.regularRepayment, d.percent, 12, y) >= 0) {
-            return {
-              year: y,
-              // Convert monthly repayment to per-period deposit equivalent
-              extraPerPeriod: (d.regularRepayment * 12) / budgetPeriodsPerYear
-            }
-          }
-        }
-        return null
-      })
-      .filter(Boolean)
-      .sort((a, b) => a.year - b.year)
-  }
-
-  // Calculate capital at a given year, accounting for freed-up debt repayments
-  // being redirected into savings after each debt is paid off
-  function capitalWithDebtBoost(targetYear) {
-    const payoffEvents = getDebtPayoffEvents()
-
-    // Filter to only events that occur before or at the target year
-    const relevantEvents = payoffEvents.filter(e => e.year <= targetYear)
-
-    let capital = currentCapital
-    let deposits = budgetedAmountToCapital
-    let prevYear = 0
-    let totalDeposits = 0
-
-    for (const payoff of relevantEvents) {
-      const segmentYears = payoff.year - prevYear
-      if (segmentYears > 0) {
-        capital = compoundedValue(capital, deposits, interestRate, budgetPeriodsPerYear, segmentYears)
-        totalDeposits += segmentYears * budgetPeriodsPerYear * deposits
-      }
-      deposits += payoff.extraPerPeriod
-      prevYear = payoff.year
-    }
-
-    // Final segment from last payoff event to target year
-    const remainingYears = targetYear - prevYear
-    if (remainingYears > 0) {
-      capital = compoundedValue(capital, deposits, interestRate, budgetPeriodsPerYear, remainingYears)
-      totalDeposits += remainingYears * budgetPeriodsPerYear * deposits
-    }
-
-    return { capital, totalDeposits, effectiveDepositsPerPeriod: deposits }
-  }
-
-  function retirementDataInYears (year) {
-    const futureBudget = inflationRate !== 0 ? compoundedValue(currentBudget, 0, inflationRate, 1, year) : currentBudget
-    const futureNeeds = inflationRate !== 0 ? compoundedValue(currentNeeds, 0, inflationRate, 1, year) : currentNeeds
-    const capitalRequired = futureBudget / (withdrawalRate * 0.01)
-    const needsCapitalRequired = futureNeeds / (withdrawalRate * 0.01)
-    let { capital, totalDeposits } = capitalWithDebtBoost(year)
-
-    let debtRemaining = debts
-      .map(d => Math.min(0, compoundedValue(d.currentBalance - d.principal, d.regularRepayment, d.percent, 12, year)))
-      .reduce((totalDebtRemaining, debtRemaining) => totalDebtRemaining + Math.abs(debtRemaining), 0)
-
-    if (capital > capitalRequired && debtRemaining > 0) {
-      const capitalDiff = Math.min(capital - capitalRequired, debtRemaining)
-      capital = capital - capitalDiff
-      debtRemaining = debtRemaining - capitalDiff
-    }
-    const deposits = totalDeposits
-    const simpleInterest = currentCapital * (interestRate/100) * year
-    const compoundedInterest = capital - deposits - simpleInterest - currentCapital
-
-    const debtCapitalRequired = capitalRequired + debtRemaining
-    return { year, capital, principle: currentCapital, deposits, simpleInterest, compoundedInterest, futureBudget, capitalRequired, needsCapitalRequired, debtCapitalRequired, debtRemaining }
-  }
   let retirementDataSet
-  $: (age, budgetPeriodsPerYear, inflationRate, withdrawalRate, interestRate, currentBudget, currentCapital, budgetedAmountToCapital, debts), retirementDataSet = Array.from(Array(yearsUntil + 1).keys()).map(y => retirementDataInYears(y))
+  $: (age, budgetPeriodsPerYear, inflationRate, withdrawalRate, interestRate, currentBudget, currentCapital, budgetedAmountToCapital, debts), retirementDataSet = retirementDataInYears(
+    yearsUntil,
+    {
+      year: 0,
+      capital: currentCapital,
+      principle: currentCapital,
+      deposits: 0,
+      simpleInterest: 0,
+      needsCapitalRequired: currentNeeds / (withdrawalRate * 0.01),
+      capitalRequired: currentBudget / (withdrawalRate * 0.01),
+      debtRemaining: debts.reduce((totalDebtRemaining, d) => totalDebtRemaining + Math.max(0, d.principal - d.currentBalance), 0)
+    },
+    debts.map(d => ({
+      amountLeft: Math.max(0, d.principal - d.currentBalance),
+      percent: d.percent,
+      regularRepayment: d.regularRepayment
+    })),
+    {
+      regularSavingsDeposit: budgetedAmountToCapital,
+      budgetPeriodsPerYear,
+      savingsInterestRate: interestRate,
+      inflationRate,
+      withdrawalRate
+    }
+  )
   $: finalYearData = retirementDataSet[retirementDataSet.length - 1]
 </script>
 

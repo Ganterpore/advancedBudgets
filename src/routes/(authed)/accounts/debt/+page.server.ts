@@ -19,6 +19,9 @@ export const actions: Actions = {
     if ([principal, percent, regularRepayment].includes(NaN)) {
       return error(400, 'principal, percent and regularRepayment must be numbers')
     }
+    if (id && (!parent || !nominatedAccount)) {
+      return error(400, 'If ID is present, parent and nominatedAccount must be to')
+    }
     const debt: Omit<Debt, 'id'|'parent'|'nominatedAccount'> = {
       name,
       user: Number(locals.user!.id),

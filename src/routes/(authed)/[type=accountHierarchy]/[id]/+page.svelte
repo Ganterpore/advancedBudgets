@@ -53,7 +53,7 @@
   <AccountOverview transactionList={data.transactions} />
   <div class="listContainer">
     {#each Object.keys(transactionsByMonth) as key}
-      <ListItem id={key}>
+      <ListItem secondary id={key}>
         <TransactionMonthHeader
           dateString={key}
           transactions={transactionsByMonth[key]}
@@ -71,7 +71,11 @@
   </div>
 </div>
 
-<ParentAccountPopup account={data.account}/>
+<ParentAccountPopup account={data.account} debt={{
+  ...data.account.debtInfo,
+  name: data.account.name,
+  parent: data.account.id
+}}/>
 <AccountPopup account={data.account}/>
 <ArchiveAccountPopup accountId={data.account.id} isParent={data.isParent} />
 
@@ -89,7 +93,7 @@
   }
   .listContainer {
       width: 80%;
-
+      background-color: var(--theme-secondary);
       flex-grow: 1;
   }
   .list {

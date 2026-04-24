@@ -1,6 +1,7 @@
 <script>
   import {currencyToString} from "$lib/utils";
   import { slide } from 'svelte/transition';
+  import MetricsGrid from '$lib/components/sharedComponents/MetricsGrid.svelte'
 
   export let transactionList = []
 
@@ -88,114 +89,23 @@
     </div>
   </div>
 
-  <!-- Key metrics grid -->
-  <div class="metrics-grid">
-    <div class="metric-card highlight">
-      <span class="metric-value">{currencyToString(totalIncome)}</span>
-      <span class="metric-label">Total Income</span>
-    </div>
-
-    <div class="metric-card highlight">
-      <span class="metric-value">{currencyToString(totalExpenses)}</span>
-      <span class="metric-label">Total Expenses</span>
-    </div>
-
-    <div class="metric-card highlight">
-      <span class="metric-value" class:positive={netFlow >= 0} class:negative={netFlow < 0}>
-        {currencyToString(netFlow)}
-      </span>
-      <span class="metric-label">Net Flow</span>
-    </div>
-
-    <div class="metric-card">
-      <span class="metric-value">{totalTransactions.toLocaleString()}</span>
-      <span class="metric-label">Total Transactions</span>
-    </div>
-
-    <div class="metric-card">
-      <span class="metric-value">{accountAgeText}</span>
-      <span class="metric-label">Account Age</span>
-    </div>
-
-    <div class="metric-card">
-      <span class="metric-value">{incomeExpenseRatio === Infinity ? '∞' : incomeExpenseRatio.toFixed(2)}</span>
-      <span class="metric-label">Income/Expense Ratio</span>
-    </div>
-  </div>
+  <MetricsGrid metrics={[
+      { label: 'Total Income', value: currencyToString(totalIncome) },
+      { label: 'Total Expenses', value: currencyToString(totalExpenses) },
+      { label: 'Total Transactions', value: totalTransactions.toLocaleString() },
+  ]} />
 
   <!-- Monthly averages -->
   {#if expanded}
     <div class="section" transition:slide={{duration: 300}}>
       <h3>Monthly Averages</h3>
-      <div class="averages-grid">
-        <div class="average-item">
-          <span class="label">Income:</span>
-          <span class="value positive">{currencyToString(avgMonthlyIncome)}</span>
-        </div>
-        <div class="average-item">
-          <span class="label">Expenses:</span>
-          <span class="value negative">{currencyToString(avgMonthlyExpenses)}</span>
-        </div>
-        <div class="average-item">
-          <span class="label">Net:</span>
-          <span class="value" class:positive={avgMonthlyNet >= 0} class:negative={avgMonthlyNet < 0}>
-            {currencyToString(avgMonthlyNet)}
-          </span>
-        </div>
-        <div class="average-item">
-          <span class="label">Transactions:</span>
-          <span class="value">{avgTransactionsPerMonth.toFixed(1)}</span>
-        </div>
-      </div>
+      <MetricsGrid metrics={[
+        { label: 'Income:', value: currencyToString(avgMonthlyIncome) },
+        { label: 'Expenses:', value: currencyToString(avgMonthlyExpenses) },
+        { label: 'Net:', value: currencyToString(avgMonthlyNet) },
+        { label: 'Transactions:', value: avgTransactionsPerMonth.toFixed(1) },
+    ]} />
     </div>
-
-    <!-- Transaction insights -->
-    <div class="section" transition:slide={{duration: 300, delay: 100}}>
-      <h3>Transaction Insights</h3>
-      <div class="insights-grid">
-        <div class="insight-item">
-          <span class="label">Largest Income:</span>
-          <span class="value positive">{currencyToString(largestIncome)}</span>
-        </div>
-        <div class="insight-item">
-          <span class="label">Largest Expense:</span>
-          <span class="value negative">{currencyToString(largestExpense)}</span>
-        </div>
-        <div class="insight-item">
-          <span class="label">Avg Transaction Size:</span>
-          <span class="value">{currencyToString(averageTransactionSize)}</span>
-        </div>
-        <div class="insight-item">
-          <span class="label">Daily Activity:</span>
-          <span class="value">{avgTransactionsPerDay.toFixed(1)} transactions</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Top categories -->
-    {#if topCategories.length > 0}
-      <div class="section" transition:slide={{duration: 300, delay: 200}}>
-        <h3>Top Categories</h3>
-        <div class="categories-list">
-          {#each topCategories as [category, stats]}
-            <div class="category-item">
-              <div class="category-info">
-                <span class="category-name">{category}</span>
-                <span class="category-count">{stats.count} transactions</span>
-              </div>
-              <div class="category-amounts">
-                {#if stats.income > 0}
-                  <span class="income">+{currencyToString(stats.income)}</span>
-                {/if}
-                {#if stats.expenses > 0}
-                  <span class="expense">-{currencyToString(stats.expenses)}</span>
-                {/if}
-              </div>
-            </div>
-          {/each}
-        </div>
-      </div>
-    {/if}
   {/if}
 </div>
 
@@ -270,45 +180,6 @@
     font-weight: bold;
   }
 
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-
-  .metric-card {
-    background: var(--theme-primary, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--theme-text, rgba(255, 255, 255, 0.05));
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .metric-card.highlight {
-    border: 1px solid var(--theme-secondary, rgba(255, 255, 255, 0.2));
-    background: var(--theme-secondary, rgba(255, 255, 255, 0.08));
-  }
-
-  .metric-value {
-    font-size: 1.4em;
-    font-weight: bold;
-    color: var(--theme-text, white);
-    margin-bottom: 6px;
-  }
-
-  .metric-label {
-    font-size: 0.85em;
-    color: var(--theme-text, rgba(255, 255, 255, 0.7));
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .metric-card.highlight .metric-label {
-    color: var(--theme-secondary-text, rgba(255, 255, 255, 0.7));
-  }
 
   .section {
     margin-bottom: 25px;

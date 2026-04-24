@@ -31,6 +31,8 @@
   {#if error}<Alert>{error}</Alert>{/if}
   <!-- Used to send the id to the server without showing it to the user-->
   {#if debt.id}<input style="display: none" name="id" value={debt.id} />{/if}
+  {#if debt.parent}<input style="display: none" name="parent" value={debt.parent} />{/if}
+  {#if debt.nominatedAccount}<input style="display: none" name="nominatedAccount" value={debt.nominatedAccount} />{/if}
   <DebtForm debt={debt} />
   <Button disabled={isLoading} style="width: 100%">
     {debt.id ? 'Update' : 'Create'}

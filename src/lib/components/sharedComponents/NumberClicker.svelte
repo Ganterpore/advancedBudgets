@@ -9,11 +9,11 @@
 <div class="numberClicker">
   <p class="name">{name}</p>
   <div class="clickers">
-    {#if additionalClickerValue !== 0}<Button on:click={() => value += additionalClickerValue}>+{additionalClickerValue}</Button>{/if}
-    <Button on:click={() => value++}>+</Button>
-    <p>{value}{unit}</p>
-    <Button on:click={() => value--}>-</Button>
     {#if additionalClickerValue !== 0}<Button on:click={() => value -= additionalClickerValue}>-{additionalClickerValue}</Button>{/if}
+    <Button on:click={() => value--}>-</Button>
+    <p>{value}{unit}</p>
+    <Button on:click={() => value++}>+</Button>
+    {#if additionalClickerValue !== 0}<Button on:click={() => value += additionalClickerValue}>+{additionalClickerValue}</Button>{/if}
   </div>
 </div>
 

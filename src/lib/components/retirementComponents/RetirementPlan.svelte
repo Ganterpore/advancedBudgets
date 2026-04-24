@@ -3,20 +3,11 @@
   import { onMount } from 'svelte';
   import type { Theme } from '$lib/types/userTypes'
   import { currencyToString } from '$lib/utils'
+  import type { RetirementChartData } from '$lib/helpers/financeHelpers'
 
   export let age
   export let theme: Theme
-  export let data: {
-    year: number,
-    capital: number,
-    principle: number,
-    deposits: number,
-    simpleInterest: number,
-    compoundedInterest: number,
-    capitalRequired: number,
-    needsCapitalRequired: number,
-    debtCapitalRequired: number
-  }[]
+  export let data: RetirementChartData[]
 
   let ctx
   let chartCanvas
@@ -28,47 +19,29 @@
   $: datasets = [
     {
       label: 'Required Capital for Needs',
-      backgroundColor: theme.alert + '25',
+      backgroundColor: theme.highlight + '25',
       data: data.map(d => d.needsCapitalRequired),
       type: 'line',
       tooltip
     },
     {
       label: 'Required Capital',
-      backgroundColor: theme.alert + '50',
+      backgroundColor: theme.highlight,
       data: data.map(d => d.capitalRequired),
       type: 'line',
       tooltip
     },
     {
-      label: 'Required Capital including debt',
+      label: 'Debt',
       backgroundColor: theme.alert,
-      data: data.map(d => d.debtCapitalRequired),
+      data: data.map(d => d.debtRemaining),
       type: 'line',
       tooltip
     },
     {
-      label: 'Principle',
-      backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.principle),
-      tooltip
-    },
-    {
-      label: 'P+Deposits',
-      backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle),
-      tooltip
-    },
-    {
-      label: 'P+D+Simple Interest',
-      backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle + d.simpleInterest),
-      tooltip
-    },
-    {
-      label: 'P+D+i+Compounded Interest',
-      backgroundColor: theme.highlight + '55',
-      data: data.map(d => d.deposits + d.principle + d.simpleInterest + d.compoundedInterest),
+      label: 'Savings',
+      backgroundColor: theme.highlight,
+      data: data.map(d => d.capital),
       tooltip
     }
   ]

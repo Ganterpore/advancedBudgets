@@ -57,11 +57,11 @@
   {/if}
   <br/>
   <MetricsGrid metrics={[
-    { label: 'Expected Monthly Budget', value: currencyToString(finalYearData.futureBudget / 12), subValue: currencyToString(finalYearData.futureBudget) + ' pa' },
+    { label: 'Expected Monthly Budget', value: currencyToString(finalYearData.capitalRequired * withdrawalRate * 0.01 / 12), subValue: currencyToString(finalYearData.futureBudget) + ' pa' },
     { label: 'Monthly Passive Income', value: currencyToString((finalYearData.capital * withdrawalRate * 0.01) / 12), subValue: currencyToString(finalYearData.capital * withdrawalRate * 0.01) + ' pa' },
     { label: 'Capital', value: currencyToString(finalYearData.capital) },
     { label: 'Debt', value: currencyToString(finalYearData.debtRemaining) },
-    { label: 'Capital Required to Retire with 0 debt', value: currencyToString(finalYearData.debtCapitalRequired) },
+    { label: 'Capital Required to Retire with 0 debt', value: currencyToString(finalYearData.capitalRequired + finalYearData.debtRemaining) },
     ]} />
   <div class="container">
     {#if finalYearData.capital >= finalYearData.capitalRequired && finalYearData.debtRemaining === 0}

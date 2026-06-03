@@ -57,7 +57,7 @@ export function retirementDataInYears (
     inflationRate: number,
     withdrawalRate: number
   }): RetirementChartData[] {
-  if (yearsUntil === 0) return []
+  if (yearsUntil === 0) return [prev]
   // Move numbers forward a year
   const next: RetirementChartData = {
     year: prev.year + 1,
@@ -108,6 +108,6 @@ export function retirementDataInYears (
   next.capital += additionalFunds
   // Get future data
   const futureData = retirementDataInYears(yearsUntil - 1, next, nextYearsDebt, globalSettings)
-  futureData.unshift(next)
+  futureData.unshift(prev)
   return futureData
 }

@@ -3,7 +3,7 @@
   import MaterialSymbolsCheck from '~icons/material-symbols/check';
   import { currencyToString, getHighlightColour } from '$lib/utils'
   import { TransactionType } from '$lib/types/transactionTypes'
-  import { AccountType, accountTypeIcons } from '$lib/types/accountTypes'
+  import { type Account, AccountType, accountTypeIcons } from '$lib/types/accountTypes'
   import type { AccountTypeBudget, AccountTypeSaving } from '$lib/types/accountTypes'
   import SavingsProgress from '$lib/components/accountComponents/SavingsProgress.svelte'
   import Button from '$lib/components/sharedComponents/Button.svelte'
@@ -13,7 +13,7 @@
   import { savingsAccountMultiplierToString } from '$lib/helpers/accountHelpers'
 
   export let accounts
-  export let account
+  export let account: Account
   export let value: number = 0
   export let additionalAccountData: AccountTypeSaving | AccountTypeBudget
   export let budgetDetails: Budget
@@ -88,6 +88,11 @@
       // Past planned budget
       const daysAgo = Math.round(((Date.now() - (additionalAccountData as AccountTypeBudget).endDate!.getTime()) / (1000 * 60 * 60 * 24)))
       subheading = `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`
+
+      const budgetAccountDetails = additionalAccountData as AccountTypeBudget
+      const numberOfReleases = numberOfOccurrencesBetween(budgetAccountDetails, budgetAccountDetails.startDate, budgetAccountDetails.endDate!)
+      const target = numberOfReleases * budgetAccountDetails.regularBudget
+      subValueString = `${currencyToString(target - value)} spent`
     }
     return [valueString, subValueString, subheading, iconReplacementText, progressGoal, progressMultiplier]
   }

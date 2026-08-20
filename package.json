@@ -15,6 +15,7 @@
 		"lint": "eslint .",
 		"db": "docker-compose -f src/devops/docker-compose.yml up -d",
 		"db-close": "docker-compose -f src/devops/docker-compose.yml down",
+		"generate:icons": "tsx src/devops/generateIcons.ts",
 		"migrate:make": "node-pg-migrate create -j ts",
 		"migrate:up": "dotenv -e .env tsx migrate.ts up",
 		"migrate:down": "dotenv -e .env tsx migrate.ts down"
@@ -27,6 +28,7 @@
 		"@iconify-json/la": "^1.1.8",
 		"@iconify-json/map": "^1.1.9",
 		"@iconify-json/material-symbols": "^1.1.79",
+		"@resvg/resvg-js": "^2.6.2",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/adapter-vercel": "^5.3.1",
 		"@sveltejs/kit": "^2.0.0",

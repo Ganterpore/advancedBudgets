@@ -5,7 +5,8 @@
   let settings
   export let data
   $: ({ settings } = data)
-  $: selectedTheme = (settings.theme && themes[settings.theme]) ?? themes.default
+  $: themeName = (settings.theme && themes[settings.theme]) ? settings.theme : 'default'
+  $: selectedTheme = themes[themeName]
   $: styles = Object.entries(selectedTheme)
     .map(([key, value]) => `--theme-${key}:${value}`)
     .join(';');
@@ -13,6 +14,7 @@
 
 <svelte:head>
   <meta name="theme-color" content={selectedTheme.background} />
+  <link rel="apple-touch-icon" href="/icons/{themeName}/apple-touch-icon.png" />
 </svelte:head>
 
 <div class="root" style={styles} >

@@ -45,8 +45,13 @@ export const handle: Handle = async ({event, resolve}) => {
     return resolve(event)
   }
   await handleLuciaAuthentication(event)
-  // If not authed, redirect to login page
-  if (!event.url.pathname.startsWith('/login') && !event.locals.user) {
+  // If not authed, redirect to login page. The manifest is exempted so the PWA install prompt
+  // (and its theme colors, when a session is present) still work outside of authed pages.
+  if (
+    !event.url.pathname.startsWith('/login') &&
+    event.url.pathname !== '/manifest.webmanifest' &&
+    !event.locals.user
+  ) {
     event.locals.user = null
     event.locals.session = null
     return new Response(null, {

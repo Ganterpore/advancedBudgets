@@ -1,5 +1,6 @@
 <script lang="ts">
   import {themes} from "$lib/types/userTypes";
+  import PwaUpdatePrompt from "$lib/components/sharedComponents/PwaUpdatePrompt.svelte";
 
   let settings
   export let data
@@ -12,6 +13,7 @@
 
 <div class="root" style={styles} >
   <slot />
+  <PwaUpdatePrompt />
 </div>
 
 <style>

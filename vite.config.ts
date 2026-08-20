@@ -14,20 +14,10 @@ export default defineConfig({
 			// precache static build assets/icons — not page HTML — and never register a
 			// navigateFallback, meaning navigations always hit the network as before.
 			registerType: 'prompt',
-			manifest: {
-				name: 'Advanced Budgets',
-				short_name: 'Budgets',
-				description: 'Track spending and manage budgets',
-				theme_color: '#161c91',
-				background_color: '#161c91',
-				display: 'standalone',
-				start_url: '/',
-				icons: [
-					{ src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-					{ src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-					{ src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
-				]
-			},
+			// The web app manifest is served dynamically instead (src/routes/manifest.webmanifest)
+			// so its theme_color/background_color can match the logged-in user's saved theme.
+			// See src/lib/types/userTypes.ts for the theme definitions.
+			manifest: false,
 			devOptions: {
 				enabled: false
 			}

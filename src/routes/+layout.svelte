@@ -11,6 +11,10 @@
     .join(';');
 </script>
 
+<svelte:head>
+  <meta name="theme-color" content={selectedTheme.background} />
+</svelte:head>
+
 <div class="root" style={styles} >
   <slot />
   <PwaUpdatePrompt />

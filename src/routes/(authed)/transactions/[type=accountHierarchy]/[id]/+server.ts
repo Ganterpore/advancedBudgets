@@ -11,7 +11,8 @@ export type TransactionData = {
   amount: number,
   description: string,
   type: TransactionType,
-  transferTo?: number
+  transferTo?: number,
+  transferFrom?: number
 }
 
 async function validateFields ({ request, params }: RequestEvent<Partial<Record<string, string>>, string | null>) {
@@ -33,6 +34,11 @@ async function validateFields ({ request, params }: RequestEvent<Partial<Record<
 
 async function handleGroupedSavingTransaction (accountId: number, data: TransactionData) {
   const suggestions = await assignTransaction(data.amount, Number(accountId))
+  if (data.transferFrom) {
+    // Pull the full amount out of the source account before distributing it
+    const fromData = { ...data, amount: data.amount * -1 }
+    await handleIndividualTransaction(data.transferFrom, fromData)
+  }
   const promises = suggestions.map(s => newTransaction({
     account: s.account,
     amount: s.amount,

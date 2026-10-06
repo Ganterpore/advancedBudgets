@@ -51,6 +51,15 @@
   let error: string
 
   let transferTo = (accountList ?? [])[0]?.id
+  let transferFrom: number
+  let isTransferringFrom = false
+  $: transferFromAvailable = selectedTransactionType === TransactionType.GROUPED_SAVING && accounts !== undefined
+  // Accounts belonging to this parent receive the money, so they can't be the source
+  $: transferFromOptions = (accounts ?? []).filter(a => !a.archived)
+  function startTransferFrom () {
+    transferFrom = transferFromOptions[0]?.id
+    isTransferringFrom = true
+  }
   let prevTransactionType = selectedTransactionType
   const transferableTypes = [TransactionType.INDIVIDUAL, TransactionType.TRANSFER]
   $: transferAvailable = transferableTypes.includes(selectedTransactionType) && accounts !== undefined
@@ -96,6 +105,7 @@
       type: selectedTransactionType
     }
     if (transactionId) body.id = transactionId
+    if (transferFromAvailable && isTransferringFrom && transferFrom) body.transferFrom = transferFrom
     if (([TransactionType.TRANSFER, TransactionType.COMPLETION] as TransactionType[]).includes(selectedTransactionType)) body.transferTo = transferTo
     const url = `/transactions/${ selectedTransactionType === TransactionType.GROUPED_SAVING ? 'parentAccount' : 'account' }/${account.id}`
     const res = await fetch(url, {
@@ -123,6 +133,7 @@
     transactionName = 'Transaction'
     transactionValue = 0
     previousTransactionValue = undefined
+    isTransferringFrom = false
     onClose()
   }
 </script>
@@ -165,6 +176,19 @@
         {#if selectedTransactionType === TransactionType.COMPLETION}
           <div class="transfer">
             <Button on:click={convertCompletionToIndividual}>Reopen the account instead</Button>
+          </div>
+        {/if}
+      {/if}
+      {#if transferFromAvailable}
+        {#if isTransferringFrom}
+          <p style="text-align: center">Transfer From</p>
+          <div class="transfer">
+            <AllAccountsDropdown accounts={transferFromOptions} bind:selectedAccount={transferFrom} />
+            <Button on:click={() => isTransferringFrom = false}>X</Button>
+          </div>
+        {:else}
+          <div class="transfer">
+            <Button on:click={startTransferFrom}>Transfer from an account</Button>
           </div>
         {/if}
       {/if}

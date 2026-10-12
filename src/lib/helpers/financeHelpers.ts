@@ -11,6 +11,7 @@ export function compoundedValue (principle: number, regularDeposits: number, per
 }
 
 export function calculateN (P: number, rate: number, M: number) {
+  console.log(P, rate, M)
   const r = (rate / 100) / 12; // Convert annual % to monthly decimal
   const result = Math.log(M / (M - P * r)) / Math.log(1 + r)
   if (isNaN(result)) return '∞'

@@ -17,8 +17,8 @@ export function calculateN (P: number, rate: number, M: number) {
   return Math.round(result)
 }
 
-export function formatDuration (totalMonths: number) {
-  if (!isFinite(totalMonths)) return "Never (interest exceeds repayment)";
+export function formatDuration (totalMonths: number | '∞') {
+  if (totalMonths === '∞' || !isFinite(totalMonths)) return "Never (interest exceeds repayment)";
 
   // Use Math.ceil because even a partial month requires a full payment
   const total = Math.ceil(totalMonths);

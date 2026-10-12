@@ -22,9 +22,9 @@
     <p>{account.name}</p>
     {#if account.debtInfo}
       <p class="subValue">{formatDuration(calculateN(
-        account.debtInfo.principal - value,
+        (account.debtInfo.principal - value)/100,
         account.debtInfo.percent,
-        account.debtInfo.regularRepayment
+        account.debtInfo.regularRepayment/100
       ))} left</p>
     {/if}
   </div>

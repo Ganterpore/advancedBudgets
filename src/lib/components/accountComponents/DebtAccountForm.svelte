@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Debt } from '$lib/types/accountTypes'
+  import type { Account, Debt } from '$lib/types/accountTypes'
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import Alert from '$lib/components/sharedComponents/Alert.svelte'
   import { enhance } from '$app/forms'
@@ -9,6 +9,9 @@
 
   export let debt: Omit<Debt, 'id'|'user'|'parent'|'nominatedAccount'> & Partial<Debt>
   export let onSubmit: () => void
+  // Existing child accounts that can receive principal repayments when converting an existing account to a debt
+  export let repaymentAccountOptions: Account[] = []
+  $: isConverting = !!debt.parent && !debt.id
   let error
   let isLoading = false
 </script>
@@ -34,8 +37,19 @@
   {#if debt.parent}<input style="display: none" name="parent" value={debt.parent} />{/if}
   {#if debt.nominatedAccount}<input style="display: none" name="nominatedAccount" value={debt.nominatedAccount} />{/if}
   <DebtForm debt={debt} />
+  {#if isConverting}
+    <label class="repaymentAccount">
+      Principal repayments go to:
+      <select name="nominatedAccount">
+        <option value="">New 'Principal Repayments' account</option>
+        {#each repaymentAccountOptions as option}
+          <option value={option.id}>{option.type}: {option.name}</option>
+        {/each}
+      </select>
+    </label>
+  {/if}
   <Button disabled={isLoading} style="width: 100%">
-    {debt.id ? 'Update' : 'Create'}
+    {debt.id ? 'Update' : isConverting ? 'Convert to Debt' : 'Create'}
     {#if isLoading}<LoadingSpinner/>{/if}
   </Button>
 </form>
@@ -49,6 +63,13 @@
   }
   .subText {
     padding: 20px;
+  }
+  .repaymentAccount {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 10px;
+    color: var(--theme-text);
   }
   p {
     font-style: italic;

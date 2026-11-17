@@ -3,6 +3,7 @@ import { AccountHierarchy } from '../../../params/accountHierarchy'
 import { error, redirect } from '@sveltejs/kit'
 import { newParentAccount, updateParentAccount } from '$lib/models/parentAccountModel'
 import { createNewAccount, updateAccount } from '$lib/controllers/accountController'
+import { convertDebtToParent } from '$lib/models/debtModel'
 import type { Account } from '$lib/types/accountTypes'
 import { AccountType } from '$lib/types/accountTypes'
 
@@ -22,6 +23,9 @@ export const actions: Actions = {
           user: Number(locals.user!.id),
           name: accountName.toString()
         })
+        if (data.get('removeDebt') === 'true') {
+          await convertDebtToParent(Number(id), Number(locals.user!.id))
+        }
       } else {
         id = await newParentAccount({user: Number(locals.user!.id), name: accountName.toString()})
       }

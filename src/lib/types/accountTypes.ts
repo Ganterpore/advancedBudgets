@@ -64,7 +64,8 @@ export type Investment = {
   name: string,
   expectedROI: number,
   withdrawalRate: number,
-  amount: number
+  amount: number,
+  archived?: boolean
 }
 
 export type Debt = {

@@ -1,5 +1,6 @@
 import type { Investment, InvestmentValue } from '$lib/types/accountTypes'
 import { connect } from '$lib/db'
+import { error } from '@sveltejs/kit'
 
 export async function createInvestmentAccount (investment: Omit<Investment, 'id'>): Promise<number> {
   const db = await connect()
@@ -87,11 +88,21 @@ export async function updateInvestmentAccount (investment: Investment): Promise<
   `, [investment.id, amount, new Date()])
 }
 
-export async function archiveInvestmentAccount (investmentId: number) {
+export async function archiveInvestmentAccount (investmentId: number, userId: number) {
   const db = await connect()
+  const latest = await db.query(`
+    SELECT iv.amount FROM investment_value iv
+    JOIN investment_account ia ON ia.id = iv.investment
+    WHERE iv.investment = $1 AND ia."user" = $2
+    ORDER BY iv."onDate" DESC, iv.id DESC
+    LIMIT 1
+  `, [investmentId, userId])
+  if (latest.rows.length === 0) throw error(404, 'Investment not found')
+  // Like parent accounts, only allow archiving once there's nothing left in it
+  if (Number(latest.rows[0].amount) !== 0) throw error(400, 'Set the current value to $0 before archiving')
   await db.query(
     `UPDATE investment_account SET "archived" = true
-      WHERE ID=$1`,
-    [investmentId]
+      WHERE ID=$1 AND "user"=$2`,
+    [investmentId, userId]
   )
 }

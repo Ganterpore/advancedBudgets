@@ -14,8 +14,27 @@
   $: points = [...values]
     .map(v => ({ x: new Date(v.onDate).getTime(), y: v.amount }))
     .sort((a, b) => a.x - b.x)
+  // With one value (or all values equal) Chart.js has no range to work with, so give it one:
+  // a month either side of a lone date, and some headroom around a flat value
+  const DAY = 24 * 60 * 60 * 1000
+  $: xs = points.map(p => p.x)
+  $: ys = points.map(p => p.y)
+  $: xBounds = points.length && Math.min(...xs) === Math.max(...xs)
+    ? { min: xs[0] - 30 * DAY, max: xs[0] + 30 * DAY }
+    : { min: undefined, max: undefined }
+  // 10% headroom above and below the data, never going below $0 (investment values can't be negative)
+  $: yBounds = (() => {
+    if (!points.length) return { suggestedMin: undefined, suggestedMax: undefined }
+    const min = Math.min(...ys)
+    const max = Math.max(...ys)
+    if (min === max) return { suggestedMin: 0, suggestedMax: max === 0 ? 100000 : max * 1.2 }
+    const pad = (max - min) * 0.1
+    return { suggestedMin: Math.max(0, min - pad), suggestedMax: max + pad }
+  })()
   $: if (chart) {
     chart.data.datasets[0].data = points
+    Object.assign(chart.options.scales!.x!, xBounds)
+    Object.assign(chart.options.scales!.y!, yBounds)
     chart.update()
   }
 
@@ -82,12 +101,13 @@
         scales: {
           x: {
             type: 'linear',
+            ...xBounds,
             ticks: { color: text, maxTicksLimit: 6, callback: (v) => formatDate(Number(v)) },
             grid: { display: false },
             border: { color: grid }
           },
           y: {
-            grace: '10%',
+            ...yBounds,
             ticks: { color: text, maxTicksLimit: 5, callback: (v) => compactCurrency.format(Number(v) / 100) },
             grid: { color: grid, lineWidth: 1 },
             border: { display: false }

@@ -4,13 +4,36 @@
   import MetricsGrid from '$lib/components/sharedComponents/MetricsGrid.svelte'
   import ParentAccountPopup from '$lib/components/accountComponents/ParentAccountPopup.svelte'
   import InvestmentValueChart from '$lib/components/accountComponents/InvestmentValueChart.svelte'
-  import { goto } from '$app/navigation'
+  import InvestmentValueEditPopup from '$lib/components/accountComponents/InvestmentValueEditPopup.svelte'
+  import Popup from '$lib/components/sharedComponents/Popup.svelte'
+  import Button from '$lib/components/sharedComponents/Button.svelte'
+  import Alert from '$lib/components/sharedComponents/Alert.svelte'
+  import LoadingSpinner from '$lib/components/sharedComponents/LoadingSpinner.svelte'
+  import EditOutlineIcon from '~icons/material-symbols/EditOutline'
+  import { enhance } from '$app/forms'
+  import { goto, invalidate } from '$app/navigation'
   import { currencyToString } from '$lib/utils'
   import type { InvestmentValue } from '$lib/types/accountTypes'
 
   export let data
 
   let isEditOpen = false
+
+  // Historic value being edited (one popup, re-created per value)
+  let editingValue: InvestmentValue | undefined
+  let isValueEditOpen = false
+  function editValue (value: InvestmentValue) {
+    editingValue = value
+    isValueEditOpen = true
+  }
+
+  let isArchiveOpen = false
+  let archiveError: string | undefined
+  let isArchiving = false
+  function closeArchive () {
+    isArchiveOpen = false
+    archiveError = undefined
+  }
 
   // Values come newest first
   $: values = data.values as InvestmentValue[]
@@ -31,7 +54,10 @@
 
 <AppBar title={data.investment.name}
         leftButton={{ name: 'Back', action: () => goto('/') }}
-        rightButtons={[{ name: 'Edit', action: () => isEditOpen = true }]}/>
+        rightButtons={[
+          { name: 'Edit', action: () => isEditOpen = true },
+          { name: 'Archive', action: () => isArchiveOpen = true }
+        ]}/>
 
 <div class="container">
   <div class="overview">
@@ -66,13 +92,18 @@
               <p class="text">{currencyToString(entry.amount)}</p>
               <p class="sub-text">{formatDate(entry.onDate)}</p>
             </div>
-            {#if entry.change !== undefined}
-              <p class="change" class:positive={entry.change > 0} class:negative={entry.change < 0}>
-                {formatChange(entry.change)}
-              </p>
-            {:else}
-              <p class="sub-text">Initial value</p>
-            {/if}
+            <div class="row-end">
+              {#if entry.change !== undefined}
+                <p class="change" class:positive={entry.change > 0} class:negative={entry.change < 0}>
+                  {formatChange(entry.change)}
+                </p>
+              {:else}
+                <p class="sub-text">Initial value</p>
+              {/if}
+              <Button aria-label="Edit value" on:click={() => editValue(entry)}>
+                <EditOutlineIcon/>
+              </Button>
+            </div>
           </div>
         </ListItem>
       {:else}
@@ -85,6 +116,35 @@
 {#key data.investment}
   <ParentAccountPopup bind:isOpen={isEditOpen} investment={{ ...data.investment }} />
 {/key}
+
+{#if editingValue}
+  {#key editingValue}
+    <InvestmentValueEditPopup value={editingValue} bind:isOpen={isValueEditOpen} canDelete={values.length > 1} />
+  {/key}
+{/if}
+
+<Popup id="archiveInvestment" isOpen={isArchiveOpen} onClose={closeArchive}>
+  <h1 class="popup-title">Archive Investment</h1>
+  <p class="popup-text">Are you sure you want to archive {data.investment.name}?</p>
+  {#if archiveError}<Alert>{archiveError}</Alert>{/if}
+  <form class="popup-actions" method="post" action="?/archive"
+    use:enhance={() => {
+      isArchiving = true
+      return async ({ result }) => {
+        isArchiving = false
+        if (result.type === 'error') {
+          archiveError = result.error.message
+        } else {
+          closeArchive()
+          await invalidate('data:accounts')
+          await goto('/')
+        }
+      }
+    }}>
+    <Button disabled={isArchiving}>Yes{#if isArchiving}<LoadingSpinner/>{/if}</Button>
+    <Button secondary type="button" on:click={closeArchive}>No</Button>
+  </form>
+</Popup>
 
 <style>
   .container {
@@ -162,6 +222,18 @@
     margin: 0;
     font-size: small;
     color: var(--theme-text);
+  }
+  .row-end {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .popup-title, .popup-text {
+    color: var(--theme-text);
+  }
+  .popup-actions {
+    display: flex;
+    gap: 10px;
   }
   .change {
     margin: 0;

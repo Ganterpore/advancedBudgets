@@ -14,7 +14,7 @@
   let amountDollars = investment.amount / 100
 </script>
 
-<form class="form" method="post" action="/investment/{investment.id}"
+<form class="form" method="post" action="/investment/{investment.id}?/value"
   use:enhance={() => {
     isLoading = true
     return async ({ result }) => {

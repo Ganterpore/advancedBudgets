@@ -23,7 +23,7 @@
     percent: 0,
     regularRepayment: 0
   }
-  export let isOpen = undefined
+  export let isOpen: boolean | undefined = undefined
 
   async function onSubmit () {
     if (!account.id) {

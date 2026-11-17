@@ -72,10 +72,19 @@ export async function updateInvestmentAccount (investment: Investment): Promise<
      SET ("user", "name", "expectedROI", "withdrawalRate") = ($1, $2, $3, $4) 
      WHERE ID=$5`,
     [investment.user, investment.name, investment.expectedROI, investment.withdrawalRate, investment.id])
+  // Only record a new value when it has changed, so editing details doesn't add duplicate history entries
+  const latest = await db.query(`
+    SELECT amount FROM investment_value
+    WHERE investment = $1
+    ORDER BY "onDate" DESC, id DESC
+    LIMIT 1
+  `, [investment.id])
+  const amount = Math.round(investment.amount)
+  if (latest.rows[0]?.amount === amount) return
   await db.query(`
     INSERT INTO investment_value("investment", "amount", "onDate")
     VALUES($1, $2, $3)
-  `, [investment.id, Math.round(investment.amount), new Date()])
+  `, [investment.id, amount, new Date()])
 }
 
 export async function archiveInvestmentAccount (investmentId: number) {

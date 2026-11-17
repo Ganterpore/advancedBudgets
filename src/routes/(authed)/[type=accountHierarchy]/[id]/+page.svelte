@@ -72,6 +72,9 @@
 </div>
 
 <ParentAccountPopup account={data.account} debt={{
+  principal: 0,
+  percent: 0,
+  regularRepayment: 0,
   ...data.account.debtInfo,
   name: data.account.name,
   parent: data.account.id

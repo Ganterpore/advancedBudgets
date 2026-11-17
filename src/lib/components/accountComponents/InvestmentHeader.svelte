@@ -3,12 +3,15 @@
   import { currencyToString } from '$lib/utils'
   import Button from '$lib/components/sharedComponents/Button.svelte'
   import MaterialSymbolsAddRounded from '~icons/material-symbols/add-rounded'
-  import ParentAccountPopup from '$lib/components/accountComponents/ParentAccountPopup.svelte'
+  import Popup from '$lib/components/sharedComponents/Popup.svelte'
+  import InvestmentValueForm from '$lib/components/accountComponents/InvestmentValueForm.svelte'
 
   export let investment: Investment
   let isOpen = false
-  function updateAmount () {
-    isOpen = !isOpen
+  function updateAmount (e: MouseEvent) {
+    // Don't also trigger the row click, which navigates to the investment page
+    e.stopPropagation()
+    isOpen = true
   }
 </script>
 
@@ -20,7 +23,12 @@
     <MaterialSymbolsAddRounded/>
   </Button>
 </div>
-<ParentAccountPopup bind:isOpen={isOpen} bind:investment={investment}/>
+<Popup id="investmentValue-{investment.id}" bind:isOpen={isOpen} onClose={() => isOpen = false}>
+  <h1 style="margin: 0">{investment.name}</h1>
+  {#key isOpen}
+    <InvestmentValueForm investment={investment} onSubmit={() => isOpen = false} />
+  {/key}
+</Popup>
 
 <style>
   p {
@@ -28,6 +36,9 @@
     font-size: large;
     color: var(--theme-secondary-text);
     font-weight: bold;
+  }
+  h1 {
+    color: var(--theme-text);
   }
   .header {
     display: flex;

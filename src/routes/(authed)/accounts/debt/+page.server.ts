@@ -1,7 +1,7 @@
 import type { Actions } from '@sveltejs/kit'
 import { error } from '@sveltejs/kit'
 import type { Debt } from '$lib/types/accountTypes'
-import { newDebt, updateDebt } from '$lib/models/debtModel'
+import { convertParentToDebt, newDebt, updateDebt } from '$lib/models/debtModel'
 
 export const actions: Actions = {
   default: async ({ request, locals }) => {
@@ -31,6 +31,9 @@ export const actions: Actions = {
     }
     if (id && parent && nominatedAccount) {
       await updateDebt({...debt, id, parent, nominatedAccount })
+    } else if (parent) {
+      // Existing parent account without debt info, so convert it to a debt account
+      await convertParentToDebt({ ...debt, parent }, nominatedAccount || undefined)
     } else {
       await newDebt(debt)
     }
